@@ -1,0 +1,62 @@
+name: operator-e2e
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  operator:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - uses: helm/kind-action@v1
+        with:
+          version: v0.33.0
+          kubectl_version: v1.37.0
+          node_image: docker.io/submod/amd-mock-kind-node:0.2.1
+          cluster_name: amd-operator-test
+          config: deployments/kind-node/kind-config.yaml
+          ignore_failed_clean: true
+          wait: 120s
+      - name: Install mock and Operator
+        run: |
+          helm install amd-gpu-mock deployments/helm/amd-gpu-mock \
+            -n amd-mock --create-namespace --set devicePlugin.enabled=false
+          kubectl -n amd-mock rollout status ds/amd-gpu-mock --timeout=120s
+          helm install cert-manager cert-manager --repo https://charts.jetstack.io \
+            -n cert-manager --create-namespace --version v1.15.1 \
+            --set crds.enabled=true --wait --timeout=180s
+          helm install amd-gpu-operator gpu-operator-charts --repo https://rocm.github.io/gpu-operator \
+            --version v1.5.0 -n kube-amd-gpu --create-namespace \
+            --set kmm.enabled=false --set remediation.enabled=false \
+            --set node-feature-discovery.enabled=false --set installdefaultNFDRule=false \
+            --set deviceConfig.spec.driver.enable=false \
+            --set deviceConfig.spec.metricsExporter.enable=false \
+            --set controller.manager.image.repository=docker.io/submod/gpu-operator-sim \
+            --set controller.manager.image.tag=latest
+          kubectl -n kube-amd-gpu set env \
+            deployment/amd-gpu-operator-gpu-operator-charts-controller-manager SIM_ENABLE=true
+      - name: Operator scheduling smoke test
+        env:
+          KEEP: "1"
+        run: python3 tests/operator-e2e.py
+      - name: Diagnostics
+        if: always()
+        run: |
+          mkdir -p artifacts
+          kubectl get pods -A -o wide > artifacts/pods.txt 2>&1 || true
+          kubectl get events -A --sort-by=.lastTimestamp > artifacts/events.txt 2>&1 || true
+          kubectl -n kube-amd-gpu get deviceconfig -o yaml > artifacts/deviceconfig.yaml 2>&1 || true
+          kubectl -n kube-amd-gpu describe pods > artifacts/operands.txt 2>&1 || true
+          kubectl -n kube-amd-gpu logs deployment/amd-gpu-operator-gpu-operator-charts-controller-manager \
+            -c manager --tail=300 > artifacts/controller.log 2>&1 || true
+          kind export logs artifacts/kind --name amd-operator-test || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: operator-diagnostics
+          path: artifacts/

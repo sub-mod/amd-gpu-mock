@@ -69,7 +69,12 @@ partitions. The API does not increase Kubernetes capacity when CPX is selected.
 Fault tests use an explicit device-plugin restart; they do not promise
 continuous device-health detection without rediscovery.
 
-These suites do not validate the GPU Operator, real AMD metrics exporter,
+The `operator-e2e` smoke job separately tests the published SIM_ENABLE
+controller, device-plugin and node-labeller readiness, eight-GPU capacity,
+and one-GPU workload injection. It disables DME, KMM and NFD to isolate
+Operator reconciliation and scheduling; it does not claim their validation.
+
+These suites do not validate the real AMD metrics exporter,
 full amd-smi CLI, CVS/RVS, node reboot/failure, or multi-node placement.
 Those remain separate consumer-validation tasks. GPU computation is outside
 the mock's control-plane scope.
