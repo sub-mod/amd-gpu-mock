@@ -45,6 +45,11 @@ jobs:
           PROFILE: ${{ matrix.profile }}
           KEEP: "1"
         run: python3 tests/profile-e2e.py
+      - name: Device-plugin Tiny LLM and multi-instance demo
+        if: matrix.profile == 'mi300x'
+        run: |
+          kubectl delete namespace amd-profile-test --wait=true --timeout=120s
+          MODE=device-plugin python3 tests/demo-e2e.py
       - name: Diagnostics
         if: always()
         run: |

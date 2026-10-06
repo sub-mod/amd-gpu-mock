@@ -78,3 +78,30 @@ These suites do not validate the real AMD metrics exporter,
 full amd-smi CLI, CVS/RVS, node reboot/failure, or multi-node placement.
 Those remain separate consumer-validation tasks. GPU computation is outside
 the mock's control-plane scope.
+
+## Tiny LLM and virtual partition demos
+
+On the default published quick start, run:
+
+```bash
+MODE=dra python3 tests/demo-e2e.py
+```
+
+For the alternative device-plugin installation (DRA disabled), run:
+
+```bash
+MODE=device-plugin python3 tests/demo-e2e.py
+```
+
+Run on a dedicated MI300X cluster with no other GPU consumers. The script
+creates and deletes the named default-namespace demo deployments and restores
+SPX mode. Both paths check one-GPU injection and scripted LLM output, then
+DPX/CPX/QPX/SPX transitions, virtual identity/memory, and unchanged physical
+allocator capacity. The device-plugin path also checks four simultaneous
+replicas receive four distinct physical GPUs. DRA multi-GPU requests and
+shared explicit claims are covered by the basic/lifecycle suites.
+
+These demos execute scripted Python output; they do not download model weights
+or perform LLM inference. Virtual partition entries are not independently
+schedulable slices. AMD compute partitions and NVIDIA MIG hardware isolation
+are not implemented by this mock.

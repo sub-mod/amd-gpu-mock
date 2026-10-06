@@ -11,7 +11,7 @@
 #   ./scripts/demo-setup.sh --profile mi325x   # Use a different GPU profile
 #   ./scripts/demo-setup.sh --teardown         # Clean up everything
 
-set -uo pipefail
+set -euo pipefail
 
 CLUSTER_NAME="${CLUSTER_NAME:-amd-mock}"
 GPU_PROFILE="${GPU_PROFILE:-mi300x}"
@@ -66,19 +66,8 @@ if ! $SKIP_CLUSTER; then
   echo "Step 1/4: Creating KIND cluster..."
   kind delete cluster --name "$CLUSTER_NAME" 2>/dev/null || true
 
-  # Try the custom node image (enables GPU Operator support on x86).
-  # Falls back to standard kindest/node on macOS/ARM where the custom
-  # image's systemd sysfs mounts fail under Rosetta emulation.
-  KIND_NODE_IMAGE="docker.io/submod/amd-mock-kind-node:0.2.2"
-
-  if kind create cluster --name "$CLUSTER_NAME" --image "$KIND_NODE_IMAGE" 2>/dev/null; then
-    echo "Using custom KIND node image (GPU Operator support enabled)"
-  else
-    echo "Custom node image failed (expected on macOS/ARM). Using standard image."
-    echo "Note: GPU Operator integration requires x86 Linux."
-    kind delete cluster --name "$CLUSTER_NAME" 2>/dev/null || true
-    kind create cluster --name "$CLUSTER_NAME"
-  fi
+  kind create cluster --name "$CLUSTER_NAME" \
+    --image docker.io/submod/amd-mock-kind-node:0.2.2
   echo ""
 fi
 
@@ -105,7 +94,7 @@ echo ""
 
 # ── Step 4: Wait for LLM ──────────────────────────────────────────────
 echo "Step 4/4: Waiting for LLM pod..."
-kubectl wait --for=condition=Ready pod -l app=tiny-llm --timeout=60s 2>/dev/null || true
+kubectl rollout status deployment/tiny-llm-demo --timeout=180s
 echo ""
 
 # ── Summary ────────────────────────────────────────────────────────────

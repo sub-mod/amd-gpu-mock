@@ -1,13 +1,6 @@
-# Compute Partitioning Demo — shows multiple LLM instances on partitioned GPUs.
-#
-# Simulates what happens when you partition MI300X GPUs into smaller slices
-# and schedule multiple workloads across them.
-#
-# Before deploying:
-#   curl -X POST 'http://localhost:8080/api/partitions/set?mode=CPX'
-#   # Node now has 64 amd.com/gpu (8 physical × 8 partitions)
-#
-# This deploys 4 replicas, each requesting 1 GPU partition slice.
+# Multi-instance scheduling demo: four independent physical GPU requests.
+# Requires the device-plugin installation; CPX API state does not create
+# independently allocatable Kubernetes partitions. Each replica gets a full GPU.
 
 ---
 apiVersion: apps/v1
@@ -30,6 +23,7 @@ spec:
         app: partition-demo
         model: summarizer
     spec:
+      terminationGracePeriodSeconds: 2
       containers:
       - name: llm
         image: python:3.11-slim
@@ -40,12 +34,12 @@ spec:
           gpu_id = os.environ.get("ROCR_VISIBLE_DEVICES", "?")
           print(f"{'='*50}")
           print(f"  LLM Service: Text Summarizer")
-          print(f"  GPU Partition: {gpu_id}")
+          print(f"  Physical GPU: {gpu_id}")
           print(f"  /dev/kfd: {os.path.exists('/dev/kfd')}")
-          print(f"  Partition Mode: CPX (1/8 of MI300X)")
+          print(f"  Allocation: one full physical GPU")
           print(f"{'='*50}")
           print()
-          print("Loading summarization model on GPU partition...")
+          print("Loading summarization model on physical GPU...")
           for p in [25, 50, 75, 100]:
               print(f"  [{'#'*(p//5)}{'-'*(20-p//5)}] {p}%")
               time.sleep(0.3)
@@ -55,7 +49,7 @@ spec:
           time.sleep(0.5)
           print("Result: 'K8s schedules GPU workloads using device plugins.'")
           print()
-          print(f"Summarizer running on partition {gpu_id}. Waiting for requests...")
+          print(f"Summarizer running on physical GPU {gpu_id}. Waiting for requests...")
           while True:
               time.sleep(3600)
         resources:
@@ -89,6 +83,7 @@ spec:
         app: partition-demo
         model: chatbot
     spec:
+      terminationGracePeriodSeconds: 2
       containers:
       - name: llm
         image: python:3.11-slim
@@ -99,12 +94,12 @@ spec:
           gpu_id = os.environ.get("ROCR_VISIBLE_DEVICES", "?")
           print(f"{'='*50}")
           print(f"  LLM Service: Chatbot")
-          print(f"  GPU Partition: {gpu_id}")
+          print(f"  Physical GPU: {gpu_id}")
           print(f"  /dev/kfd: {os.path.exists('/dev/kfd')}")
-          print(f"  Partition Mode: CPX (1/8 of MI300X)")
+          print(f"  Allocation: one full physical GPU")
           print(f"{'='*50}")
           print()
-          print("Loading chat model on GPU partition...")
+          print("Loading chat model on physical GPU...")
           for p in [25, 50, 75, 100]:
               print(f"  [{'#'*(p//5)}{'-'*(20-p//5)}] {p}%")
               time.sleep(0.3)
@@ -116,7 +111,7 @@ spec:
           print("     304 compute units, and 8 XCDs — each XCD can be a")
           print("     separate compute partition for independent workloads.")
           print()
-          print(f"Chatbot running on partition {gpu_id}. Waiting for requests...")
+          print(f"Chatbot running on physical GPU {gpu_id}. Waiting for requests...")
           while True:
               time.sleep(3600)
         resources:

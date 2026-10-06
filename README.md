@@ -83,12 +83,13 @@ Prometheus scrapes 8 GPU metrics (`gpu_temperature`, `gpu_power`,
 ## LLM demo
 
 ```bash
-kubectl apply -f deployments/tiny-llm-demo.yaml
-kubectl logs -l app=tiny-llm
+kubectl apply -f deployments/dra/tiny-llm-demo.yaml
+kubectl logs -l app=tiny-llm-dra
 ```
 
-Deploys a simulated LLM requesting `amd.com/gpu: 1`. Kubernetes
-schedules it on the mock GPU node.
+Deploys a scripted LLM simulation requesting one GPU through DRA. No model
+weights or GPU inference run. For the device-plugin installation, use
+`deployments/tiny-llm-demo.yaml` (`amd.com/gpu: 1`).
 
 ## GPU partitioning
 
@@ -106,9 +107,11 @@ kubectl -n amd-mock port-forward ds/amd-gpu-mock 8080:8080 &
 # API displays 64 virtual entries for 8 physical GPUs
 curl -X POST 'http://localhost:8080/api/partitions/set?mode=CPX'
 
-# Demo still schedules against physical amd.com/gpu resources
-kubectl apply -f deployments/partition-demo.yaml
 ```
+
+For four concurrent workloads on physical GPUs, use the
+[device-plugin installation](docs/guides/device-plugin.md), then apply
+`deployments/partition-demo.yaml`.
 
 | Mode | Partitions/GPU | Total GPUs | Memory/partition |
 |------|---------------|------------|------------------|

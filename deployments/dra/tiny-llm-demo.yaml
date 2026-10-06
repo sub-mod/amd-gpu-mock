@@ -1,28 +1,36 @@
-# Tiny LLM Demo — simulates a GPU AI workload on the AMD mock cluster.
-#
-# Requests amd.com/gpu: 1 to prove Kubernetes scheduling works.
-# Inference output is scripted; no model is downloaded or executed.
-# The point: OpenShift/K8s sees this as a GPU workload, schedules it
-# onto the mock GPU node, and the pod starts successfully.
-#
-# Demonstrates GPU-scheduled workload on a mock AMD GPU cluster.
-
+# Tiny LLM scheduling simulation for the default DRA quick start.
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: tiny-llm-gpu
+  namespace: default
+spec:
+  spec:
+    devices:
+      requests:
+      - name: gpu
+        exactly:
+          deviceClassName: gpu.amd.com
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tiny-llm-demo
+  name: tiny-llm-dra-demo
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tiny-llm
+      app: tiny-llm-dra
   template:
     metadata:
       labels:
-        app: tiny-llm
+        app: tiny-llm-dra
     spec:
       terminationGracePeriodSeconds: 2
+      resourceClaims:
+      - name: gpu
+        resourceClaimTemplateName: tiny-llm-gpu
       containers:
       - name: llm-service
         image: python:3.11-slim
@@ -37,7 +45,7 @@ spec:
           print("  AMD GPU Mock — LLM Inference Demo")
           print("=" * 60)
           print()
-          print(f"Pod scheduled on node with amd.com/gpu resources.")
+          print(f"Pod scheduled with a DRA ResourceClaim.")
           print(f"GPU device: /dev/kfd = {os.path.exists('/dev/kfd')}")
           print(f"DRI device: /dev/dri = {os.path.exists('/dev/dri')}")
           print()
@@ -73,11 +81,11 @@ spec:
           while True:
               time.sleep(3600)
         resources:
+          claims:
+          - name: gpu
           limits:
-            amd.com/gpu: 1
             cpu: "1"
             memory: 512Mi
           requests:
-            amd.com/gpu: 1
             cpu: "500m"
             memory: 256Mi

@@ -63,6 +63,8 @@ jobs:
           tests/dra/validate_dra.sh
           kubectl delete namespace amd-dra-test --wait=true --timeout=120s
           python3 tests/dra/lifecycle.py
+      - name: Default DRA Tiny LLM and virtual partition demo
+        run: MODE=dra python3 tests/demo-e2e.py
       - name: Collect diagnostics
         if: always()
         run: |
