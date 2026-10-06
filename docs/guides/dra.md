@@ -8,7 +8,8 @@ that containerd uses to inject the allocated devices.
 
 ## Quick start: published images only
 
-Install kind, kubectl, Helm, and a running Docker or Podman runtime. Linux
+Install kind v0.33.0 or newer, kubectl v1.37, Helm, and a running Docker or
+Podman runtime. Release 0.2.0 supports Kubernetes 1.37 only. Linux
 AMD64 and Linux ARM64 nodes are supported; Apple-silicon Macs run ARM64
 nodes inside the container runtime's Linux VM. Internet access is needed
 to pull images and the chart. No Go compiler or local image build is required.
@@ -46,8 +47,9 @@ scripts/dra-setup.sh
 
 For an existing Kubernetes cluster, skip `kind create`. It must serve
 `resource.k8s.io/v1`, allow the privileged mock/driver DaemonSets and hostPath
-mounts, and have CDI enabled in its container runtime. Kubernetes 1.34 is
-the minimum for the v1 DRA API; the validated kind image runs 1.37.0.
+mounts, and have CDI enabled in its container runtime. Use Kubernetes 1.37;
+the published node image runs v1.37.0. Older Kubernetes versions are not
+supported by this release, even if they expose the v1 DRA API.
 If limiting the mock to particular nodes, give both `nodeSelector` and
 `dra.kubeletPlugin.nodeSelector` identical values. With a nondefault mock root,
 also set `dra.mockSysPath` to `<mockRootDir>/sys`. The chart checks both rules.

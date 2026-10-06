@@ -7,6 +7,12 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$REPO_ROOT/scripts/release.env"
 CLUSTER_NAME="${CLUSTER_NAME:-amd-dra}"
 for bin in kind kubectl helm; do command -v "$bin" >/dev/null; done
+kind_version="$(kind version)"
+if [[ ! "$kind_version" =~ v([0-9]+)\.([0-9]+)\.([0-9]+) ]] ||
+   { [ "${BASH_REMATCH[1]}" -eq 0 ] && [ "${BASH_REMATCH[2]}" -lt 33 ]; }; then
+    echo "Kubernetes 1.37 requires kind v0.33.0 or newer; found $kind_version" >&2
+    exit 1
+fi
 if [ -n "${CONTAINER_RUNTIME:-}" ]; then
     RUNTIME="$CONTAINER_RUNTIME"
 elif command -v podman >/dev/null && podman info >/dev/null 2>&1; then

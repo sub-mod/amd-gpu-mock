@@ -27,7 +27,10 @@ pod/gpu-test created   # scheduled on mock GPU node
 
 ## Quick start
 
-Requires kind, kubectl, Helm, and a running Docker or Podman runtime.
+Requires kind **v0.33.0 or newer**, kubectl v1.37, Helm, and a running Docker
+or Podman runtime. Release **0.2.0 targets Kubernetes 1.37**; its node image
+contains Kubernetes v1.37.0. Kubernetes 1.36 and earlier are outside this
+release’s supported/tested matrix.
 Release images support Linux AMD64 and ARM64, including Apple-silicon Macs
 through the runtime's Linux VM. Pull the published images and chart below;
 no Go compiler, AMD source checkout, or custom image build is needed.
@@ -310,6 +313,8 @@ fault injection with sysfs propagation.
 
 | Component | Version | Repo |
 |---|---|---|
+| Kubernetes | v1.37.0 (release 0.2.0 target) | kind node image |
+| kind | v0.33.0 or newer | Cluster creation |
 | ROCm Platform | 10.0.0 | [ROCm/rocm-systems](https://github.com/ROCm/rocm-systems) |
 | amdgpu driver | 6.19.4 | [ROCm/amdgpu](https://github.com/ROCm/amdgpu) |
 | AMD SMI library | 27.0.0 | ROCm/rocm-systems |
