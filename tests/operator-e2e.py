@@ -36,6 +36,7 @@ assert len(controllers) == 1
 controller = controllers[0]
 k('rollout', 'status', '-n', NS, 'deployment/' + controller['metadata']['name'], '--timeout=240s')
 containers = controller['spec']['template']['spec']['containers']
+assert any(c['image'].startswith('docker.io/submod/gpu-operator-sim:') for c in containers), 'Wrong controller image'
 assert any(e.get('name') == 'SIM_ENABLE' and e.get('value') == 'true'
            for c in containers for e in c.get('env', []))
 print('PASS: mock-aware Operator controller is ready with SIM_ENABLE', flush=True)

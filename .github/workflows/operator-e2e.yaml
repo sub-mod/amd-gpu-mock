@@ -32,12 +32,12 @@ jobs:
             --set crds.enabled=true --wait --timeout=180s
           helm install amd-gpu-operator gpu-operator-charts --repo https://rocm.github.io/gpu-operator \
             --version v1.5.0 -n kube-amd-gpu --create-namespace \
-            --set kmm.enabled=false --set remediation.enabled=false \
+            --set kmm.enabled=false --set kmm.watch=false --set remediation.enabled=false \
             --set node-feature-discovery.enabled=false --set installdefaultNFDRule=false \
             --set deviceConfig.spec.driver.enable=false \
             --set deviceConfig.spec.metricsExporter.enable=false \
-            --set controller.manager.image.repository=docker.io/submod/gpu-operator-sim \
-            --set controller.manager.image.tag=latest
+            --set controllerManager.manager.image.repository=docker.io/submod/gpu-operator-sim \
+            --set controllerManager.manager.image.tag=latest
           kubectl -n kube-amd-gpu set env \
             deployment/amd-gpu-operator-gpu-operator-charts-controller-manager SIM_ENABLE=true
       - name: Operator scheduling smoke test

@@ -26,7 +26,7 @@ kubectl label node --all feature.node.kubernetes.io/amd-gpu=true
 helm repo add rocm https://rocm.github.io/gpu-operator
 SIM_ENABLE=true helm install amd-gpu-operator rocm/gpu-operator-charts \
   --namespace kube-amd-gpu --create-namespace \
-  --set kmm.enabled=false \
+  --set kmm.enabled=false --set kmm.watch=false \
   --set deviceConfig.spec.driver.enable=false
 
 # Use mock-aware controller image with SIM_ENABLE
