@@ -24,6 +24,11 @@ mockRootDir: /var/lib/amd-gpu-mock
 api:
   port: 8080
 
+# The kind quick start maps this NodePort to localhost:8080.
+dashboard:
+  enabled: true
+  nodePort: 30080
+
 nri:
   # NRI injects GPU visibility into pods that don't request amd.com/gpu.
   # Not needed for standard GPU scheduling — only for monitoring/debugging pods.

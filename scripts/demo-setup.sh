@@ -16,7 +16,7 @@ set -euo pipefail
 CLUSTER_NAME="${CLUSTER_NAME:-amd-mock}"
 GPU_PROFILE="${GPU_PROFILE:-mi300x}"
 CHART="oci://docker.io/submod/amd-gpu-mock"
-CHART_VERSION="0.2.2"
+CHART_VERSION="0.2.3"
 SKIP_CLUSTER=false
 TEARDOWN=false
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -67,7 +67,8 @@ if ! $SKIP_CLUSTER; then
   kind delete cluster --name "$CLUSTER_NAME" 2>/dev/null || true
 
   kind create cluster --name "$CLUSTER_NAME" \
-    --image docker.io/submod/amd-mock-kind-node:0.2.2
+    --image docker.io/submod/amd-mock-kind-node:0.2.2 \
+    --config "$SCRIPT_DIR/deployments/kind-node/kind-config.yaml"
   echo ""
 fi
 
@@ -104,8 +105,7 @@ echo "============================================"
 echo ""
 echo "  GPUs:       $GPU_COUNT x AMD Instinct (profile: $GPU_PROFILE)"
 echo ""
-echo "  Dashboard:  kubectl -n amd-mock port-forward ds/amd-gpu-mock 8080:8080"
-echo "              then open http://localhost:8080"
+echo "  Dashboard:  http://localhost:8080"
 echo ""
 echo "  LLM status: kubectl get pods -l app=tiny-llm"
 echo "  LLM logs:   kubectl logs -l app=tiny-llm"

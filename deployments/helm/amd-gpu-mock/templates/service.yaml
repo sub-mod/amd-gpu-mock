@@ -6,10 +6,16 @@ metadata:
   labels:
     {{- include "amd-gpu-mock.labels" . | nindent 4 }}
 spec:
+  {{- if .Values.dashboard.enabled }}
+  type: NodePort
+  {{- end }}
   selector:
     {{- include "amd-gpu-mock.selectorLabels" . | nindent 4 }}
   ports:
     - name: api
       port: {{ .Values.api.port }}
+      {{- if .Values.dashboard.enabled }}
+      nodePort: {{ .Values.dashboard.nodePort }}
+      {{- end }}
       targetPort: api
       protocol: TCP

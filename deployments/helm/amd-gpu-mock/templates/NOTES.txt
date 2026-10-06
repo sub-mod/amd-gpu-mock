@@ -21,20 +21,10 @@ VERIFY MOCK GPUS:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-DEPLOY AMD DEVICE PLUGIN:
-
-  kubectl apply -f deployments/device-plugin-mock.yaml
-  kubectl -n kube-system rollout status ds/amd-gpu-device-plugin --timeout=60s
-
-  Verify allocatable GPUs:
-    kubectl get node -o jsonpath='{.items[0].status.allocatable.amd\.com/gpu}'
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-WEB DASHBOARD:
-
-  kubectl -n {{ .Release.Namespace }} port-forward ds/{{ include "amd-gpu-mock.fullname" . }} 8080:8080
-  open http://localhost:8080
+{{- if .Values.devicePlugin.enabled }}
+DEVICE PLUGIN INSTALLED:
+  kubectl get node -o jsonpath='{.items[0].status.allocatable.amd\.com/gpu}'
+{{- end }}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -46,4 +36,9 @@ CHANGE GPU PROFILE:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+{{- end }}
+
+{{- if .Values.dashboard.enabled }}
+Dashboard: http://localhost:8080 (when using the quick-start kind configuration).
+To change the host port, see the README Dashboard section.
 {{- end }}

@@ -52,8 +52,10 @@ jobs:
         if: matrix.stack == 'published'
         run: |
           helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-            --version 0.2.2 -n amd-mock --create-namespace
+            --version 0.2.3 -n amd-mock --create-namespace
           kubectl -n amd-mock rollout status ds/amd-gpu-mock --timeout=120s
+      - name: Dashboard available automatically on host
+        run: python3 tests/dashboard-e2e.py
       - name: DRA discovery and allocation
         env:
           KEEP: "1"

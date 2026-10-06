@@ -69,6 +69,6 @@ done
 helm lint "$REPO_ROOT/deployments/helm/amd-gpu-mock"
 helm package "$REPO_ROOT/deployments/helm/amd-gpu-mock" -d "$BUILD_DIR"
 if $PUSH; then
-    helm push "$BUILD_DIR/amd-gpu-mock-$RELEASE_VERSION.tgz" "oci://$IMAGE_REGISTRY"
+    helm push "$BUILD_DIR/amd-gpu-mock-${CHART_VERSION:-$RELEASE_VERSION}.tgz" "oci://$IMAGE_REGISTRY"
 fi
 echo "Built AMD64/ARM64 release $RELEASE_VERSION (published=$PUSH)."

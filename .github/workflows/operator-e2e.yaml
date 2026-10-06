@@ -44,6 +44,8 @@ jobs:
         env:
           KEEP: "1"
         run: python3 tests/operator-e2e.py
+      - name: Dashboard available automatically on host
+        run: python3 tests/dashboard-e2e.py
       - name: Diagnostics
         if: always()
         run: |

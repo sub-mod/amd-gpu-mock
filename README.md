@@ -16,14 +16,15 @@ show live telemetry, all without a single real GPU.
 
 ## Quick start
 
-Requires kind v0.33.0+, kubectl, Helm, and Docker or Podman.
+Requires kind v0.33.0+, kubectl, Helm, and Docker or Podman. Run from this checkout.
 
 ```bash
 kind create cluster --name amd-mock \
-    --image docker.io/submod/amd-mock-kind-node:0.2.2
+    --image docker.io/submod/amd-mock-kind-node:0.2.2 \
+    --config deployments/kind-node/kind-config.yaml
 
 helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-    --version 0.2.2 --namespace amd-mock --create-namespace
+    --version 0.2.3 --namespace amd-mock --create-namespace
 ```
 
 You now have eight mock MI300X GPUs available through DRA. See the
@@ -41,9 +42,17 @@ kind delete cluster --name amd-mock
 
 ## Dashboard
 
+The quick start exposes the dashboard at [localhost:8080](http://localhost:8080).
+
+To use another host port, change the kind mapping before creating the cluster:
+
 ```bash
-kubectl -n amd-mock port-forward ds/amd-gpu-mock 8080:8080
-open http://localhost:8080
+sed 's/hostPort: 8080/hostPort: 9090/' \
+  deployments/kind-node/kind-config.yaml > /tmp/amd-mock-kind.yaml
+kind create cluster --name amd-mock \
+  --image docker.io/submod/amd-mock-kind-node:0.2.2 \
+  --config /tmp/amd-mock-kind.yaml
+# Install the chart as above, then open http://localhost:9090.
 ```
 
 ![AMD GPU Mock Dashboard](docs/img/dashboard.png)
@@ -65,7 +74,7 @@ helm install monitoring prometheus-community/kube-prometheus-stack \
 
 # Enable ServiceMonitor for GPU metrics
 helm upgrade amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-  --version 0.2.2 --namespace amd-mock \
+  --version 0.2.3 --namespace amd-mock \
   --set prometheus.serviceMonitor.enabled=true
 
 # Import dashboard
@@ -102,8 +111,6 @@ This does not change device-plugin capacity or provide independently
 allocatable Kubernetes partitions:
 
 ```bash
-kubectl -n amd-mock port-forward ds/amd-gpu-mock 8080:8080 &
-
 # API displays 64 virtual entries for 8 physical GPUs
 curl -X POST 'http://localhost:8080/api/partitions/set?mode=CPX'
 
@@ -248,7 +255,7 @@ Cluster test commands and their prerequisites are in the
 | Artifact | Location |
 |---|---|
 | KIND node image | `docker.io/submod/amd-mock-kind-node:0.2.2` |
-| Helm chart (OCI) | `oci://docker.io/submod/amd-gpu-mock:0.2.2` |
+| Helm chart (OCI) | `oci://docker.io/submod/amd-gpu-mock:0.2.3` |
 | Mock container image | `docker.io/submod/amd-gpu-mock:v0.2.2` (AMD64/ARM64) |
 | DRA driver image | `docker.io/submod/amd-gpu-dra-driver:v1.0.0-mock.3` (AMD64/ARM64; unchanged upstream source) |
 | GPU Operator (SIM_ENABLE) | `docker.io/submod/gpu-operator-sim:latest` |

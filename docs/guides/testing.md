@@ -105,3 +105,20 @@ These demos execute scripted Python output; they do not download model weights
 or perform LLM inference. Virtual partition entries are not independently
 schedulable slices. AMD compute partitions and NVIDIA MIG hardware isolation
 are not implemented by this mock.
+
+## Automatic dashboard access
+
+The quick-start kind configuration maps host port 8080 to the chart's
+NodePort 30080. After Helm installation, no port-forward process is needed:
+
+```bash
+python3 tests/dashboard-e2e.py
+```
+
+This checks dashboard HTML, GPU identity/count, profile API, and metrics through
+the host URL. Use `DASHBOARD_URL=http://127.0.0.1:9090` when testing a custom
+kind host port. Change that mapping before creating the cluster; container
+port mappings cannot be added to an existing kind node by a Helm upgrade.
+The DRA and Operator CI jobs run this check with the same kind configuration.
+Chart 0.2.3 exposes the dashboard while reusing the published 0.2.2 mock/node
+images; the node image still runs Kubernetes 1.37.

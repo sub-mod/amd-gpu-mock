@@ -34,9 +34,10 @@ if kind get clusters | grep -Fxq "$CLUSTER_NAME"; then
 fi
 kind create cluster --name "$CLUSTER_NAME" \
     --image "$IMAGE_REGISTRY/amd-mock-kind-node:$RELEASE_VERSION" \
+    --config "$REPO_ROOT/deployments/kind-node/kind-config.yaml" \
     --kubeconfig "$KUBECONFIG" --wait 120s
 helm install amd-gpu-mock "oci://$IMAGE_REGISTRY/amd-gpu-mock" \
-    --version "$RELEASE_VERSION" --namespace amd-mock --create-namespace \
+    --version "${CHART_VERSION:-$RELEASE_VERSION}" --namespace amd-mock --create-namespace \
     --set devicePlugin.enabled=false --set dra.enabled=true
 kubectl -n amd-mock rollout status ds/amd-gpu-mock --timeout=120s
 kubectl -n amd-mock rollout status ds/amd-gpu-mock-dra-kubeletplugin --timeout=180s
@@ -44,3 +45,5 @@ kubectl apply -f "$REPO_ROOT/deployments/dra/demo.yaml"
 kubectl wait pod/dra-gpu-demo --for=condition=Ready --timeout=180s
 kubectl exec dra-gpu-demo -- ls -l /dev/kfd /dev/dri
 echo "DRA ready. Inspect with: KUBECONFIG=$KUBECONFIG kubectl get resourceslices"
+
+echo "Dashboard: http://localhost:8080"
