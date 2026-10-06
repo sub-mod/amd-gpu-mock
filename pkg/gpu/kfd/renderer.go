@@ -37,6 +37,9 @@ func (r *Renderer) SwitchProfile(profile *Profile) error {
 	if err := r.renderPCISysfs(); err != nil {
 		return fmt.Errorf("pci sysfs: %w", err)
 	}
+	if err := r.renderDriverLinks(); err != nil {
+		return fmt.Errorf("driver links: %w", err)
+	}
 	if err := r.renderHostCompat(); err != nil {
 		return fmt.Errorf("host compat: %w", err)
 	}
@@ -130,6 +133,9 @@ func (r *Renderer) RenderAll() error {
 	}
 	if err := r.renderPCISysfs(); err != nil {
 		return fmt.Errorf("pci sysfs: %w", err)
+	}
+	if err := r.renderDriverLinks(); err != nil {
+		return fmt.Errorf("driver links: %w", err)
 	}
 	if err := r.renderHostCompat(); err != nil {
 		return fmt.Errorf("host compat: %w", err)
@@ -398,6 +404,11 @@ func (r *Renderer) renderDRMDevices() error {
 		if err := writeFile(filepath.Join(drmDir, "device"), fmt.Sprintf("0x%04x\n", r.profile.DeviceDefault.DeviceID)); err != nil {
 			return err
 		}
+		// Read by AMD's DRA driver (productName attribute) and node labeller
+		// (product-name label); without it both come back empty on the mock.
+		if err := writeFile(filepath.Join(drmDir, "product_name"), r.profile.DeviceDefault.SysfsProductName()+"\n"); err != nil {
+			return err
+		}
 		if err := writeFile(filepath.Join(drmDir, "uevent"),
 			fmt.Sprintf("DRIVER=amdgpu\nPCI_CLASS=38000\nPCI_ID=1002:%04X\nPCI_SUBSYS_ID=1002:%04X\nPCI_SLOT_NAME=%s\n",
 				r.profile.DeviceDefault.DeviceID,
@@ -551,6 +562,63 @@ func (r *Renderer) renderPCISysfs() error {
 		}
 	}
 	return nil
+}
+
+// renderDriverLinks adds the driver symlinks a real amdgpu system has:
+//
+//	/sys/bus/pci/drivers/amdgpu/module  -> /sys/module/amdgpu
+//	/sys/bus/pci/drivers/amdgpu/<BDF>   -> the PCI device
+//	/sys/devices/<root>/<BDF>/driver    -> /sys/bus/pci/drivers/amdgpu
+//	/sys/class/drm/cardN/device/driver  -> /sys/bus/pci/drivers/amdgpu
+//
+// AMD's DRA driver v1.0.0 and node labeller read the driver version through
+// /sys/class/drm/cardN/device/driver/module/version. Without these links the
+// DRA driver publishes an empty driverVersion, which is not valid semver, so
+// the API server rejects its ResourceSlice and no GPUs are advertised.
+func (r *Renderer) renderDriverLinks() error {
+	sysDir := filepath.Join(r.rootDir, "sys")
+	drvDir := filepath.Join(sysDir, "bus/pci/drivers/amdgpu")
+	if err := os.MkdirAll(drvDir, 0o755); err != nil {
+		return err
+	}
+	if err := relSymlink(filepath.Join(sysDir, "module/amdgpu"), filepath.Join(drvDir, "module")); err != nil {
+		return err
+	}
+	for _, dev := range r.profile.Devices {
+		cardDriver := filepath.Join(sysDir, fmt.Sprintf("class/drm/card%d/device/driver", dev.Index))
+		if err := relSymlink(drvDir, cardDriver); err != nil {
+			return err
+		}
+		for _, rc := range r.profile.PCIETopology.RootComplexes {
+			for _, bdf := range rc.Devices {
+				if bdf != dev.PCIBDF {
+					continue
+				}
+				pciDev := filepath.Join(sysDir, "devices", rc.ID, bdf)
+				if err := relSymlink(drvDir, filepath.Join(pciDev, "driver")); err != nil {
+					return err
+				}
+				if err := relSymlink(pciDev, filepath.Join(drvDir, bdf)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
+// relSymlink creates or replaces link so it points at target through a
+// relative path, as sysfs does, so the tree resolves wherever it is mounted.
+func relSymlink(target, link string) error {
+	if err := os.MkdirAll(filepath.Dir(link), 0o755); err != nil {
+		return err
+	}
+	rel, err := filepath.Rel(filepath.Dir(link), target)
+	if err != nil {
+		return err
+	}
+	_ = os.Remove(link)
+	return os.Symlink(rel, link)
 }
 
 func (r *Renderer) ioLinkCount(dev *DeviceConfig) int {

@@ -1,0 +1,52 @@
+# Claim one mock GPU through DRA instead of the amd.com/gpu extended resource.
+# Requires AMD's DRA driver running against the mock; see docs/guides/dra.md.
+#
+#   kubectl apply -f deployments/dra/demo.yaml
+#   kubectl logs dra-gpu-demo
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: amd-gpu
+spec:
+  spec:
+    devices:
+      requests:
+        - name: gpu
+          exactly:
+            deviceClassName: gpu.amd.com
+---
+# Same request narrowed with a CEL selector on an attribute the driver
+# publishes. productName comes from the profile's product_name.
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: amd-mi300x
+spec:
+  spec:
+    devices:
+      requests:
+        - name: gpu
+          exactly:
+            deviceClassName: gpu.amd.com
+            selectors:
+              - cel:
+                  expression: device.attributes["gpu.amd.com"].productName == "AMD_Instinct_MI300X_OAM"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dra-gpu-demo
+spec:
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 2
+  containers:
+    - name: demo
+      image: docker.io/busybox:1.36
+      # The DRA driver's CDI spec injects the allocated GPU's device nodes.
+      command: ["sh", "-c", "ls -l /dev/kfd /dev/dri/ && sleep 3600"]
+      resources:
+        claims:
+          - name: gpu
+  resourceClaims:
+    - name: gpu
+      resourceClaimTemplateName: amd-gpu

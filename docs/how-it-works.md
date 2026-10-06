@@ -96,11 +96,11 @@ The AMD K8s device plugin doesn't call a library — it reads files:
 ```
 /sys/class/kfd/kfd/topology/nodes/1/properties
     ↓
-    simd_count 912              ← "this GPU has 912 SIMD units"
+    simd_count 1216             ← "1216 SIMD units = 304 CUs × 4"
     local_mem_size 206158430208 ← "192 GB of VRAM"
     vendor_id 4098              ← "0x1002 = AMD"
     device_id 29857             ← "0x74a1 = MI300X"
-    gfx_target_version 90400   ← "gfx942 architecture"
+    gfx_target_version 90402   ← "gfx942 architecture"
     num_xcc 8                   ← "8 XCDs (compute dies)"
 ```
 

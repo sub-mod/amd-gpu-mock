@@ -1,0 +1,15 @@
+# Values for AMD's k8s-gpu-dra-driver chart when it runs against amd-gpu-mock.
+# Render the chart with these values and pipe it through sys-remap.sh, which
+# points the kubelet plugin's /sys at the mock tree. See docs/guides/dra.md.
+
+image:
+  # Pin the driver. Keep in step with DRA_REF in tests/dra/*.sh.
+  # AMD publishes linux/amd64 images only.
+  tag: v1.0.0
+
+kubeletPlugin:
+  # After sys-remap.sh the plugin reads the mock tree, so keep it off any node
+  # the mock agent does not serve. kind-config.yaml sets this label;
+  # tests/dra/validate_dra.sh adds it to nodes running the mock agent.
+  nodeSelector:
+    amd-gpu-mock.amd.com/type: sgpu

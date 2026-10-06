@@ -1,4 +1,5 @@
-FROM kindest/node:v1.37.0
+ARG BASE_IMAGE=docker.io/kindest/node:v1.37.0
+FROM ${BASE_IMAGE}
 
 # Install AMD Container Runtime and CDI toolkit (pre-compiled)
 COPY bin/amd-container-runtime /usr/bin/amd-container-runtime
@@ -13,3 +14,5 @@ COPY amd-container-runtime.toml /etc/amd-container-runtime/config.toml
 
 # CDI spec directories
 RUN mkdir -p /etc/cdi /var/run/cdi
+
+COPY TOOLKIT-LICENSE /licenses/AMD-CONTAINER-TOOLKIT-LICENSE

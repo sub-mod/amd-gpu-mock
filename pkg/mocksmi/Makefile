@@ -14,8 +14,8 @@ TARGET = libamd_smi.so
 
 all: $(TARGET)
 
-$(TARGET): mock_amdsmi.c amdsmi_types.h
-	$(CC) $(CFLAGS) -o $@ $<
+$(TARGET): mock_amdsmi.c stubs.c amdsmi_types.h
+	$(CC) $(CFLAGS) -Wl,-soname,libamd_smi.so.27 -o $@ mock_amdsmi.c stubs.c
 
 clean:
 	rm -f $(TARGET)

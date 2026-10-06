@@ -1,0 +1,26 @@
+# Runs AMD's DRA driver discovery code against every GPU profile.
+# Fast (no cluster), so it runs on every PR. The full kind test is
+# tests/dra/validate_dra.sh.
+name: dra-discovery
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  discovery:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+          cache: false
+      - name: Renderer contract tests
+        run: go test ./pkg/gpu/kfd
+      - name: AMD DRA driver discovery, all profiles
+        run: tests/dra/discovery-check.sh

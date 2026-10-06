@@ -4,11 +4,11 @@ package kfd
 type Profile struct {
 	Version string `yaml:"version"`
 
-	System        SystemConfig       `yaml:"system"`
+	System        SystemConfig        `yaml:"system"`
 	DeviceDefault DeviceDefaultConfig `yaml:"device_defaults"`
-	XGMI          XGMIConfig         `yaml:"xgmi"`
-	PCIETopology  PCIETopologyConfig `yaml:"pcie_topology"`
-	Devices       []DeviceConfig     `yaml:"devices"`
+	XGMI          XGMIConfig          `yaml:"xgmi"`
+	PCIETopology  PCIETopologyConfig  `yaml:"pcie_topology"`
+	Devices       []DeviceConfig      `yaml:"devices"`
 }
 
 type SystemConfig struct {
@@ -18,7 +18,12 @@ type SystemConfig struct {
 }
 
 type DeviceDefaultConfig struct {
-	Name              string `yaml:"name"`
+	Name string `yaml:"name"`
+	// ProductName is the raw string the amdgpu driver exposes in
+	// /sys/class/drm/cardN/device/product_name (for example
+	// "AMD Instinct MI300X OAM"). AMD's DRA driver publishes it as the
+	// productName device attribute. Defaults to Name when empty.
+	ProductName       string `yaml:"product_name,omitempty"`
 	VendorID          uint32 `yaml:"vendor_id"`
 	DeviceID          uint32 `yaml:"device_id"`
 	SubsystemVendorID uint32 `yaml:"subsystem_vendor_id"`
@@ -74,11 +79,11 @@ type PowerConfig struct {
 }
 
 type ThermalConfig struct {
-	EdgeTempC         uint32 `yaml:"edge_temperature_c"`
-	HotspotTempC      uint32 `yaml:"hotspot_temperature_c"`
-	MemTempC          uint32 `yaml:"mem_temperature_c"`
-	ShutdownTempC     uint32 `yaml:"shutdown_temperature_c"`
-	SlowdownTempC     uint32 `yaml:"slowdown_temperature_c"`
+	EdgeTempC     uint32 `yaml:"edge_temperature_c"`
+	HotspotTempC  uint32 `yaml:"hotspot_temperature_c"`
+	MemTempC      uint32 `yaml:"mem_temperature_c"`
+	ShutdownTempC uint32 `yaml:"shutdown_temperature_c"`
+	SlowdownTempC uint32 `yaml:"slowdown_temperature_c"`
 }
 
 type ClocksConfig struct {
@@ -99,8 +104,8 @@ type PCIeConfig struct {
 }
 
 type ECCConfig struct {
-	Enabled           bool   `yaml:"enabled"`
-	CorrectableCount  uint64 `yaml:"correctable_count"`
+	Enabled            bool   `yaml:"enabled"`
+	CorrectableCount   uint64 `yaml:"correctable_count"`
 	UncorrectableCount uint64 `yaml:"uncorrectable_count"`
 }
 
@@ -144,4 +149,13 @@ type DeviceConfig struct {
 	DRMRenderMinor int    `yaml:"drm_render_minor"`
 	UniqueID       string `yaml:"unique_id"`
 	XGMIDeviceID   string `yaml:"xgmi_device_id"`
+}
+
+// SysfsProductName returns the value rendered into
+// /sys/class/drm/cardN/device/product_name.
+func (d *DeviceDefaultConfig) SysfsProductName() string {
+	if d.ProductName != "" {
+		return d.ProductName
+	}
+	return d.Name
 }

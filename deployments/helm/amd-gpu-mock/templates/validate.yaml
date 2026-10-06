@@ -1,0 +1,9 @@
+{{- if and .Values.dra.enabled .Values.devicePlugin.enabled -}}
+{{- fail "DRA and the device plugin cannot allocate the same GPUs: set devicePlugin.enabled=false" -}}
+{{- end -}}
+{{- if and .Values.dra.enabled (ne .Values.dra.mockSysPath (printf "%s/sys" .Values.mockRootDir)) -}}
+{{- fail "dra.mockSysPath must equal mockRootDir + /sys" -}}
+{{- end -}}
+{{- if and .Values.dra.enabled (ne (toJson .Values.nodeSelector) (toJson .Values.dra.kubeletPlugin.nodeSelector)) -}}
+{{- fail "dra.kubeletPlugin.nodeSelector must match nodeSelector so the driver runs only on mock nodes" -}}
+{{- end -}}

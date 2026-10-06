@@ -6,7 +6,7 @@ gpu:
 
 image:
   repository: docker.io/submod/amd-gpu-mock
-  tag: latest
+  tag: ""
   pullPolicy: IfNotPresent
 
 devicePlugin:
@@ -33,3 +33,17 @@ prometheus:
   serviceMonitor:
     enabled: false
     interval: 15s
+
+# Set dra.enabled=true and devicePlugin.enabled=false for DRA scheduling.
+# This installs the pinned upstream driver; no user image build is needed.
+dra:
+  enabled: false
+  allowDefaultNamespace: false
+  image:
+    repository: docker.io/submod/amd-gpu-dra-driver
+    tag: v1.0.0-mock.1
+    pullPolicy: IfNotPresent
+  mockSysPath: /var/lib/amd-gpu-mock/sys
+  kubeletPlugin:
+    # Match nodeSelector above when limiting the mock to particular nodes.
+    nodeSelector: {}

@@ -10,6 +10,9 @@ system:
 
 device_defaults:
   name: "AMD Instinct MI300X"
+  # Raw sysfs product_name. Matches the productName AMD uses in its own
+  # DRA examples (AMD_Instinct_MI300X_OAM after spaces become underscores).
+  product_name: "AMD Instinct MI300X OAM"
   vendor_id: 0x1002
   device_id: 0x74a1
   subsystem_vendor_id: 0x1002

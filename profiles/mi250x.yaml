@@ -96,6 +96,9 @@ xgmi:
   link_type: 11
 
 pcie_topology:
+  # Each MI250X package shows up as two GPUs (one per die). The second die
+  # is listed with its package's root complex and NUMA node; not yet checked
+  # against a real node's sysfs.
   root_complexes:
     - id: "pci0000:00"
       numa_node: 0
@@ -104,6 +107,10 @@ pcie_topology:
         - "0000:23:00.0"
         - "0000:43:00.0"
         - "0000:63:00.0"
+        - "0000:06:00.0"
+        - "0000:27:00.0"
+        - "0000:47:00.0"
+        - "0000:66:00.0"
     - id: "pci0000:80"
       numa_node: 1
       devices:
@@ -111,6 +118,10 @@ pcie_topology:
         - "0000:a3:00.0"
         - "0000:c3:00.0"
         - "0000:e3:00.0"
+        - "0000:86:00.0"
+        - "0000:a7:00.0"
+        - "0000:c7:00.0"
+        - "0000:e6:00.0"
 
 devices:
   - index: 0

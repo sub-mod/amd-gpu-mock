@@ -16,7 +16,7 @@ set -uo pipefail
 CLUSTER_NAME="${CLUSTER_NAME:-amd-mock}"
 GPU_PROFILE="${GPU_PROFILE:-mi300x}"
 CHART="oci://docker.io/submod/amd-gpu-mock"
-CHART_VERSION="0.1.0"
+CHART_VERSION="0.2.0"
 SKIP_CLUSTER=false
 TEARDOWN=false
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -69,7 +69,7 @@ if ! $SKIP_CLUSTER; then
   # Try the custom node image (enables GPU Operator support on x86).
   # Falls back to standard kindest/node on macOS/ARM where the custom
   # image's systemd sysfs mounts fail under Rosetta emulation.
-  KIND_NODE_IMAGE="docker.io/submod/amd-mock-kind-node:latest"
+  KIND_NODE_IMAGE="docker.io/submod/amd-mock-kind-node:0.2.0"
 
   if kind create cluster --name "$CLUSTER_NAME" --image "$KIND_NODE_IMAGE" 2>/dev/null; then
     echo "Using custom KIND node image (GPU Operator support enabled)"

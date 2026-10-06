@@ -27,12 +27,20 @@ pod/gpu-test created   # scheduled on mock GPU node
 
 ## Quick start
 
+Requires kind, kubectl, Helm, and a running Docker or Podman runtime.
+Release images support Linux AMD64 and ARM64, including Apple-silicon Macs
+through the runtime's Linux VM. Pull the published images and chart below;
+no Go compiler, AMD source checkout, or custom image build is needed.
+The default path uses the device plugin. For ResourceClaims, use the DRA
+quick start below instead.
+
+
 ```bash
 kind create cluster --name amd-mock \
-    --image docker.io/submod/amd-mock-kind-node:latest
+    --image docker.io/submod/amd-mock-kind-node:0.2.0
 
 helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-    --version 0.1.0 \
+    --version 0.2.0 \
     --namespace amd-mock --create-namespace
 ```
 
@@ -49,12 +57,45 @@ kubectl get node -o jsonpath='{.items[0].status.allocatable.amd\.com/gpu}'
 
 ```bash
 KIND_EXPERIMENTAL_PROVIDER=podman kind create cluster --name amd-mock \
-    --image docker.io/submod/amd-mock-kind-node:latest
+    --image docker.io/submod/amd-mock-kind-node:0.2.0
 
 helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-    --version 0.1.0 \
+    --version 0.2.0 \
     --namespace amd-mock --create-namespace
 ```
+
+### DRA quick start
+
+Create a separate cluster and enable the bundled DRA driver:
+
+```bash
+# Podman users: export KIND_EXPERIMENTAL_PROVIDER=podman
+kind create cluster --name amd-dra \
+    --image docker.io/submod/amd-mock-kind-node:0.2.0
+
+helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
+    --version 0.2.0 --namespace amd-mock --create-namespace \
+    --set devicePlugin.enabled=false --set dra.enabled=true
+
+kubectl -n amd-mock rollout status ds/amd-gpu-mock --timeout=120s
+kubectl -n amd-mock rollout status ds/amd-gpu-mock-dra-kubeletplugin --timeout=180s
+kubectl get resourceslices
+```
+
+The chart installs DeviceClass `gpu.amd.com` and AMD's unchanged v1.0.0
+DRA driver from a published AMD64/ARM64 image. No separate driver install,
+post-renderer, or local build is required. GPUs appear in ResourceSlices;
+DRA mode does not advertise `amd.com/gpu` node capacity. The chart rejects
+running both allocators together.
+
+From the source checkout, `scripts/dra-setup.sh` also creates the cluster,
+installs the published chart, and starts the claim demo. It writes a separate
+kubeconfig under `tmp/` and leaves other cluster contexts unchanged.
+
+See the [DRA guide](docs/guides/dra.md) for a copyable claim/pod example,
+allocation and release flow, explicit claim lifetimes, selectors, test cases, and
+troubleshooting. DRA support covers full devices; CPX/DPX, AutoPartition,
+node-failure recovery, and multi-node topology behavior are not claimed.
 
 ### Clean up
 
@@ -89,7 +130,7 @@ helm install monitoring prometheus-community/kube-prometheus-stack \
 
 # Enable ServiceMonitor for GPU metrics
 helm upgrade amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-  --version 0.1.0 --namespace amd-mock \
+  --version 0.2.0 --namespace amd-mock \
   --set prometheus.serviceMonitor.enabled=true
 
 # Import dashboard
@@ -115,6 +156,9 @@ Deploys a simulated LLM requesting `amd.com/gpu: 1`. Kubernetes
 schedules it on the mock GPU node.
 
 ## GPU partitioning
+
+This dashboard simulation is separate from DRA. The DRA integration exposes
+full GPUs and does not implement compute-partition allocation.
 
 AMD compute partitioning (SPX/DPX/TPX/QPX/CPX) — in CPX mode, each
 MI300X (8 XCDs) becomes 8 independent GPU partitions:
@@ -218,6 +262,11 @@ KIND Node (docker.io/submod/amd-mock-kind-node)
          │
          ▼
     Pods requesting amd.com/gpu get scheduled
+
+Alternative allocator (device plugin disabled):
+    AMD DRA Driver → ResourceSlices → ResourceClaims
+        → kubelet PrepareResourceClaims → per-claim CDI spec
+        → containerd injects the allocated device nodes
 ```
 
 ## Validation
@@ -228,6 +277,15 @@ KIND Node (docker.io/submod/amd-mock-kind-node)
 
 # Full stack validation (mock + GPU Operator — 27 tests across 8 layers)
 ./tests/validate_full.sh
+
+# AMD's DRA driver discovery against every profile (no cluster; runs in CI)
+./tests/dra/discovery-check.sh
+
+# Published-chart DRA allocation, selectors, deletion, and reallocation
+INSTALL_DRIVER=0 DRA_NS=amd-mock ./tests/dra/validate_dra.sh
+
+# Additional lifecycle cases on an otherwise idle, single-node DRA cluster
+DRA_NS=amd-mock python3 tests/dra/lifecycle.py
 ```
 
 Layers tested: mock infrastructure, GPU Operator controller, operator
@@ -241,6 +299,7 @@ fault injection with sysfs propagation.
 |---|---|---|
 | AMD GPU Operator (v1.5.0) | Controller, device plugin, metrics exporter, node labeller | [GPU Operator guide](docs/guides/gpu-operator.md) |
 | AMD K8s Device Plugin | Discovers 8 GPUs from mock sysfs, advertises `amd.com/gpu` | Bundled in Helm chart |
+| AMD GPU DRA Driver (v1.0.0) | 7-profile discovery; claim allocation, selectors, exact CDI device injection, deletion/reallocation, and lifecycle tests | [DRA guide](docs/guides/dra.md) |
 | AMD SMI Python interface | Loads mock library, enumerates GPUs, returns "AMD Instinct MI300X" | — |
 | Prometheus + Grafana | 8 GPU metrics scraped, "AMD GPU Mock Fleet" dashboard | See [Grafana telemetry](#grafana-telemetry) |
 
@@ -253,17 +312,32 @@ fault injection with sysfs propagation.
 | AMD SMI library | 27.0.0 | ROCm/rocm-systems |
 | GPU Operator | v1.5.0 | [ROCm/gpu-operator](https://github.com/ROCm/gpu-operator) |
 | K8s Device Plugin | v1.31.0.11 | [ROCm/k8s-device-plugin](https://github.com/ROCm/k8s-device-plugin) |
+| GPU DRA Driver | v1.0.0 | [ROCm/k8s-gpu-dra-driver](https://github.com/ROCm/k8s-gpu-dra-driver) |
 | Container Toolkit | v1.3.0 | [ROCm/container-toolkit](https://github.com/ROCm/container-toolkit) |
 
 ## Published artifacts
 
 | Artifact | Location |
 |---|---|
-| KIND node image | `docker.io/submod/amd-mock-kind-node:latest` |
-| Helm chart (OCI) | `oci://docker.io/submod/amd-gpu-mock:0.1.0` |
-| Mock container image | `docker.io/submod/amd-gpu-mock:latest` |
+| KIND node image | `docker.io/submod/amd-mock-kind-node:0.2.0` |
+| Helm chart (OCI) | `oci://docker.io/submod/amd-gpu-mock:0.2.0` |
+| Mock container image | `docker.io/submod/amd-gpu-mock:v0.2.0` (AMD64/ARM64) |
+| DRA driver image | `docker.io/submod/amd-gpu-dra-driver:v1.0.0-mock.1` (AMD64/ARM64; unchanged upstream source) |
 | GPU Operator (SIM_ENABLE) | `docker.io/submod/gpu-operator-sim:latest` |
 | GPU Operator fork | [github.com/sub-mod/gpu-operator](https://github.com/sub-mod/gpu-operator) |
+
+### Rebuild and publish (maintainers)
+
+```bash
+scripts/build-images.sh          # build all three images for AMD64 and ARM64
+scripts/build-images.sh --push   # publish image manifests and the OCI chart
+```
+
+The script pins AMD's driver and container-toolkit commits in
+`scripts/release.env`, builds all binaries and the mock library, includes
+upstream licenses, and packages the chart. End users do not run it.
+See the [DRA test matrix and limits](docs/guides/dra.md#tests-and-evidence)
+before assuming an optional DRA feature is supported.
 
 ## License
 

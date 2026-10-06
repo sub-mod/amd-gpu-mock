@@ -1,0 +1,67 @@
+name: dra-e2e
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  kind:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+      - uses: azure/setup-helm@v4
+      - uses: helm/kind-action@v1
+        with:
+          version: v0.31.0
+          cluster_name: amd-dra-test
+          node_image: kindest/node:v1.37.0
+          config: deployments/kind-node/kind-config.yaml
+          wait: 120s
+      - name: Build and deploy patched mock
+        run: |
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/node-agent ./cmd/node-agent
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/nri-plugin ./cmd/nri-plugin
+          make -C pkg/mocksmi
+          docker build -f Dockerfile.prebuilt -t amd-gpu-mock:dra-test .
+          kind load docker-image amd-gpu-mock:dra-test --name amd-dra-test
+          helm install amd-gpu-mock deployments/helm/amd-gpu-mock \
+            -n amd-mock --create-namespace \
+            --set image.repository=amd-gpu-mock --set image.tag=dra-test \
+            --set image.pullPolicy=Never --set devicePlugin.enabled=false \
+            --set gpu.profile=mi300x --set dra.enabled=true \
+            --set dra.image.repository=docker.io/rocm/k8s-gpu-dra-driver \
+            --set dra.image.tag=v1.0.0
+          kubectl -n amd-mock rollout status ds/amd-gpu-mock --timeout=120s
+      - name: DRA discovery and allocation
+        env:
+          KEEP: "1"
+          INSTALL_DRIVER: "0"
+          DRA_NS: amd-mock
+        run: |
+          tests/dra/validate_dra.sh
+          kubectl delete namespace amd-dra-test --wait=true --timeout=120s
+          python3 tests/dra/lifecycle.py
+      - name: Collect diagnostics
+        if: always()
+        run: |
+          mkdir -p artifacts
+          kubectl get pods,resourceclaims -A -o wide > artifacts/workloads.txt
+          kubectl get resourceslices -o yaml > artifacts/resourceslices.yaml
+          kubectl get events -A --sort-by=.lastTimestamp > artifacts/events.txt
+          kubectl -n amd-mock logs ds/amd-gpu-mock-dra-kubeletplugin \
+            --all-containers --tail=200 > artifacts/driver.log 2>&1 || true
+          kind export logs artifacts/kind --name amd-dra-test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dra-e2e-diagnostics
+          path: artifacts/

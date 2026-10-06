@@ -1,0 +1,87 @@
+# Default values for rocm/k8s-gpu-dra-driver.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+namespaceOverride: ""
+selectorLabelsOverride: {}
+
+allowDefaultNamespace: false
+
+imagePullSecrets: []
+image:
+  repository: docker.io/rocm/k8s-gpu-dra-driver
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+deviceClass:
+  # -- Create the gpu.amd.com DeviceClass resource. Set to false if deploying via gpu-operator.
+  create: true
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+kubeletPlugin:
+  priorityClassName: "system-node-critical"
+  updateStrategy:
+    type: RollingUpdate
+  podAnnotations: {}
+  podSecurityContext: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  kubeletRegistrarDirectoryPath: /var/lib/kubelet/plugins_registry
+  kubeletPluginsDirectoryPath: /var/lib/kubelet/plugins
+  containers:
+    init:
+      image: docker.io/busybox:1.36
+      securityContext:
+        privileged: true
+      resources: {}
+    plugin:
+      securityContext:
+        privileged: true
+      resources: {}
+      # Port running a gRPC health service checked by a livenessProbe.
+      # Set to a negative value to disable the service and the probe.
+      healthcheckPort: 51515
+
+webhook:
+  enabled: false
+  servicePort: 443
+  containerPort: 443
+  priorityClassName: "system-cluster-critical"
+  strategy:
+    type: RollingUpdate
+  podAnnotations: {}
+  podSecurityContext: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  containers:
+    webhook:
+      securityContext:
+        privileged: false
+      resources: {}
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    # Annotations to add to the service account
+    annotations: {}
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+cdi:
+  dynamicPath: /var/run/cdi
+
+# Packaging adaptation: upstream hardcodes /sys. Driver code is unchanged.
+mockSysPath: /var/lib/amd-gpu-mock/sys

@@ -1,3 +1,11 @@
+{{- if .Values.dra.enabled }}
+AMD DRA driver installed with the mock. Inspect published devices:
+  kubectl get resourceslices
+
+Use ResourceClaim / ResourceClaimTemplate requests for deviceClassName gpu.amd.com.
+The device plugin is disabled, so amd.com/gpu capacity is not advertised.
+See https://github.com/sub-mod/amd-gpu-mock/blob/main/docs/guides/dra.md
+{{- else }}
 Mock AMD GPU environment deployed on all nodes!
 
   Profile: {{ .Values.gpu.profile }}
@@ -37,3 +45,5 @@ CHANGE GPU PROFILE:
     --set gpu.profile=mi250x
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+{{- end }}
