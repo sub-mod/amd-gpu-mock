@@ -1,0 +1,39 @@
+Mock AMD GPU environment deployed on all nodes!
+
+  Profile: {{ .Values.gpu.profile }}
+  Available profiles: mi210, mi250x, mi300a, mi300x, mi325x
+  Mock driver root: {{ .Values.mockRootDir }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+VERIFY MOCK GPUS:
+
+  kubectl -n {{ .Release.Namespace }} exec ds/{{ include "amd-gpu-mock.fullname" . }} -- \
+    cat {{ .Values.mockRootDir }}/sys/class/kfd/kfd/topology/nodes/1/name
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DEPLOY AMD DEVICE PLUGIN:
+
+  kubectl apply -f deployments/device-plugin-mock.yaml
+  kubectl -n kube-system rollout status ds/amd-gpu-device-plugin --timeout=60s
+
+  Verify allocatable GPUs:
+    kubectl get node -o jsonpath='{.items[0].status.allocatable.amd\.com/gpu}'
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+WEB DASHBOARD:
+
+  kubectl -n {{ .Release.Namespace }} port-forward ds/{{ include "amd-gpu-mock.fullname" . }} 8080:8080
+  open http://localhost:8080
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CHANGE GPU PROFILE:
+
+  helm upgrade {{ .Release.Name }} ./deployments/helm/amd-gpu-mock \
+    --namespace {{ .Release.Namespace }} \
+    --set gpu.profile=mi250x
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

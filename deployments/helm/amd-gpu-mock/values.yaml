@@ -1,0 +1,35 @@
+gpu:
+  # GPU profile: mi210, mi250x, mi300a, mi300x, mi325x, mi350x, mi355x
+  profile: mi300x
+  # Number of mock GPUs per node (empty = derive from profile)
+  count: ""
+
+image:
+  repository: docker.io/submod/amd-gpu-mock
+  tag: latest
+  pullPolicy: IfNotPresent
+
+devicePlugin:
+  enabled: true
+  image: rocm/k8s-device-plugin:latest
+  imagePullPolicy: IfNotPresent
+
+nodeSelector: {}
+
+tolerations:
+  - operator: Exists
+
+mockRootDir: /var/lib/amd-gpu-mock
+
+api:
+  port: 8080
+
+nri:
+  # NRI injects GPU visibility into pods that don't request amd.com/gpu.
+  # Not needed for standard GPU scheduling — only for monitoring/debugging pods.
+  enabled: false
+
+prometheus:
+  serviceMonitor:
+    enabled: false
+    interval: 15s

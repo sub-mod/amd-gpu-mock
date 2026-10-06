@@ -1,0 +1,6 @@
+[amd-container-runtime]
+mode = "cdi"
+
+[amd-container-runtime.modes.cdi]
+default-kind = "amd.com/gpu"
+spec-dirs = ["/var/run/cdi", "/etc/cdi"]

@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "amd-gpu-mock.fullname" . }}
+  labels:
+    {{- include "amd-gpu-mock.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "amd-gpu-mock.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "amd-gpu-mock.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: node-agent
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - node-agent
+            - --config=/etc/amd-gpu-mock/config.yaml
+            - --root={{ .Values.mockRootDir }}
+            - --api=:{{ .Values.api.port }}
+          ports:
+            - name: api
+              containerPort: {{ .Values.api.port }}
+              protocol: TCP
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: config
+              mountPath: /etc/amd-gpu-mock/config.yaml
+              subPath: config.yaml
+              readOnly: true
+            - name: mock-root
+              mountPath: {{ .Values.mockRootDir }}
+              mountPropagation: Bidirectional
+            - name: host-dev
+              mountPath: /dev
+            - name: host-cdi
+              mountPath: /etc/cdi
+            - name: host-cdi-run
+              mountPath: /var/run/cdi
+        {{- if .Values.nri.enabled }}
+        - name: nri-plugin
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - nri-plugin
+            - --overlay-host={{ .Values.mockRootDir }}
+            - --overlay-mount=/opt/amd-gpu-mock
+            - --release-namespace={{ .Release.Namespace }}
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: nri-socket
+              mountPath: /var/run/nri
+            - name: mock-root
+              mountPath: {{ .Values.mockRootDir }}
+              readOnly: true
+        {{- end }}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "amd-gpu-mock.fullname" . }}
+        - name: mock-root
+          hostPath:
+            path: {{ .Values.mockRootDir }}
+            type: DirectoryOrCreate
+        - name: host-dev
+          hostPath:
+            path: /dev
+        - name: host-cdi
+          hostPath:
+            path: /etc/cdi
+            type: DirectoryOrCreate
+        - name: host-cdi-run
+          hostPath:
+            path: /var/run/cdi
+            type: DirectoryOrCreate
+        {{- if .Values.nri.enabled }}
+        - name: nri-socket
+          hostPath:
+            path: /var/run/nri
+        {{- end }}

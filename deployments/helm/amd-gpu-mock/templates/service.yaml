@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "amd-gpu-mock.fullname" . }}-metrics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "amd-gpu-mock.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "amd-gpu-mock.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: api
+      port: {{ .Values.api.port }}
+      targetPort: api
+      protocol: TCP

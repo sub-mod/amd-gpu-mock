@@ -1,0 +1,82 @@
+# Tiny LLM Demo — simulates a GPU AI workload on the AMD mock cluster.
+#
+# Requests amd.com/gpu: 1 to prove Kubernetes scheduling works.
+# The model runs on CPU (device='cpu') since there's no real GPU.
+# The point: OpenShift/K8s sees this as a GPU workload, schedules it
+# onto the mock GPU node, and the pod starts successfully.
+#
+# Demonstrates GPU-scheduled workload on a mock AMD GPU cluster.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tiny-llm-demo
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tiny-llm
+  template:
+    metadata:
+      labels:
+        app: tiny-llm
+    spec:
+      containers:
+      - name: llm-service
+        image: python:3.11-slim
+        command:
+        - python3
+        - -u
+        - -c
+        - |
+          import time, os, json
+
+          print("=" * 60)
+          print("  AMD GPU Mock — LLM Inference Demo")
+          print("=" * 60)
+          print()
+          print(f"Pod scheduled on node with amd.com/gpu resources.")
+          print(f"GPU device: /dev/kfd = {os.path.exists('/dev/kfd')}")
+          print(f"DRI device: /dev/dri = {os.path.exists('/dev/dri')}")
+          print()
+
+          # Simulate model loading
+          print("Loading model: HuggingFaceTB/SmolLM-135M")
+          for pct in [0, 25, 50, 75, 100]:
+              bar = "#" * (pct // 5) + "-" * (20 - pct // 5)
+              print(f"  [{bar}] {pct}%")
+              time.sleep(0.5)
+          print("Model loaded successfully! (135M parameters)")
+          print()
+
+          # Simulate inference
+          prompt = "The future of AI is"
+          tokens = ["bright", "and", "full", "of", "possibilities"]
+          print(f'Prompt: "{prompt}"')
+          print(f"Generating {len(tokens)} tokens...")
+          output = prompt
+          for i, tok in enumerate(tokens):
+              output += " " + tok
+              print(f"  Token {i+1}: {tok}")
+              time.sleep(0.3)
+          print()
+          print(f'Generated: "{output}"')
+          print()
+          print("In a real deployment, this would use ROCm/HIP on the MI300X.")
+          print("The mock proves Kubernetes GPU scheduling works end-to-end.")
+          print()
+          print("LLM service ready. Listening for requests...")
+
+          # Stay alive
+          while True:
+              time.sleep(3600)
+        resources:
+          limits:
+            amd.com/gpu: 1
+            cpu: "1"
+            memory: 512Mi
+          requests:
+            amd.com/gpu: 1
+            cpu: "500m"
+            memory: 256Mi

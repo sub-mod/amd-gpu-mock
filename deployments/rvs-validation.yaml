@@ -1,0 +1,110 @@
+# RVS (ROCm Validation Suite) — Phase 6 validation against the mock cluster.
+#
+# Runs AMD's own GPU validation tools against our mock infrastructure.
+# Detection modules (gpup, peqt, rcqt) should pass — they read sysfs and
+# /dev/kfd, which our mock provides. Compute modules (gst, mem, babel) are
+# expected to fail — we simulate the control plane, not the data plane.
+#
+# Image: rocm/dev-ubuntu-24.04 ships RVS at /opt/rocm/bin/rvs.
+# Devices: /dev/kfd and /dev/dri from our mock (staged on the host by
+# the amd-gpu-mock DaemonSet).
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rvs-validation
+  namespace: amd-mock
+  labels:
+    app.kubernetes.io/name: rvs-validation
+    app.kubernetes.io/component: validation
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rvs-validation
+    spec:
+      restartPolicy: Never
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: rvs
+          image: rocm/dev-ubuntu-24.04:7.1.1-complete
+          imagePullPolicy: IfNotPresent
+          command:
+            - bash
+            - -c
+            - |
+              echo "========================================"
+              echo " RVS Validation against AMD GPU Mock"
+              echo "========================================"
+              echo ""
+
+              echo "--- Step 0: Install RVS ---"
+              apt-get update -qq && apt-get install -y -qq rocm-validation-suite 2>&1 | tail -3
+              echo ""
+
+              echo "--- Step 1: Check /dev/kfd exists ---"
+              ls -la /dev/kfd && echo "PASS: /dev/kfd found" || echo "FAIL: /dev/kfd not found"
+              echo ""
+
+              echo "--- Step 2: Check /dev/dri render nodes ---"
+              ls -la /dev/dri/renderD* && echo "PASS: render nodes found" || echo "FAIL: no render nodes"
+              echo ""
+
+              echo "--- Step 3: Check KFD topology ---"
+              if [ -d /sys/class/kfd/kfd/topology/nodes ]; then
+                echo "PASS: KFD topology exists"
+                for node in /sys/class/kfd/kfd/topology/nodes/*/; do
+                  name=$(cat "$node/name" 2>/dev/null || echo "unknown")
+                  gpu_id=$(cat "$node/gpu_id" 2>/dev/null || echo "?")
+                  echo "  Node $(basename $node): $name (gpu_id=$gpu_id)"
+                done
+              else
+                echo "FAIL: KFD topology not found"
+              fi
+              echo ""
+
+              echo "--- Step 4: Check amdgpu driver module ---"
+              if [ -f /sys/module/amdgpu/version ]; then
+                echo "PASS: amdgpu module present, version=$(cat /sys/module/amdgpu/version)"
+              else
+                echo "FAIL: amdgpu module not found"
+              fi
+              echo ""
+
+              echo "--- Step 5: RVS GPU detection (rvs -g) ---"
+              /opt/rocm/bin/rvs -g 2>&1 || echo "NOTE: rvs -g failed (may need real KFD ioctl)"
+              echo ""
+
+              echo "--- Step 6: RVS GPU Properties (rvs -m gpup) ---"
+              /opt/rocm/bin/rvs -m gpup 2>&1 || echo "NOTE: rvs -m gpup failed"
+              echo ""
+
+              echo "--- Step 7: RVS PCIe Qualification (rvs -m peqt) ---"
+              /opt/rocm/bin/rvs -m peqt 2>&1 || echo "NOTE: rvs -m peqt failed"
+              echo ""
+
+              echo "========================================"
+              echo " Validation complete"
+              echo "========================================"
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: kfd
+              mountPath: /dev/kfd
+            - name: dri
+              mountPath: /dev/dri
+            - name: mock-sys
+              mountPath: /sys
+              readOnly: true
+      volumes:
+        - name: kfd
+          hostPath:
+            path: /dev/kfd
+        - name: dri
+          hostPath:
+            path: /dev/dri
+        - name: mock-sys
+          hostPath:
+            path: /var/lib/amd-gpu-mock/sys

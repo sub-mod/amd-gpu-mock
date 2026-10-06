@@ -1,0 +1,130 @@
+# Compute Partitioning Demo — shows multiple LLM instances on partitioned GPUs.
+#
+# Simulates what happens when you partition MI300X GPUs into smaller slices
+# and schedule multiple workloads across them.
+#
+# Before deploying:
+#   curl -X POST 'http://localhost:8080/api/partitions/set?mode=CPX'
+#   # Node now has 64 amd.com/gpu (8 physical × 8 partitions)
+#
+# This deploys 4 replicas, each requesting 1 GPU partition slice.
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-inference-a
+  namespace: default
+  labels:
+    app: partition-demo
+    model: summarizer
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: partition-demo
+      model: summarizer
+  template:
+    metadata:
+      labels:
+        app: partition-demo
+        model: summarizer
+    spec:
+      containers:
+      - name: llm
+        image: python:3.11-slim
+        command: ["python3", "-u", "-c"]
+        args:
+        - |
+          import os, time
+          gpu_id = os.environ.get("ROCR_VISIBLE_DEVICES", "?")
+          print(f"{'='*50}")
+          print(f"  LLM Service: Text Summarizer")
+          print(f"  GPU Partition: {gpu_id}")
+          print(f"  /dev/kfd: {os.path.exists('/dev/kfd')}")
+          print(f"  Partition Mode: CPX (1/8 of MI300X)")
+          print(f"{'='*50}")
+          print()
+          print("Loading summarization model on GPU partition...")
+          for p in [25, 50, 75, 100]:
+              print(f"  [{'#'*(p//5)}{'-'*(20-p//5)}] {p}%")
+              time.sleep(0.3)
+          print("Model ready!")
+          print()
+          print("Processing request: 'Summarize: Kubernetes GPU scheduling...'")
+          time.sleep(0.5)
+          print("Result: 'K8s schedules GPU workloads using device plugins.'")
+          print()
+          print(f"Summarizer running on partition {gpu_id}. Waiting for requests...")
+          while True:
+              time.sleep(3600)
+        resources:
+          limits:
+            amd.com/gpu: 1
+            cpu: "500m"
+            memory: 256Mi
+          requests:
+            amd.com/gpu: 1
+            cpu: "250m"
+            memory: 128Mi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-inference-b
+  namespace: default
+  labels:
+    app: partition-demo
+    model: chatbot
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: partition-demo
+      model: chatbot
+  template:
+    metadata:
+      labels:
+        app: partition-demo
+        model: chatbot
+    spec:
+      containers:
+      - name: llm
+        image: python:3.11-slim
+        command: ["python3", "-u", "-c"]
+        args:
+        - |
+          import os, time
+          gpu_id = os.environ.get("ROCR_VISIBLE_DEVICES", "?")
+          print(f"{'='*50}")
+          print(f"  LLM Service: Chatbot")
+          print(f"  GPU Partition: {gpu_id}")
+          print(f"  /dev/kfd: {os.path.exists('/dev/kfd')}")
+          print(f"  Partition Mode: CPX (1/8 of MI300X)")
+          print(f"{'='*50}")
+          print()
+          print("Loading chat model on GPU partition...")
+          for p in [25, 50, 75, 100]:
+              print(f"  [{'#'*(p//5)}{'-'*(20-p//5)}] {p}%")
+              time.sleep(0.3)
+          print("Model ready!")
+          print()
+          print("User: What is AMD MI300X?")
+          time.sleep(0.5)
+          print("Bot: The MI300X is AMD's data center GPU with 192GB HBM3,")
+          print("     304 compute units, and 8 XCDs — each XCD can be a")
+          print("     separate compute partition for independent workloads.")
+          print()
+          print(f"Chatbot running on partition {gpu_id}. Waiting for requests...")
+          while True:
+              time.sleep(3600)
+        resources:
+          limits:
+            amd.com/gpu: 1
+            cpu: "500m"
+            memory: 256Mi
+          requests:
+            amd.com/gpu: 1
+            cpu: "250m"
+            memory: 128Mi

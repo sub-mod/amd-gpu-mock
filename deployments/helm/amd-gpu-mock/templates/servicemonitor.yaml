@@ -1,0 +1,20 @@
+{{- if .Values.prometheus.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "amd-gpu-mock.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "amd-gpu-mock.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "amd-gpu-mock.selectorLabels" . | nindent 6 }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  endpoints:
+    - port: api
+      path: /metrics
+      interval: {{ .Values.prometheus.serviceMonitor.interval }}
+{{- end }}

@@ -1,0 +1,163 @@
+# AMD Instinct MI350X Mock Profile
+# 8-GPU OAM configuration (CDNA 4, SPX mode)
+
+version: "1.0"
+
+system:
+  amdgpu_version: "6.22.0"
+  rocm_version: "10.0.0"
+  amdsmi_version: "28.0.0"
+
+device_defaults:
+  name: "AMD Instinct MI350X"
+  vendor_id: 0x1002
+  device_id: 0x75a0
+  subsystem_vendor_id: 0x1002
+  subsystem_device_id: 0x75a0
+  gfx_target_version: 90500       # gfx950 — hex needed for CDNA 4
+  architecture: "cdna4"
+
+  compute:
+    cu_count: 256
+    simd_per_cu: 4
+    simd_count: 1024
+    stream_processors: 16384
+    wave_front_size: 64
+    array_count: 32
+    simd_arrays_per_engine: 2
+    cu_per_simd_array: 8
+    num_xcc: 8
+    max_waves_per_simd: 16
+    lds_size_in_kb: 64
+    gds_size_in_kb: 0
+    num_sdma_engines: 2
+    num_sdma_xgmi_engines: 6
+    num_cp_queues: 128
+
+  memory:
+    vram_type: "hbm3e"
+    vram_size_bytes: 309237645312     # 288 GB
+    vram_used_bytes: 314572800        # ~300 MB baseline
+    vram_bus_width: 8192
+    vis_vram_size_bytes: 309237645312
+    gtt_size_bytes: 536854528000
+    max_mem_clk_mhz: 2000
+
+  power:
+    current_socket_power_w: 220
+    default_power_cap_w: 1000
+    max_power_cap_w: 1000
+    min_power_cap_w: 0
+
+  thermal:
+    edge_temperature_c: 45
+    hotspot_temperature_c: 50
+    mem_temperature_c: 44
+    shutdown_temperature_c: 110
+    slowdown_temperature_c: 100
+
+  clocks:
+    max_gfx_clk_mhz: 2200
+    min_gfx_clk_mhz: 500
+    current_gfx_clk_mhz: 500
+    max_mem_clk_mhz: 2000
+    min_mem_clk_mhz: 900
+    current_mem_clk_mhz: 2000
+
+  pcie:
+    gen: 5
+    width: 16
+    max_gen: 5
+    max_width: 16
+    replay_count: 0
+
+  ecc:
+    enabled: true
+    correctable_count: 0
+    uncorrectable_count: 0
+
+  firmware:
+    pmfw_version: "00.80.01.00"
+
+  utilization:
+    gfx_activity_percent: 0
+    umc_activity_percent: 0
+    mm_activity_percent: 0
+
+  partition:
+    mode: "SPX"
+    nps_mode: "NPS1"
+
+xgmi:
+  hive_id: "0x2345678901abcdef"
+  links_per_gpu: 7
+  lanes_per_link: 16
+  bandwidth_per_link_gbps: 153
+  link_type: 11
+
+pcie_topology:
+  root_complexes:
+    - id: "pci0000:00"
+      numa_node: 0
+      devices:
+        - "0000:05:00.0"
+        - "0000:26:00.0"
+        - "0000:46:00.0"
+        - "0000:65:00.0"
+    - id: "pci0000:80"
+      numa_node: 1
+      devices:
+        - "0000:85:00.0"
+        - "0000:a6:00.0"
+        - "0000:c6:00.0"
+        - "0000:e5:00.0"
+
+devices:
+  - index: 0
+    uuid: "GPU-amd-mi350x-0000-0000-000000000000"
+    pci_bdf: "0000:05:00.0"
+    drm_render_minor: 128
+    unique_id: "0x9c5f000000000001"
+    xgmi_device_id: "0x0001"
+  - index: 1
+    uuid: "GPU-amd-mi350x-0000-0000-000000000001"
+    pci_bdf: "0000:26:00.0"
+    drm_render_minor: 129
+    unique_id: "0x9c5f000000000002"
+    xgmi_device_id: "0x0002"
+  - index: 2
+    uuid: "GPU-amd-mi350x-0000-0000-000000000002"
+    pci_bdf: "0000:46:00.0"
+    drm_render_minor: 130
+    unique_id: "0x9c5f000000000003"
+    xgmi_device_id: "0x0003"
+  - index: 3
+    uuid: "GPU-amd-mi350x-0000-0000-000000000003"
+    pci_bdf: "0000:65:00.0"
+    drm_render_minor: 131
+    unique_id: "0x9c5f000000000004"
+    xgmi_device_id: "0x0004"
+  - index: 4
+    uuid: "GPU-amd-mi350x-0000-0000-000000000004"
+    pci_bdf: "0000:85:00.0"
+    drm_render_minor: 132
+    unique_id: "0x9c5f000000000005"
+    xgmi_device_id: "0x0005"
+  - index: 5
+    uuid: "GPU-amd-mi350x-0000-0000-000000000005"
+    pci_bdf: "0000:a6:00.0"
+    drm_render_minor: 133
+    unique_id: "0x9c5f000000000006"
+    xgmi_device_id: "0x0006"
+  - index: 6
+    uuid: "GPU-amd-mi350x-0000-0000-000000000006"
+    pci_bdf: "0000:c6:00.0"
+    drm_render_minor: 134
+    unique_id: "0x9c5f000000000007"
+    xgmi_device_id: "0x0007"
+  - index: 7
+    uuid: "GPU-amd-mi350x-0000-0000-000000000007"
+    pci_bdf: "0000:e5:00.0"
+    drm_render_minor: 135
+    unique_id: "0x9c5f000000000008"
+    xgmi_device_id: "0x0008"

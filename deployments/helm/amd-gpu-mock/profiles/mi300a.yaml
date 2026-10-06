@@ -1,0 +1,135 @@
+# AMD Instinct MI300A Mock Profile
+# 4-GPU APU configuration (CPU + GPU integrated, Grace-like)
+
+version: "1.0"
+
+system:
+  amdgpu_version: "6.19.4"
+  rocm_version: "7.14.0"
+  amdsmi_version: "27.0.0"
+
+device_defaults:
+  name: "AMD Instinct MI300A"
+  vendor_id: 0x1002
+  device_id: 0x74a0
+  subsystem_vendor_id: 0x1002
+  subsystem_device_id: 0x74a0
+  gfx_target_version: 90402          # gfx942
+  architecture: "cdna3"
+
+  compute:
+    cu_count: 228
+    simd_per_cu: 4
+    simd_count: 912
+    stream_processors: 14592
+    wave_front_size: 64
+    array_count: 29
+    simd_arrays_per_engine: 2
+    cu_per_simd_array: 8
+    num_xcc: 6
+    max_waves_per_simd: 16
+    lds_size_in_kb: 64
+    gds_size_in_kb: 0
+    num_sdma_engines: 2
+    num_sdma_xgmi_engines: 6
+    num_cp_queues: 128
+
+  memory:
+    vram_type: "hbm3"
+    vram_size_bytes: 137438953472     # ~128 GB
+    vram_used_bytes: 262144000        # ~250 MB baseline
+    vram_bus_width: 8192
+    vis_vram_size_bytes: 137438953472
+    gtt_size_bytes: 268427264000
+    max_mem_clk_mhz: 1300
+
+  power:
+    current_socket_power_w: 155
+    default_power_cap_w: 550
+    max_power_cap_w: 550
+    min_power_cap_w: 0
+
+  thermal:
+    edge_temperature_c: 44
+    hotspot_temperature_c: 48
+    mem_temperature_c: 42
+    shutdown_temperature_c: 110
+    slowdown_temperature_c: 100
+
+  clocks:
+    max_gfx_clk_mhz: 2100
+    min_gfx_clk_mhz: 500
+    current_gfx_clk_mhz: 500
+    max_mem_clk_mhz: 1300
+    min_mem_clk_mhz: 900
+    current_mem_clk_mhz: 1300
+
+  pcie:
+    gen: 5
+    width: 16
+    max_gen: 5
+    max_width: 16
+    replay_count: 0
+
+  ecc:
+    enabled: true
+    correctable_count: 0
+    uncorrectable_count: 0
+
+  firmware:
+    pmfw_version: "00.68.45.00"
+
+  utilization:
+    gfx_activity_percent: 0
+    umc_activity_percent: 0
+    mm_activity_percent: 0
+
+  partition:
+    mode: "SPX"
+    nps_mode: "NPS1"
+
+xgmi:
+  hive_id: "0xbcde300a00000001"
+  links_per_gpu: 7
+  lanes_per_link: 16
+  bandwidth_per_link_gbps: 50
+  link_type: 11
+
+pcie_topology:
+  root_complexes:
+    - id: "pci0000:00"
+      numa_node: 0
+      devices:
+        - "0000:05:00.0"
+        - "0000:26:00.0"
+    - id: "pci0000:40"
+      numa_node: 1
+      devices:
+        - "0000:45:00.0"
+        - "0000:66:00.0"
+
+devices:
+  - index: 0
+    uuid: "GPU-amd-mi300a-0000-0000-000000000000"
+    pci_bdf: "0000:05:00.0"
+    drm_render_minor: 128
+    unique_id: "0x8a30000000000001"
+    xgmi_device_id: "0x0001"
+  - index: 1
+    uuid: "GPU-amd-mi300a-0000-0000-000000000001"
+    pci_bdf: "0000:26:00.0"
+    drm_render_minor: 129
+    unique_id: "0x8a30000000000002"
+    xgmi_device_id: "0x0002"
+  - index: 2
+    uuid: "GPU-amd-mi300a-0000-0000-000000000002"
+    pci_bdf: "0000:45:00.0"
+    drm_render_minor: 130
+    unique_id: "0x8a30000000000003"
+    xgmi_device_id: "0x0003"
+  - index: 3
+    uuid: "GPU-amd-mi300a-0000-0000-000000000003"
+    pci_bdf: "0000:66:00.0"
+    drm_render_minor: 131
+    unique_id: "0x8a30000000000004"
+    xgmi_device_id: "0x0004"

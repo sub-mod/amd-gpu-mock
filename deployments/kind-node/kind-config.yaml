@@ -1,0 +1,15 @@
+# KIND cluster config for the AMD GPU mock.
+# Use with the custom node image:
+#   kind create cluster --name amd-mock \
+#     --image amd-mock-kind-node:latest \
+#     --config deployments/kind-node/kind-config.yaml
+
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    labels:
+      # GPU Operator targets this label
+      feature.node.kubernetes.io/amd-gpu: "true"
+      # Mock GPU type
+      amd-gpu-mock.amd.com/type: sgpu

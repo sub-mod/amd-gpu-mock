@@ -1,0 +1,6 @@
+apiVersion: v2
+name: amd-gpu-mock
+description: Mock AMD GPU infrastructure for Kubernetes testing
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

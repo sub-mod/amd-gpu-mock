@@ -1,0 +1,212 @@
+# AMD Instinct MI250X Mock Profile
+# 8-GPU OAM configuration (dual-GCD per module)
+
+version: "1.0"
+
+system:
+  amdgpu_version: "6.12.12"
+  rocm_version: "6.2.0"
+  amdsmi_version: "24.6.0"
+
+device_defaults:
+  name: "AMD Instinct MI250X"
+  vendor_id: 0x1002
+  device_id: 0x740c
+  subsystem_vendor_id: 0x1002
+  subsystem_device_id: 0x740c
+  gfx_target_version: 90010       # gfx90a — hex needed because 'a' in version
+  architecture: "cdna2"
+
+  compute:
+    cu_count: 110
+    simd_per_cu: 4
+    simd_count: 440
+    stream_processors: 7040
+    wave_front_size: 64
+    array_count: 14
+    simd_arrays_per_engine: 2
+    cu_per_simd_array: 8
+    num_xcc: 1
+    max_waves_per_simd: 16
+    lds_size_in_kb: 64
+    gds_size_in_kb: 0
+    num_sdma_engines: 2
+    num_sdma_xgmi_engines: 6
+    num_cp_queues: 128
+
+  memory:
+    vram_type: "hbm2e"
+    vram_size_bytes: 68719476736      # ~64 GB per GCD
+    vram_used_bytes: 209715200        # ~200 MB baseline
+    vram_bus_width: 4096
+    vis_vram_size_bytes: 68719476736
+    gtt_size_bytes: 268427264000
+    max_mem_clk_mhz: 1600
+
+  power:
+    current_socket_power_w: 145
+    default_power_cap_w: 500
+    max_power_cap_w: 500
+    min_power_cap_w: 0
+
+  thermal:
+    edge_temperature_c: 42
+    hotspot_temperature_c: 46
+    mem_temperature_c: 40
+    shutdown_temperature_c: 110
+    slowdown_temperature_c: 100
+
+  clocks:
+    max_gfx_clk_mhz: 1700
+    min_gfx_clk_mhz: 500
+    current_gfx_clk_mhz: 500
+    max_mem_clk_mhz: 1600
+    min_mem_clk_mhz: 500
+    current_mem_clk_mhz: 1600
+
+  pcie:
+    gen: 4
+    width: 16
+    max_gen: 4
+    max_width: 16
+    replay_count: 0
+
+  ecc:
+    enabled: true
+    correctable_count: 0
+    uncorrectable_count: 0
+
+  firmware:
+    pmfw_version: "00.48.06.00"
+
+  utilization:
+    gfx_activity_percent: 0
+    umc_activity_percent: 0
+    mm_activity_percent: 0
+
+  partition:
+    mode: "SPX"
+    nps_mode: "NPS1"
+
+xgmi:
+  hive_id: "0xdef0250x00000001"
+  links_per_gpu: 8
+  lanes_per_link: 16
+  bandwidth_per_link_gbps: 50
+  link_type: 11
+
+pcie_topology:
+  root_complexes:
+    - id: "pci0000:00"
+      numa_node: 0
+      devices:
+        - "0000:03:00.0"
+        - "0000:23:00.0"
+        - "0000:43:00.0"
+        - "0000:63:00.0"
+    - id: "pci0000:80"
+      numa_node: 1
+      devices:
+        - "0000:83:00.0"
+        - "0000:a3:00.0"
+        - "0000:c3:00.0"
+        - "0000:e3:00.0"
+
+devices:
+  - index: 0
+    uuid: "GPU-amd-mi250x-0000-0000-000000000000"
+    pci_bdf: "0000:03:00.0"
+    drm_render_minor: 128
+    unique_id: "0x7a50000000000001"
+    xgmi_device_id: "0x0001"
+  - index: 1
+    uuid: "GPU-amd-mi250x-0000-0000-000000000001"
+    pci_bdf: "0000:23:00.0"
+    drm_render_minor: 129
+    unique_id: "0x7a50000000000002"
+    xgmi_device_id: "0x0002"
+  - index: 2
+    uuid: "GPU-amd-mi250x-0000-0000-000000000002"
+    pci_bdf: "0000:43:00.0"
+    drm_render_minor: 130
+    unique_id: "0x7a50000000000003"
+    xgmi_device_id: "0x0003"
+  - index: 3
+    uuid: "GPU-amd-mi250x-0000-0000-000000000003"
+    pci_bdf: "0000:63:00.0"
+    drm_render_minor: 131
+    unique_id: "0x7a50000000000004"
+    xgmi_device_id: "0x0004"
+  - index: 4
+    uuid: "GPU-amd-mi250x-0000-0000-000000000004"
+    pci_bdf: "0000:83:00.0"
+    drm_render_minor: 132
+    unique_id: "0x7a50000000000005"
+    xgmi_device_id: "0x0005"
+  - index: 5
+    uuid: "GPU-amd-mi250x-0000-0000-000000000005"
+    pci_bdf: "0000:a3:00.0"
+    drm_render_minor: 133
+    unique_id: "0x7a50000000000006"
+    xgmi_device_id: "0x0006"
+  - index: 6
+    uuid: "GPU-amd-mi250x-0000-0000-000000000006"
+    pci_bdf: "0000:c3:00.0"
+    drm_render_minor: 134
+    unique_id: "0x7a50000000000007"
+    xgmi_device_id: "0x0007"
+  - index: 7
+    uuid: "GPU-amd-mi250x-0000-0000-000000000007"
+    pci_bdf: "0000:e3:00.0"
+    drm_render_minor: 135
+    unique_id: "0x7a50000000000008"
+    xgmi_device_id: "0x0008"
+
+  - index: 8
+    uuid: "GPU-amd-mi250x-0000-0000-000000000008"
+    pci_bdf: "0000:06:00.0"
+    drm_render_minor: 136
+    unique_id: "0x9c3f000000000009"
+    xgmi_device_id: "0x0009"
+  - index: 9
+    uuid: "GPU-amd-mi250x-0000-0000-000000000009"
+    pci_bdf: "0000:27:00.0"
+    drm_render_minor: 137
+    unique_id: "0x9c3f00000000000a"
+    xgmi_device_id: "0x000a"
+  - index: 10
+    uuid: "GPU-amd-mi250x-0000-0000-00000000000a"
+    pci_bdf: "0000:47:00.0"
+    drm_render_minor: 138
+    unique_id: "0x9c3f00000000000b"
+    xgmi_device_id: "0x000b"
+  - index: 11
+    uuid: "GPU-amd-mi250x-0000-0000-00000000000b"
+    pci_bdf: "0000:66:00.0"
+    drm_render_minor: 139
+    unique_id: "0x9c3f00000000000c"
+    xgmi_device_id: "0x000c"
+  - index: 12
+    uuid: "GPU-amd-mi250x-0000-0000-00000000000c"
+    pci_bdf: "0000:86:00.0"
+    drm_render_minor: 140
+    unique_id: "0x9c3f00000000000d"
+    xgmi_device_id: "0x000d"
+  - index: 13
+    uuid: "GPU-amd-mi250x-0000-0000-00000000000d"
+    pci_bdf: "0000:a7:00.0"
+    drm_render_minor: 141
+    unique_id: "0x9c3f00000000000e"
+    xgmi_device_id: "0x000e"
+  - index: 14
+    uuid: "GPU-amd-mi250x-0000-0000-00000000000e"
+    pci_bdf: "0000:c7:00.0"
+    drm_render_minor: 142
+    unique_id: "0x9c3f00000000000f"
+    xgmi_device_id: "0x000f"
+  - index: 15
+    uuid: "GPU-amd-mi250x-0000-0000-00000000000f"
+    pci_bdf: "0000:e6:00.0"
+    drm_render_minor: 143
+    unique_id: "0x9c3f000000000010"
+    xgmi_device_id: "0x0010"

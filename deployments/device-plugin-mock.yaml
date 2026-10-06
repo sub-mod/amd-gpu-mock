@@ -1,0 +1,71 @@
+# AMD K8s Device Plugin — Mock Configuration
+#
+# Modified from the upstream ROCm/k8s-device-plugin DaemonSet to read
+# the mock sysfs tree at /var/lib/amd-gpu-mock/sys instead of the real /sys,
+# and mock device nodes at /var/lib/amd-gpu-mock/dev instead of /dev.
+#
+# Modified AMD device plugin DaemonSet for the mock GPU infrastructure.
+#
+# The upstream plugin hardcodes /sys and /dev paths with no override flag,
+# so the only way to redirect it is to bind-mount the mock tree at those
+# paths inside the container.
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: amd-gpu-device-plugin
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: amd-gpu-device-plugin
+    app.kubernetes.io/component: device-plugin
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: amd-gpu-device-plugin
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: amd-gpu-device-plugin
+    spec:
+      tolerations:
+        - operator: Exists
+      priorityClassName: system-node-critical
+      containers:
+        - name: device-plugin
+          image: rocm/k8s-device-plugin:latest
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          volumeMounts:
+            # kubelet device plugin socket directory
+            - name: device-plugin
+              mountPath: /var/lib/kubelet/device-plugins
+
+            # Mock sysfs tree mounted at /sys inside the container.
+            # The plugin reads /sys/module/amdgpu/drivers/...,
+            # /sys/class/drm/, and /sys/class/kfd/ — all of which
+            # exist in our mock tree.
+            - name: sys
+              mountPath: /sys
+              readOnly: true
+
+            # Mock device nodes mounted at /dev inside the container.
+            # The plugin opens /dev/kfd and /dev/dri/renderD* for
+            # health checks.
+            - name: dev
+              mountPath: /dev
+
+      volumes:
+        - name: device-plugin
+          hostPath:
+            path: /var/lib/kubelet/device-plugins
+
+        # Point at the mock tree instead of the real /sys
+        - name: sys
+          hostPath:
+            path: /var/lib/amd-gpu-mock/sys
+
+        # Point at the mock dev nodes instead of the real /dev
+        - name: dev
+          hostPath:
+            path: /var/lib/amd-gpu-mock/dev

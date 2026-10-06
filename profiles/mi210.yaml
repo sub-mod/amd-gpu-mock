@@ -1,0 +1,163 @@
+# AMD Instinct MI210 Mock Profile
+# 8-GPU PCIe card configuration
+
+version: "1.0"
+
+system:
+  amdgpu_version: "6.12.12"
+  rocm_version: "6.2.0"
+  amdsmi_version: "24.6.0"
+
+device_defaults:
+  name: "AMD Instinct MI210"
+  vendor_id: 0x1002
+  device_id: 0x740f
+  subsystem_vendor_id: 0x1002
+  subsystem_device_id: 0x740f
+  gfx_target_version: 90010       # gfx90a — hex needed because 'a' in version
+  architecture: "cdna2"
+
+  compute:
+    cu_count: 104
+    simd_per_cu: 4
+    simd_count: 416
+    stream_processors: 6656
+    wave_front_size: 64
+    array_count: 13
+    simd_arrays_per_engine: 2
+    cu_per_simd_array: 8
+    num_xcc: 1
+    max_waves_per_simd: 16
+    lds_size_in_kb: 64
+    gds_size_in_kb: 0
+    num_sdma_engines: 2
+    num_sdma_xgmi_engines: 2
+    num_cp_queues: 128
+
+  memory:
+    vram_type: "hbm2e"
+    vram_size_bytes: 68719476736      # ~64 GB
+    vram_used_bytes: 157286400        # ~150 MB baseline
+    vram_bus_width: 4096
+    vis_vram_size_bytes: 68719476736
+    gtt_size_bytes: 134213632000
+    max_mem_clk_mhz: 1600
+
+  power:
+    current_socket_power_w: 85
+    default_power_cap_w: 300
+    max_power_cap_w: 300
+    min_power_cap_w: 0
+
+  thermal:
+    edge_temperature_c: 38
+    hotspot_temperature_c: 42
+    mem_temperature_c: 36
+    shutdown_temperature_c: 110
+    slowdown_temperature_c: 100
+
+  clocks:
+    max_gfx_clk_mhz: 1700
+    min_gfx_clk_mhz: 500
+    current_gfx_clk_mhz: 500
+    max_mem_clk_mhz: 1600
+    min_mem_clk_mhz: 500
+    current_mem_clk_mhz: 1600
+
+  pcie:
+    gen: 4
+    width: 16
+    max_gen: 4
+    max_width: 16
+    replay_count: 0
+
+  ecc:
+    enabled: true
+    correctable_count: 0
+    uncorrectable_count: 0
+
+  firmware:
+    pmfw_version: "00.46.02.00"
+
+  utilization:
+    gfx_activity_percent: 0
+    umc_activity_percent: 0
+    mm_activity_percent: 0
+
+  partition:
+    mode: "SPX"
+    nps_mode: "NPS1"
+
+xgmi:
+  hive_id: "0xf001210000000001"
+  links_per_gpu: 3
+  lanes_per_link: 16
+  bandwidth_per_link_gbps: 50
+  link_type: 11
+
+pcie_topology:
+  root_complexes:
+    - id: "pci0000:00"
+      numa_node: 0
+      devices:
+        - "0000:03:00.0"
+        - "0000:23:00.0"
+        - "0000:43:00.0"
+        - "0000:63:00.0"
+    - id: "pci0000:80"
+      numa_node: 1
+      devices:
+        - "0000:83:00.0"
+        - "0000:a3:00.0"
+        - "0000:c3:00.0"
+        - "0000:e3:00.0"
+
+devices:
+  - index: 0
+    uuid: "GPU-amd-mi210-0000-0000-0000000000000"
+    pci_bdf: "0000:03:00.0"
+    drm_render_minor: 128
+    unique_id: "0x6210000000000001"
+    xgmi_device_id: "0x0001"
+  - index: 1
+    uuid: "GPU-amd-mi210-0000-0000-0000000000001"
+    pci_bdf: "0000:23:00.0"
+    drm_render_minor: 129
+    unique_id: "0x6210000000000002"
+    xgmi_device_id: "0x0002"
+  - index: 2
+    uuid: "GPU-amd-mi210-0000-0000-0000000000002"
+    pci_bdf: "0000:43:00.0"
+    drm_render_minor: 130
+    unique_id: "0x6210000000000003"
+    xgmi_device_id: "0x0003"
+  - index: 3
+    uuid: "GPU-amd-mi210-0000-0000-0000000000003"
+    pci_bdf: "0000:63:00.0"
+    drm_render_minor: 131
+    unique_id: "0x6210000000000004"
+    xgmi_device_id: "0x0004"
+  - index: 4
+    uuid: "GPU-amd-mi210-0000-0000-0000000000004"
+    pci_bdf: "0000:83:00.0"
+    drm_render_minor: 132
+    unique_id: "0x6210000000000005"
+    xgmi_device_id: "0x0005"
+  - index: 5
+    uuid: "GPU-amd-mi210-0000-0000-0000000000005"
+    pci_bdf: "0000:a3:00.0"
+    drm_render_minor: 133
+    unique_id: "0x6210000000000006"
+    xgmi_device_id: "0x0006"
+  - index: 6
+    uuid: "GPU-amd-mi210-0000-0000-0000000000006"
+    pci_bdf: "0000:c3:00.0"
+    drm_render_minor: 134
+    unique_id: "0x6210000000000007"
+    xgmi_device_id: "0x0007"
+  - index: 7
+    uuid: "GPU-amd-mi210-0000-0000-0000000000007"
+    pci_bdf: "0000:e3:00.0"
+    drm_render_minor: 135
+    unique_id: "0x6210000000000008"
+    xgmi_device_id: "0x0008"

@@ -1,0 +1,9 @@
+tmp/
+bin/
+*.exe
+.DS_Store
+node-agent
+nri-plugin
+bin/
+/tmp/
+*.tar
