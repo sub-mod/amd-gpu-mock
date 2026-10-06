@@ -82,7 +82,7 @@ section "1. Preconditions"
 if kubectl api-resources --api-group=resource.k8s.io -o name 2>/dev/null | grep -q '^resourceslices'; then
     pass "cluster serves resource.k8s.io (DRA)"
 else
-    die "cluster does not serve resource.k8s.io; DRA needs Kubernetes 1.34+"
+    die "cluster does not serve resource.k8s.io; this release targets Kubernetes 1.37"
 fi
 
 AGENT_NODES="$(kubectl get pods -A -l app.kubernetes.io/name=amd-gpu-mock \
@@ -114,7 +114,7 @@ git -c advice.detachedHead=false clone --quiet --depth 1 --branch "$DRA_REF" "$D
 # Render, then point only the plugin's /sys hostPath at the mock tree.
 if helm template "$RELEASE" "$WORK/dra/helm-charts-k8s" \
         --namespace "$DRA_NS" \
-        --kube-version 1.34.0 --api-versions resource.k8s.io/v1 \
+        --kube-version 1.37.0 --api-versions resource.k8s.io/v1 \
         -f "$REPO_ROOT/deployments/dra/values-mock.yaml" --set-string "image.repository=$DRA_IMAGE" --set-string "image.tag=$DRA_IMAGE_TAG" \
     | "$REPO_ROOT/deployments/dra/sys-remap.sh" > "$WORK/dra.yaml"; then
     pass "chart rendered, /sys remapped to $MOCK_SYS"

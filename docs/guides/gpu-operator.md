@@ -6,7 +6,8 @@ infrastructure using `SIM_ENABLE` mode.
 
 ## Prerequisites
 
-- amd-gpu-mock deployed (`helm install amd-gpu-mock ...`)
+- amd-gpu-mock deployed with both bundled allocators disabled:
+  `--set dra.enabled=false --set devicePlugin.enabled=false`
 - cert-manager installed
 
 ## Install

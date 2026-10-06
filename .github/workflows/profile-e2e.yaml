@@ -36,7 +36,8 @@ jobs:
           helm install amd-gpu-mock deployments/helm/amd-gpu-mock \
             -n amd-mock --create-namespace \
             --set image.repository=amd-gpu-mock --set image.tag=profile-test \
-            --set image.pullPolicy=Never --set gpu.profile=${{ matrix.profile }}
+            --set image.pullPolicy=Never --set gpu.profile=${{ matrix.profile }} \
+            --set dra.enabled=false --set devicePlugin.enabled=true
           kubectl -n amd-mock rollout status ds/amd-gpu-mock --timeout=120s
           kubectl -n kube-system rollout status ds/amd-gpu-mock-device-plugin --timeout=180s
       - name: Profile scheduling and fault propagation

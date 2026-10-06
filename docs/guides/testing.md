@@ -1,6 +1,6 @@
 # Automated validation
 
-Release 0.2.1 targets Kubernetes 1.37. Use kind v0.33.0 or newer and kubectl
+Release 0.2.2 targets Kubernetes 1.37. Use kind v0.33.0 or newer and kubectl
 v1.37. Older kind versions can generate kubeadm APIs that Kubernetes 1.37
 rejects before any GPU test runs.
 

@@ -71,15 +71,19 @@ func TestProfileSysfsContract(t *testing.T) {
 				}
 			}
 			// Runtime hooks require this mount destination on native AMD64 kind nodes.
-			path := "sys/class/dmi/id/product_uuid"
-			if len(read(path)) != 36 {
-				t.Fatal("invalid DMI UUID mount target")
+			paths := []string{"sys/class/dmi/id/product_uuid", "sys/devices/virtual/dmi/id/product_uuid"}
+			for _, path := range paths {
+				if len(read(path)) != 36 {
+					t.Fatal("invalid DMI UUID mount target: " + path)
+				}
 			}
 			if err := r.SwitchProfile(p); err != nil {
 				t.Fatal(err)
 			}
-			if len(read(path)) != 36 {
-				t.Fatal("DMI UUID target lost after profile switch")
+			for _, path := range paths {
+				if len(read(path)) != 36 {
+					t.Fatal("DMI UUID target lost after profile switch: " + path)
+				}
 			}
 		})
 	}

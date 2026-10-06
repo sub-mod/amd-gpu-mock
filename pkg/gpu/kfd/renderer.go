@@ -152,8 +152,9 @@ func (r *Renderer) renderHostCompat() error {
 		"sys/class/dmi/id/board_vendor":   "AMD\n",
 		"sys/class/dmi/id/product_serial": "mock-serial\n",
 		// kind bind-mounts the host UUID here on native x86 nodes.
-		"sys/class/dmi/id/product_uuid":         "00000000-0000-0000-0000-000000000000\n",
-		"sys/devices/system/node/node0/cpulist": "0-127\n",
+		"sys/devices/virtual/dmi/id/product_uuid": "00000000-0000-0000-0000-000000000000\n",
+		"sys/class/dmi/id/product_uuid":           "00000000-0000-0000-0000-000000000000\n",
+		"sys/devices/system/node/node0/cpulist":   "0-127\n",
 	}
 	for path, content := range compatPaths {
 		if err := writeFile(filepath.Join(r.rootDir, path), content); err != nil {

@@ -10,7 +10,7 @@ image:
   pullPolicy: IfNotPresent
 
 devicePlugin:
-  enabled: true
+  enabled: false
   image: rocm/k8s-device-plugin:latest
   imagePullPolicy: IfNotPresent
 
@@ -34,14 +34,15 @@ prometheus:
     enabled: false
     interval: 15s
 
-# Set dra.enabled=true and devicePlugin.enabled=false for DRA scheduling.
+# DRA is the default allocator. For device-plugin mode set dra.enabled=false
+# and devicePlugin.enabled=true.
 # This installs the pinned upstream driver; no user image build is needed.
 dra:
-  enabled: false
+  enabled: true
   allowDefaultNamespace: false
   image:
     repository: docker.io/submod/amd-gpu-dra-driver
-    tag: v1.0.0-mock.2
+    tag: v1.0.0-mock.3
     pullPolicy: IfNotPresent
   mockSysPath: /var/lib/amd-gpu-mock/sys
   kubeletPlugin:

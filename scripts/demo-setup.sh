@@ -16,7 +16,7 @@ set -uo pipefail
 CLUSTER_NAME="${CLUSTER_NAME:-amd-mock}"
 GPU_PROFILE="${GPU_PROFILE:-mi300x}"
 CHART="oci://docker.io/submod/amd-gpu-mock"
-CHART_VERSION="0.2.1"
+CHART_VERSION="0.2.2"
 SKIP_CLUSTER=false
 TEARDOWN=false
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -69,7 +69,7 @@ if ! $SKIP_CLUSTER; then
   # Try the custom node image (enables GPU Operator support on x86).
   # Falls back to standard kindest/node on macOS/ARM where the custom
   # image's systemd sysfs mounts fail under Rosetta emulation.
-  KIND_NODE_IMAGE="docker.io/submod/amd-mock-kind-node:0.2.1"
+  KIND_NODE_IMAGE="docker.io/submod/amd-mock-kind-node:0.2.2"
 
   if kind create cluster --name "$CLUSTER_NAME" --image "$KIND_NODE_IMAGE" 2>/dev/null; then
     echo "Using custom KIND node image (GPU Operator support enabled)"
@@ -85,7 +85,7 @@ fi
 # ── Step 2: Install from OCI Helm chart ────────────────────────────────
 echo "Step 2/4: Installing AMD GPU mock (profile: $GPU_PROFILE)..."
 helm install amd-gpu-mock "$CHART" \
-  --version "$CHART_VERSION" \
+  --version "$CHART_VERSION" --set dra.enabled=false --set devicePlugin.enabled=true \
   --namespace amd-mock --create-namespace \
   --set gpu.profile="$GPU_PROFILE"
 

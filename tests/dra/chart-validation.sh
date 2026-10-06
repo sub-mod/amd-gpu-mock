@@ -14,15 +14,17 @@ reject() {
     grep -Fq "$expected" "$WORK/error" || { cat "$WORK/error" >&2; exit 1; }
     echo "PASS: rejects $expected"
 }
-render >"$WORK/device-plugin.yaml"
+render >"$WORK/default.yaml"
+grep -Fq 'kind: DeviceClass' "$WORK/default.yaml"
+render --set dra.enabled=false --set devicePlugin.enabled=true >"$WORK/device-plugin.yaml"
 render --set dra.enabled=true --set devicePlugin.enabled=false >"$WORK/dra.yaml"
 grep -Fq 'kind: DeviceClass' "$WORK/dra.yaml"
 grep -Fq 'path: "/var/lib/amd-gpu-mock/sys"' "$WORK/dra.yaml"
-reject 'set devicePlugin.enabled=false' --set dra.enabled=true
+reject 'set devicePlugin.enabled=false' --set dra.enabled=true --set devicePlugin.enabled=true
 reject 'dra.mockSysPath must equal' --set dra.enabled=true --set devicePlugin.enabled=false --set dra.mockSysPath=/sys
-reject 'dra.kubeletPlugin.nodeSelector must match' --set dra.enabled=true --set devicePlugin.enabled=false --set nodeSelector.mock=true
+reject 'dra.kubeletPlugin.nodeSelector must match' --set dra.enabled=true --set devicePlugin.enabled=false --set-string nodeSelector.mock=true
 render --set dra.enabled=true --set devicePlugin.enabled=false \
-    --set nodeSelector.mock=true --set dra.kubeletPlugin.nodeSelector.mock=true \
+    --set-string nodeSelector.mock=true --set-string dra.kubeletPlugin.nodeSelector.mock=true \
     --set mockRootDir=/custom/mock --set dra.mockSysPath=/custom/mock/sys >"$WORK/custom.yaml"
 grep -Fq 'path: "/custom/mock/sys"' "$WORK/custom.yaml"
 echo 'PASS: default, DRA, and custom-root configurations render correctly'
