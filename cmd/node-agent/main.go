@@ -111,6 +111,19 @@ func main() {
 	if err := state.LoadProfiles(*profilesDir); err != nil {
 		log.Printf("warning: loading profile catalog from %s: %v", *profilesDir, err)
 	} else {
+		// Helm mounts every selected profile as config.yaml. Bind API state to
+		// its actual catalog slug rather than treating every profile as MI300X.
+		if filepath.Base(*configPath) == "config.yaml" {
+			for slug, catalogProfile := range state.Profiles {
+				if catalogProfile.DeviceDefault.Name == profile.DeviceDefault.Name {
+					for i := range state.GPUs {
+						state.GPUs[i].ProfileSlug = slug
+					}
+					state.Profiles[slug] = &profile
+					break
+				}
+			}
+		}
 		log.Printf("loaded %d profiles from %s", len(state.ProfileCatalog), *profilesDir)
 	}
 	sim := kfd.NewDynamicSimulator(state)

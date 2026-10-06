@@ -1,0 +1,61 @@
+name: profile-e2e
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  profiles:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        profile: [mi210, mi250x, mi300a, mi300x, mi325x, mi350x, mi355x]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+      - uses: azure/setup-helm@v4
+      - uses: helm/kind-action@v1
+        with:
+          version: v0.33.0
+          kubectl_version: v1.37.0
+          node_image: kindest/node:v1.37.0
+          cluster_name: amd-profile-test
+          ignore_failed_clean: true
+          wait: 120s
+      - name: Build and install source mock
+        run: |
+          docker build -t amd-gpu-mock:profile-test .
+          kind load docker-image amd-gpu-mock:profile-test --name amd-profile-test
+          helm install amd-gpu-mock deployments/helm/amd-gpu-mock \
+            -n amd-mock --create-namespace \
+            --set image.repository=amd-gpu-mock --set image.tag=profile-test \
+            --set image.pullPolicy=Never --set gpu.profile=${{ matrix.profile }}
+          kubectl -n amd-mock rollout status ds/amd-gpu-mock --timeout=120s
+          kubectl -n kube-system rollout status ds/amd-gpu-mock-device-plugin --timeout=180s
+      - name: Profile scheduling and fault propagation
+        env:
+          PROFILE: ${{ matrix.profile }}
+          KEEP: "1"
+        run: python3 tests/profile-e2e.py
+      - name: Diagnostics
+        if: always()
+        run: |
+          mkdir -p artifacts
+          kubectl get pods -A -o wide > artifacts/pods.txt 2>&1 || true
+          kubectl get nodes -o yaml > artifacts/nodes.yaml 2>&1 || true
+          kubectl get events -A --sort-by=.lastTimestamp > artifacts/events.txt 2>&1 || true
+          kubectl -n amd-mock logs ds/amd-gpu-mock > artifacts/agent.log 2>&1 || true
+          kubectl -n kube-system logs ds/amd-gpu-mock-device-plugin > artifacts/device-plugin.log 2>&1 || true
+          kind export logs artifacts/kind --name amd-profile-test || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: profile-${{ matrix.profile }}-diagnostics
+          path: artifacts/

@@ -29,7 +29,7 @@ jobs:
           kubectl_version: v1.37.0
           ignore_failed_clean: true
           cluster_name: amd-dra-test
-          node_image: ${{ matrix.stack == 'published' && 'docker.io/submod/amd-mock-kind-node:0.2.0' || 'kindest/node:v1.37.0' }}
+          node_image: ${{ matrix.stack == 'published' && 'docker.io/submod/amd-mock-kind-node:0.2.1' || 'kindest/node:v1.37.0' }}
           config: deployments/kind-node/kind-config.yaml
           wait: 120s
       - name: Build and deploy patched mock
@@ -52,7 +52,7 @@ jobs:
         if: matrix.stack == 'published'
         run: |
           helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-            --version 0.2.0 -n amd-mock --create-namespace \
+            --version 0.2.1 -n amd-mock --create-namespace \
             --set devicePlugin.enabled=false --set dra.enabled=true
           kubectl -n amd-mock rollout status ds/amd-gpu-mock --timeout=120s
       - name: DRA discovery and allocation
@@ -73,6 +73,9 @@ jobs:
           kubectl get events -A --sort-by=.lastTimestamp > artifacts/events.txt 2>&1 || true
           kubectl -n amd-mock logs ds/amd-gpu-mock-dra-kubeletplugin \
             --all-containers --tail=200 > artifacts/driver.log 2>&1 || true
+          kubectl -n amd-mock describe pods > artifacts/pod-descriptions.txt 2>&1 || true
+          kubectl -n amd-mock logs ds/amd-gpu-mock-dra-kubeletplugin \
+            -c driver-init > artifacts/driver-init.log 2>&1 || true
           kind export logs artifacts/kind --name amd-dra-test || true
       - uses: actions/upload-artifact@v4
         if: always()

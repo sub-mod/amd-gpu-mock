@@ -41,7 +41,7 @@ dra:
   allowDefaultNamespace: false
   image:
     repository: docker.io/submod/amd-gpu-dra-driver
-    tag: v1.0.0-mock.1
+    tag: v1.0.0-mock.2
     pullPolicy: IfNotPresent
   mockSysPath: /var/lib/amd-gpu-mock/sys
   kubeletPlugin:

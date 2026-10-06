@@ -75,7 +75,7 @@ func NewFleetState(profile *Profile, initialSlug string) *FleetState {
 			ProfileName:   profile.DeviceDefault.Name,
 			NodeName:      "mock-node",
 		},
-		Profiles:       make(map[string]*Profile),
+		Profiles:       map[string]*Profile{initialSlug: profile},
 		ProfileCatalog: []ProfileInfo{},
 	}
 
@@ -252,51 +252,35 @@ func (f *FleetState) SetPartitionMode(mode string, partitionsPerGPU int) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 
-	// Find the base physical GPU count from the current profile
-	physicalGPUs := len(f.GPUs)
-	// If we're already in a partitioned mode, find the original count
-	for _, p := range f.Profiles {
-		if p.DeviceDefault.Name == f.GPUs[0].Name {
-			physicalGPUs = len(p.Devices)
-			break
-		}
-	}
-
-	if partitionsPerGPU <= 1 {
-		// SPX — restore to physical GPU count
-		if len(f.GPUs) != physicalGPUs {
-			// Rebuild from profile
-			slug := f.GPUs[0].ProfileSlug
-			if p, ok := f.Profiles[slug]; ok {
-				f.GPUs = gpusFromProfile(p, slug)
-			}
-		}
-		for i := range f.GPUs {
-			f.GPUs[i].Partition = mode
-		}
+	// Always derive partitions from physical profile data. Deriving a second
+	// mode from existing virtual GPUs compounds memory division and duplicates IDs.
+	if len(f.GPUs) == 0 {
 		return
 	}
-
-	// Create virtual GPUs: physicalGPUs * partitionsPerGPU
-	totalVirtual := physicalGPUs * partitionsPerGPU
-	base := f.GPUs[0] // template from first GPU
-	newGPUs := make([]GPUState, totalVirtual)
-
+	slug := f.GPUs[0].ProfileSlug
+	profile, ok := f.Profiles[slug]
+	if !ok {
+		return
+	}
+	physical := gpusFromProfile(profile, slug)
+	if partitionsPerGPU <= 1 {
+		for i := range physical {
+			physical[i].Partition = mode
+		}
+		f.GPUs = physical
+		return
+	}
+	newGPUs := make([]GPUState, len(physical)*partitionsPerGPU)
 	for i := range newGPUs {
-		physIdx := i / partitionsPerGPU
-		partIdx := i % partitionsPerGPU
+		base := physical[i/partitionsPerGPU]
 		newGPUs[i] = base
 		newGPUs[i].Index = i
 		newGPUs[i].Partition = mode
-		newGPUs[i].UUID = fmt.Sprintf("%s-part%d", base.UUID, partIdx)
+		newGPUs[i].UUID = fmt.Sprintf("%s-part%d", base.UUID, i%partitionsPerGPU)
 		newGPUs[i].MemoryTotalMB = base.MemoryTotalMB / partitionsPerGPU
 		newGPUs[i].MemoryUsedMB = base.MemoryUsedMB / partitionsPerGPU
 		newGPUs[i].PowerCapW = base.PowerCapW / partitionsPerGPU
 		newGPUs[i].PowerW = base.PowerW / partitionsPerGPU
-		if physIdx < physicalGPUs && physIdx < len(f.GPUs) {
-			newGPUs[i].PCIBDF = f.GPUs[physIdx].PCIBDF
-			newGPUs[i].NUMANode = f.GPUs[physIdx].NUMANode
-		}
 	}
 	f.GPUs = newGPUs
 }

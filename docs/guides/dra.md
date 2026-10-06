@@ -9,7 +9,7 @@ that containerd uses to inject the allocated devices.
 ## Quick start: published images only
 
 Install kind v0.33.0 or newer, kubectl v1.37, Helm, and a running Docker or
-Podman runtime. Release 0.2.0 supports Kubernetes 1.37 only. Linux
+Podman runtime. Release 0.2.1 supports Kubernetes 1.37 only. Linux
 AMD64 and Linux ARM64 nodes are supported; Apple-silicon Macs run ARM64
 nodes inside the container runtime's Linux VM. Internet access is needed
 to pull images and the chart. No Go compiler or local image build is required.
@@ -20,10 +20,10 @@ export KIND_EXPERIMENTAL_PROVIDER=podman
 # Omit that variable when using Docker.
 
 kind create cluster --name amd-dra \
-    --image docker.io/submod/amd-mock-kind-node:0.2.0
+    --image docker.io/submod/amd-mock-kind-node:0.2.1
 
 helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-    --version 0.2.0 --namespace amd-mock --create-namespace \
+    --version 0.2.1 --namespace amd-mock --create-namespace \
     --set devicePlugin.enabled=false --set dra.enabled=true
 
 kubectl -n amd-mock rollout status ds/amd-gpu-mock --timeout=120s
