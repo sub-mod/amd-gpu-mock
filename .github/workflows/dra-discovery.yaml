@@ -20,6 +20,9 @@ jobs:
         with:
           go-version: "1.26"
           cache: false
+      - uses: azure/setup-helm@v4
+      - name: Chart configuration contracts
+        run: tests/dra/chart-validation.sh
       - name: Renderer contract tests
         run: go test ./pkg/gpu/kfd
       - name: AMD DRA driver discovery, all profiles

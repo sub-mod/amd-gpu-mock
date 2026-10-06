@@ -180,6 +180,9 @@ The source tree includes:
 # macOS: runs the same test in Docker/Podman's Linux VM.
 tests/dra/discovery-check.sh
 
+# Chart safety checks: allocator conflicts, sysfs roots, and node selectors.
+tests/dra/chart-validation.sh
+
 # Validate the driver installed by the published chart.
 INSTALL_DRIVER=0 DRA_NS=amd-mock tests/dra/validate_dra.sh
 
@@ -195,6 +198,7 @@ Set `KUBECONFIG` to the intended cluster before running any test.
 
 | Case | Assertion |
 |---|---|
+| Chart configuration | Reject simultaneous allocators, mismatched sysfs roots, and mismatched node selectors |
 | All-profile discovery | All 7 profiles / 60 GPUs match profile attributes |
 | ResourceSlice publication | Every device on mock nodes has required attributes and capacities |
 | One-GPU claim | Pod gets `/dev/kfd` and exactly one card/render character-device pair |
@@ -214,8 +218,10 @@ published quickstart was verified in a fresh cluster, and anonymous image
 and chart pulls succeeded. The installed-driver basic suite passed 12 checks and the lifecycle
 suite passed 9 checks. The standalone install mode adds a chart-remapping
 check (13 basic checks). The
-AMD64 GitHub Actions job is configured to test the published upstream AMD
-driver image; that hosted job has not been run in this session.
+AMD64 GitHub Actions matrix tests both the source mock with AMD’s official
+driver image and the published quickstart artifacts. It pins kind v0.33.0
+and kubectl v1.37.0 for Kubernetes v1.37.0; older kind versions can generate
+kubeadm configuration APIs that this Kubernetes version rejects.
 This is a tested support matrix, not a claim that every DRA feature works.
 
 ## Limits and troubleshooting

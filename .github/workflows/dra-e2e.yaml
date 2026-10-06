@@ -13,6 +13,10 @@ jobs:
   kind:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        stack: [source-upstream, published]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -21,12 +25,15 @@ jobs:
       - uses: azure/setup-helm@v4
       - uses: helm/kind-action@v1
         with:
-          version: v0.31.0
+          version: v0.33.0
+          kubectl_version: v1.37.0
+          ignore_failed_clean: true
           cluster_name: amd-dra-test
-          node_image: kindest/node:v1.37.0
+          node_image: ${{ matrix.stack == 'published' && 'docker.io/submod/amd-mock-kind-node:0.2.0' || 'kindest/node:v1.37.0' }}
           config: deployments/kind-node/kind-config.yaml
           wait: 120s
       - name: Build and deploy patched mock
+        if: matrix.stack == 'source-upstream'
         run: |
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/node-agent ./cmd/node-agent
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/nri-plugin ./cmd/nri-plugin
@@ -41,6 +48,13 @@ jobs:
             --set dra.image.repository=docker.io/rocm/k8s-gpu-dra-driver \
             --set dra.image.tag=v1.0.0
           kubectl -n amd-mock rollout status ds/amd-gpu-mock --timeout=120s
+      - name: Install published quickstart artifacts
+        if: matrix.stack == 'published'
+        run: |
+          helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
+            --version 0.2.0 -n amd-mock --create-namespace \
+            --set devicePlugin.enabled=false --set dra.enabled=true
+          kubectl -n amd-mock rollout status ds/amd-gpu-mock --timeout=120s
       - name: DRA discovery and allocation
         env:
           KEEP: "1"
@@ -54,14 +68,14 @@ jobs:
         if: always()
         run: |
           mkdir -p artifacts
-          kubectl get pods,resourceclaims -A -o wide > artifacts/workloads.txt
-          kubectl get resourceslices -o yaml > artifacts/resourceslices.yaml
-          kubectl get events -A --sort-by=.lastTimestamp > artifacts/events.txt
+          kubectl get pods,resourceclaims -A -o wide > artifacts/workloads.txt 2>&1 || true
+          kubectl get resourceslices -o yaml > artifacts/resourceslices.yaml 2>&1 || true
+          kubectl get events -A --sort-by=.lastTimestamp > artifacts/events.txt 2>&1 || true
           kubectl -n amd-mock logs ds/amd-gpu-mock-dra-kubeletplugin \
             --all-containers --tail=200 > artifacts/driver.log 2>&1 || true
-          kind export logs artifacts/kind --name amd-dra-test
+          kind export logs artifacts/kind --name amd-dra-test || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: dra-e2e-diagnostics
+          name: dra-e2e-diagnostics-${{ matrix.stack }}
           path: artifacts/

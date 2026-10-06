@@ -278,6 +278,9 @@ Alternative allocator (device plugin disabled):
 # Full stack validation (mock + GPU Operator — 27 tests across 8 layers)
 ./tests/validate_full.sh
 
+# Chart safety checks (no cluster; runs in CI)
+./tests/dra/chart-validation.sh
+
 # AMD's DRA driver discovery against every profile (no cluster; runs in CI)
 ./tests/dra/discovery-check.sh
 
