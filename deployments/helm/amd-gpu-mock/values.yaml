@@ -56,9 +56,34 @@ dra:
 
 # Real AMD exporter + GPU Agent, using the AMD SMI mock backend.
 metricsExporter:
-  enabled: false
+  enabled: true
   image: docker.io/submod/amd-device-metrics-exporter:v1.5.2-mock.2
   imagePullPolicy: IfNotPresent
   serviceMonitor:
     enabled: false
     interval: 15s
+
+# Standard Prometheus + Grafana, scraping the real AMD exporter.
+# For an external monitoring stack set monitoring.enabled=false.
+monitoring:
+  enabled: true
+  prometheus:
+    image: docker.io/prom/prometheus:v3.15.0-distroless
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+  grafana:
+    enabled: true
+    image: docker.io/grafana/grafana:13.2.3-distroless
+    adminPassword: amdmock
+    # kind maps this to localhost:3000; host port is configured separately.
+    nodePort: 30300
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        memory: 512Mi

@@ -120,7 +120,7 @@ the host URL. Use `DASHBOARD_URL=http://127.0.0.1:9090` when testing a custom
 kind host port. Change that mapping before creating the cluster; container
 port mappings cannot be added to an existing kind node by a Helm upgrade.
 The DRA and Operator CI jobs run this check with the same kind configuration.
-Chart 0.2.5 uses mock image v0.2.4 and node image 0.2.2; the node image
+Chart 0.2.7 uses mock image v0.2.4 and node image 0.2.2; the node image
 still runs Kubernetes 1.37.
 
 ## Real AMD exporter telemetry
@@ -150,3 +150,28 @@ repeats telemetry tests after exporter restart. ARM64 runs AMD's unchanged
 x86 collector under QEMU; the surrounding cluster and node agent run natively.
 Local validation passed on ARM64 Podman; CI results are the evidence for the
 native AMD64 path. The tests invoke dashboard endpoints, not browser clicks.
+
+## Presenter demos and default dashboards
+
+`demo/` contains runnable LLM, DRA, virtual partitioning, fault injection,
+multi-GPU, allocation/release, telemetry and profile presentations. See its
+[presenter guide](../../demo/README.md). Chart 0.2.7 installs built-in
+Prometheus/Grafana and the real exporter by default; the shared kind config
+exposes Grafana at localhost:3000 and the mock dashboard at localhost:8080.
+
+```bash
+tests/demo/chart-validation.sh
+python3 tests/demo/grafana-e2e.py
+```
+
+The chart checks cover default/custom host ports, both dashboard switches,
+external-monitoring mode, invalid configuration rejection, and consistency
+between demo manifests and existing tested assets. The Grafana check verifies
+host access without forwarding, dashboard provisioning, real AMD GPU count
+and every panel query. The published DRA CI path runs it from a fresh cluster.
+
+`demo-e2e` CI runs the new presenter scripts on fresh published-image clusters
+with both allocators. It covers the LLM, multi-GPU consumers, claim release,
+fault recovery and Grafana, and verifies disabling/re-enabling both dashboards.
+Do not run competing fault-injection suites simultaneously. The demos leave
+workloads for inspection; `demo/run.py cleanup` removes labelled namespaces.

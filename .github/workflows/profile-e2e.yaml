@@ -34,6 +34,7 @@ jobs:
           docker build -t amd-gpu-mock:profile-test .
           kind load docker-image amd-gpu-mock:profile-test --name amd-profile-test
           helm install amd-gpu-mock deployments/helm/amd-gpu-mock \
+            --set monitoring.enabled=false --set metricsExporter.enabled=false \
             -n amd-mock --create-namespace \
             --set image.repository=amd-gpu-mock --set image.tag=profile-test \
             --set image.pullPolicy=Never --set gpu.profile=${{ matrix.profile }} \

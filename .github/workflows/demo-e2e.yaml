@@ -1,0 +1,66 @@
+name: demo-e2e
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  demos:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        allocator: [dra, device-plugin]
+    env:
+      CONTAINER_RUNTIME: docker
+      CLUSTER_NAME: amd-presenter-test
+      DEMO_CONTEXT: kind-amd-presenter-test
+      ALLOCATOR: ${{ matrix.allocator }}
+      DEMO_CONFIG: /tmp/amd-demo-values.yaml
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - uses: helm/kind-action@v1
+        with:
+          install_only: true
+          version: v0.33.0
+          kubectl_version: v1.37.0
+      - name: Port and dashboard chart contracts
+        run: tests/demo/chart-validation.sh
+      - name: Fresh published setup with both dashboards enabled
+        run: |
+          cp demo/config.yaml "$DEMO_CONFIG"
+          if [ "$ALLOCATOR" = device-plugin ]; then
+            python3 -c 'import os,pathlib; p=pathlib.Path(os.environ["DEMO_CONFIG"]); p.write_text(p.read_text().replace("dra:\n  enabled: true", "dra:\n  enabled: false").replace("devicePlugin:\n  enabled: false", "devicePlugin:\n  enabled: true"))'
+          fi
+          ./demo/setup.sh --config "$DEMO_CONFIG"
+      - name: Grafana and all presenter commands
+        run: |
+          python3 tests/demo/grafana-e2e.py
+          python3 tests/demo/presenter-e2e.py
+      - name: Disable and restore both dashboards
+        run: |
+          helm upgrade amd-gpu-mock oci://docker.io/submod/amd-gpu-mock --version 0.2.7 \
+            -n amd-mock --reuse-values --set dashboard.enabled=false \
+            --set monitoring.grafana.enabled=false --wait --timeout 3m
+          python3 tests/demo/dashboards-disabled.py
+          ./demo/setup.sh --skip-cluster --config "$DEMO_CONFIG"
+          python3 tests/dashboard-e2e.py
+          python3 tests/demo/grafana-e2e.py
+      - name: Diagnostics
+        if: always()
+        run: |
+          mkdir -p artifacts
+          kubectl get pods -A -o wide > artifacts/pods.txt 2>&1 || true
+          kubectl get events -A --sort-by=.lastTimestamp > artifacts/events.txt 2>&1 || true
+          kubectl -n amd-mock logs deploy/amd-gpu-mock-grafana > artifacts/grafana.log 2>&1 || true
+          kubectl -n amd-mock logs deploy/amd-gpu-mock-prometheus > artifacts/prometheus.log 2>&1 || true
+          kind export logs artifacts/kind --name "$CLUSTER_NAME" || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: demos-${{ matrix.allocator }}
+          path: artifacts/

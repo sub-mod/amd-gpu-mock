@@ -1,0 +1,1 @@
+{{ dict "mockURL" (printf "http://localhost:%v" .Values.kind.mockDashboardPort) "grafanaURL" (printf "http://localhost:%v" .Values.kind.grafanaPort) "mockDashboardEnabled" .Values.dashboard.enabled "grafanaEnabled" (and .Values.monitoring.enabled .Values.monitoring.grafana.enabled) "grafanaPassword" (default "amdmock" .Values.monitoring.grafana.adminPassword) | toJson }}

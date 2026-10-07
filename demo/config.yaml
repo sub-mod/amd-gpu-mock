@@ -1,0 +1,28 @@
+# One configuration for kind port mappings AND Helm workloads.
+# Edit before creating the cluster; existing kind port mappings cannot change.
+kind:
+  mockDashboardPort: 8080
+  grafanaPort: 3000
+
+dashboard:
+  enabled: true
+  nodePort: 30080
+
+monitoring:
+  enabled: true
+  grafana:
+    enabled: true
+    nodePort: 30300
+    adminPassword: amdmock
+
+metricsExporter:
+  enabled: true
+
+gpu:
+  profile: mi300x
+
+# Choose ONE allocator; the default is DRA.
+dra:
+  enabled: true
+devicePlugin:
+  enabled: false

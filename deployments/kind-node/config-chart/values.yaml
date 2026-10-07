@@ -1,0 +1,11 @@
+kind:
+  mockDashboardPort: 8080
+  grafanaPort: 3000
+dashboard:
+  enabled: true
+  nodePort: 30080
+monitoring:
+  enabled: true
+  grafana:
+    enabled: true
+    nodePort: 30300

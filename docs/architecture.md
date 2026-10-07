@@ -76,8 +76,8 @@ HIP kernels, emulate GPU memory or implement KFD ioctls.
 
 The diagram shows data and control flow, not network isolation. API objects
 live in Kubernetes; the scheduler reads and updates them. Allocation details
-and the fault boundary are expanded below. Prometheus uses a ServiceMonitor
-for discovery; Grafana's provisioned dashboard queries the real AMD metrics.
+and the fault boundary are expanded below. Bundled Prometheus uses DNS endpoint discovery; the optional external stack
+uses a ServiceMonitor. Grafana's provisioned dashboard queries the real AMD metrics.
 
 DRA and the device plugin are mutually exclusive. Telemetry works alongside
 either allocator and reads kubelet's real pod-resources socket for workload
@@ -214,7 +214,7 @@ setup scrapes the separate AMD collector endpoint instead.
 
 ## Allocation and runtime
 
-Chart 0.2.5 defaults to AMD's unchanged DRA v1.0.0 driver, republished for
+Chart 0.2.7 defaults to AMD's unchanged DRA v1.0.0 driver, republished for
 AMD64 and ARM64. Its chart mounts mock sysfs at the driver's `/sys`. Kubernetes
 allocates ResourceClaims; kubelet calls prepare/unprepare; the driver writes
 per-claim CDI specs. Containerd injects only the allocated card/render devices
@@ -225,12 +225,12 @@ GPU capacity as `amd.com/gpu`. See the [device-plugin guide](guides/device-plugi
 
 The published `amd-mock-kind-node:0.2.2` contains Kubernetes v1.37.0 and AMD's
 container toolkit, with CDI enabled. Both allocation paths use this image.
-Chart 0.2.5 uses node-agent image `amd-gpu-mock:v0.2.4`. The kind configuration
+Chart 0.2.7 uses node-agent image `amd-gpu-mock:v0.2.4`. The kind configuration
 maps localhost:8080 to dashboard NodePort 30080 automatically.
 
 ## Telemetry
 
-The optional chart exporter DaemonSet contains unchanged AMD v1.5.2 collector
+The default chart exporter DaemonSet contains unchanged AMD v1.5.2 collector
 binaries and a dedicated AMD SMI replacement compiled against the matching
 GPU Agent ABI 27 header. It reads node-agent snapshots through a read-only
 host mount. This replacement is separate from the legacy handwritten library
@@ -238,8 +238,10 @@ staged for other consumers. Unsupported APIs return NOT_SUPPORTED.
 
 AMD's published collector is x86-64. AMD64 executes it directly; ARM64 uses
 explicit QEMU emulation. Prometheus, Grafana, Kubernetes and the node agent
-run natively. The ServiceMonitor preserves consumer labels and the provisioned
-Grafana dashboard queries AMD metric names. See the [telemetry guide](guides/telemetry.md)
+run natively. Bundled Prometheus uses DNS discovery of a headless exporter Service and
+preserves consumer labels. Grafana is provisioned and exposed at localhost:3000
+by the kind mapping. The optional external Operator stack uses a ServiceMonitor.
+The demo config coordinates ports and enable switches for both dashboards. See the [telemetry guide](guides/telemetry.md)
 for setup, fault flows, tests, provenance and limitations.
 
 ## Operator scope

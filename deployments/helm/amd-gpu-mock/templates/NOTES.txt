@@ -42,3 +42,8 @@ CHANGE GPU PROFILE:
 Dashboard: http://localhost:8080 (when using the quick-start kind configuration).
 To change the host port, see the README Dashboard section.
 {{- end }}
+
+{{- if and .Values.monitoring.enabled .Values.monitoring.grafana.enabled }}
+Grafana: http://localhost:3000 (quick-start kind mapping; admin / configured password).
+Dashboard and Grafana ports/toggles: demo/config.yaml with demo/setup.sh.
+{{- end }}

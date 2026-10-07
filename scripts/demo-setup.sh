@@ -16,7 +16,7 @@ set -euo pipefail
 CLUSTER_NAME="${CLUSTER_NAME:-amd-mock}"
 GPU_PROFILE="${GPU_PROFILE:-mi300x}"
 CHART="oci://docker.io/submod/amd-gpu-mock"
-CHART_VERSION="0.2.5"
+CHART_VERSION="0.2.7"
 SKIP_CLUSTER=false
 TEARDOWN=false
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -106,6 +106,7 @@ echo ""
 echo "  GPUs:       $GPU_COUNT x AMD Instinct (profile: $GPU_PROFILE)"
 echo ""
 echo "  Dashboard:  http://localhost:8080"
+echo "  Grafana:    http://localhost:3000 (admin / amdmock)"
 echo ""
 echo "  LLM status: kubectl get pods -l app=tiny-llm"
 echo "  LLM logs:   kubectl logs -l app=tiny-llm"

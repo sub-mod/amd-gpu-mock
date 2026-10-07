@@ -1,0 +1,25 @@
+{{- if and .Values.dashboard.enabled .Values.monitoring.enabled .Values.monitoring.grafana.enabled (eq (int .Values.kind.mockDashboardPort) (int .Values.kind.grafanaPort)) }}
+{{- fail "mock dashboard and Grafana host ports must differ" }}
+{{- end }}
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    {{- if or .Values.dashboard.enabled (and .Values.monitoring.enabled .Values.monitoring.grafana.enabled) }}
+    extraPortMappings:
+      {{- if .Values.dashboard.enabled }}
+      - containerPort: {{ .Values.dashboard.nodePort }}
+        hostPort: {{ .Values.kind.mockDashboardPort }}
+        listenAddress: "127.0.0.1"
+        protocol: TCP
+      {{- end }}
+      {{- if and .Values.monitoring.enabled .Values.monitoring.grafana.enabled }}
+      - containerPort: {{ .Values.monitoring.grafana.nodePort }}
+        hostPort: {{ .Values.kind.grafanaPort }}
+        listenAddress: "127.0.0.1"
+        protocol: TCP
+      {{- end }}
+    {{- end }}
+    labels:
+      feature.node.kubernetes.io/amd-gpu: "true"
+      amd-gpu-mock.amd.com/type: sgpu

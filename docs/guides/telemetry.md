@@ -14,16 +14,44 @@ flowchart LR
 
 This follows the same principle as [NVIDIA Moka](https://github.com/NVIDIA/k8s-test-infra): simulate the vendor device interface and keep its consumers real. NVIDIA DCGM Exporter obtains telemetry through DCGM; AMD's exporter talks to GPU Agent, which invokes AMD SMI. These are different implementations, rather than interchangeable libraries.
 
-## Install after the quick start
+## Default dashboards (chart 0.2.6+)
+
+The default chart installs the real AMD exporter, Prometheus and Grafana.
+The shared kind configuration maps the mock dashboard to localhost:8080 and
+Grafana to localhost:3000. No port-forward or separate monitoring installation
+is required. Sign in to Grafana with `admin` / `amdmock` and open
+**AMD GPU Fleet — Device Metrics Exporter**.
+
+For a complete published-image setup and a single file controlling dashboard
+ports and enable switches, use [the demo setup](../../demo/README.md).
+The built-in Prometheus discovers every exporter endpoint through a headless
+Service and DNS discovery; it does not need Prometheus Operator CRDs. GPU
+consumer labels are preserved. Storage is ephemeral and retention is 24 hours.
+
+Set `monitoring.grafana.enabled=false` to omit Grafana, or
+`monitoring.enabled=false` to omit both built-in monitoring applications.
+`dashboard.enabled=false` removes the mock dashboard's host exposure.
+`metricsExporter.enabled=false` also requires `monitoring.enabled=false`.
+The plain kind file controls mappings only; use `demo/config.yaml` with
+`demo/setup.sh` to coordinate mappings and workloads. Existing kind mappings
+cannot change on a Helm upgrade.
+
+## Optional external Prometheus Operator stack
+
+For kube-prometheus-stack integration instead of the built-in applications:
 
 ```bash
 ./scripts/setup-monitoring.sh
 kubectl -n monitoring port-forward svc/monitoring-grafana 3000:80
 ```
 
-Open http://localhost:3000, sign in with `admin` / `amdmock`, and select **AMD GPU Fleet — Device Metrics Exporter**. Set `GRAFANA_ADMIN_PASSWORD` when running the setup script to choose another password. The mock dashboard remains available at http://localhost:8080.
-
-The setup script preserves your existing GPU profile and allocator settings, enables the real exporter and its ServiceMonitor, installs pinned kube-prometheus-stack chart 92.0.0, and provisions the dashboard. It does not scrape the mock agent's `/metrics` endpoint. End users need no compiler, AMD checkout, or custom image build.
+The script preserves your profile and allocator settings, disables bundled
+monitoring, enables the exporter ServiceMonitor, installs pinned
+kube-prometheus-stack chart 92.0.0, and provisions the same dashboard. It does
+not scrape the mock agent's `/metrics` endpoint. If host port 3000 is already
+in use, choose another port for this optional port-forward. Set
+`GRAFANA_ADMIN_PASSWORD` to select an external Grafana password. End users
+need no compiler, AMD checkout or custom image build.
 
 Published inputs:
 
@@ -31,7 +59,7 @@ Published inputs:
 | --- | --- |
 | Mock node agent | `docker.io/submod/amd-gpu-mock:v0.2.4` |
 | AMD collector with mock SMI backend | `docker.io/submod/amd-device-metrics-exporter:v1.5.2-mock.2` |
-| Mock Helm chart | `0.2.5` |
+| Mock Helm chart | `0.2.7` |
 | Existing Kubernetes node image | `docker.io/submod/amd-mock-kind-node:0.2.2` |
 
 Images support Linux AMD64 and ARM64. AMD's published collector binaries are x86-64: the ARM64 runtime explicitly executes them using QEMU. The GPU Agent and exporter binaries are unchanged; ARM64 collector execution is emulated, while the mock node agent, Kubernetes, Prometheus and Grafana run natively. This costs more CPU than a native collector.
@@ -96,15 +124,14 @@ curl http://localhost:5000/metrics
 
 A log message `AMD SMI ABI 27 backend initialized` confirms the replacement library loaded. In Prometheus, verify the exporter target is `UP`. If a Grafana panel is empty, check the metric's existence and its `amd_` prefix before changing the panel query.
 
-The monitoring values use upstream GHCR Prometheus Operator images and upstream Docker Hub Prometheus/Grafana images. They avoid depending on locally cached images or Quay connectivity. Host node-exporter, Alertmanager and kube-state-metrics are omitted from this GPU-focused setup.
+The optional external monitoring values use upstream GHCR Prometheus Operator images and upstream Docker Hub Prometheus/Grafana images. They avoid depending on locally cached images or Quay connectivity. Host node-exporter, Alertmanager and kube-state-metrics are omitted from this GPU-focused setup.
 
 ## Validation and builds
 
 ```bash
 ./tests/telemetry/abi.sh
-# With the monitoring stack installed:
-kubectl -n monitoring port-forward svc/monitoring-kube-prometheus-prometheus 9090:9090
-kubectl -n monitoring port-forward svc/monitoring-grafana 3000:80
+# Default chart: Grafana is already exposed on port 3000.
+kubectl -n amd-mock port-forward svc/amd-gpu-mock-prometheus 9090:9090
 python3 tests/telemetry/e2e.py
 ```
 

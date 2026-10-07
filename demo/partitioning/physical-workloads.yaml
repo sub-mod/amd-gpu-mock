@@ -1,0 +1,123 @@
+# Multi-instance scheduling demo: four independent physical GPU requests.
+# Requires the device-plugin installation; CPX API state does not create
+# independently allocatable Kubernetes partitions. Each replica gets a full GPU.
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-inference-a
+  labels:
+    app: partition-demo
+    model: summarizer
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: partition-demo
+      model: summarizer
+  template:
+    metadata:
+      labels:
+        app: partition-demo
+        model: summarizer
+    spec:
+      terminationGracePeriodSeconds: 2
+      containers:
+      - name: llm
+        image: python:3.11-slim
+        command: ["python3", "-u", "-c"]
+        args:
+        - |
+          import os, time
+          gpu_id = os.environ.get("ROCR_VISIBLE_DEVICES", "?")
+          print(f"{'='*50}")
+          print(f"  LLM Service: Text Summarizer")
+          print(f"  Physical GPU: {gpu_id}")
+          print(f"  /dev/kfd: {os.path.exists('/dev/kfd')}")
+          print(f"  Allocation: one full physical GPU")
+          print(f"{'='*50}")
+          print()
+          print("Loading summarization model on physical GPU...")
+          for p in [25, 50, 75, 100]:
+              print(f"  [{'#'*(p//5)}{'-'*(20-p//5)}] {p}%")
+              time.sleep(0.3)
+          print("Model ready!")
+          print()
+          print("Processing request: 'Summarize: Kubernetes GPU scheduling...'")
+          time.sleep(0.5)
+          print("Result: 'K8s schedules GPU workloads using device plugins.'")
+          print()
+          print(f"Summarizer running on physical GPU {gpu_id}. Waiting for requests...")
+          while True:
+              time.sleep(3600)
+        resources:
+          limits:
+            amd.com/gpu: 1
+            cpu: "500m"
+            memory: 256Mi
+          requests:
+            amd.com/gpu: 1
+            cpu: "250m"
+            memory: 128Mi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-inference-b
+  labels:
+    app: partition-demo
+    model: chatbot
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: partition-demo
+      model: chatbot
+  template:
+    metadata:
+      labels:
+        app: partition-demo
+        model: chatbot
+    spec:
+      terminationGracePeriodSeconds: 2
+      containers:
+      - name: llm
+        image: python:3.11-slim
+        command: ["python3", "-u", "-c"]
+        args:
+        - |
+          import os, time
+          gpu_id = os.environ.get("ROCR_VISIBLE_DEVICES", "?")
+          print(f"{'='*50}")
+          print(f"  LLM Service: Chatbot")
+          print(f"  Physical GPU: {gpu_id}")
+          print(f"  /dev/kfd: {os.path.exists('/dev/kfd')}")
+          print(f"  Allocation: one full physical GPU")
+          print(f"{'='*50}")
+          print()
+          print("Loading chat model on physical GPU...")
+          for p in [25, 50, 75, 100]:
+              print(f"  [{'#'*(p//5)}{'-'*(20-p//5)}] {p}%")
+              time.sleep(0.3)
+          print("Model ready!")
+          print()
+          print("User: What is AMD MI300X?")
+          time.sleep(0.5)
+          print("Bot: The MI300X is AMD's data center GPU with 192GB HBM3,")
+          print("     304 compute units, and 8 XCDs — each XCD can be a")
+          print("     separate compute partition for independent workloads.")
+          print()
+          print(f"Chatbot running on physical GPU {gpu_id}. Waiting for requests...")
+          while True:
+              time.sleep(3600)
+        resources:
+          limits:
+            amd.com/gpu: 1
+            cpu: "500m"
+            memory: 256Mi
+          requests:
+            amd.com/gpu: 1
+            cpu: "250m"
+            memory: 128Mi

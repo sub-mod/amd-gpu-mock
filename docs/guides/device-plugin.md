@@ -8,7 +8,7 @@ kind create cluster --name amd-mock \
     --image docker.io/submod/amd-mock-kind-node:0.2.2 \
     --config deployments/kind-node/kind-config.yaml
 helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-    --version 0.2.5 --namespace amd-mock --create-namespace \
+    --version 0.2.7 --namespace amd-mock --create-namespace \
     --set dra.enabled=false --set devicePlugin.enabled=true
 kubectl -n kube-system rollout status ds/amd-gpu-mock-device-plugin --timeout=180s
 kubectl get node -o jsonpath='{.items[0].status.allocatable.amd\.com/gpu}'
@@ -38,5 +38,5 @@ workloads do not automatically become device-plugin workloads.
 See the [testing guide](testing.md) for per-profile scheduling, exhaustion,
 release, and fault propagation tests.
 
-The same dashboard and optional [real AMD telemetry pipeline](telemetry.md)
+The same dashboard and default [real AMD telemetry pipeline](telemetry.md)
 work with either allocator. The kind configuration exposes localhost:8080.

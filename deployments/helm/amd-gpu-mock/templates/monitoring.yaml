@@ -1,0 +1,223 @@
+{{- if .Values.monitoring.enabled }}
+{{- $name := include "amd-gpu-mock.fullname" . }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}-prometheus
+  namespace: {{ .Release.Namespace }}
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+    scrape_configs:
+      - job_name: {{ $name }}-metrics-exporter
+        honor_labels: true
+        dns_sd_configs:
+          - names: ['{{ $name }}-metrics-exporter-headless.{{ .Release.Namespace }}.svc.cluster.local']
+            type: A
+            port: 5000
+            refresh_interval: 15s
+        relabel_configs:
+          - target_label: service
+            replacement: {{ $name }}-metrics-exporter
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}-metrics-exporter-headless
+  namespace: {{ .Release.Namespace }}
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: {{ $name }}-metrics-exporter
+  ports:
+    - name: metrics
+      port: 5000
+      targetPort: metrics
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}-prometheus
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ $name }}-prometheus
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ $name }}-prometheus
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
+      containers:
+        - name: prometheus
+          image: {{ .Values.monitoring.prometheus.image | quote }}
+          args:
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --storage.tsdb.path=/prometheus
+            - --storage.tsdb.retention.time=24h
+          ports:
+            - name: http
+              containerPort: 9090
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: http
+          resources:
+            {{- toYaml .Values.monitoring.prometheus.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus
+              readOnly: true
+            - name: data
+              mountPath: /prometheus
+      volumes:
+        - name: config
+          configMap:
+            name: {{ $name }}-prometheus
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}-prometheus
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ $name }}-prometheus
+  ports:
+    - name: http
+      port: 9090
+      targetPort: http
+{{- if .Values.monitoring.grafana.enabled }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $name }}-grafana
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+stringData:
+  admin-password: {{ .Values.monitoring.grafana.adminPassword | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}-grafana-provisioning
+  namespace: {{ .Release.Namespace }}
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        uid: prometheus
+        access: proxy
+        url: http://{{ $name }}-prometheus:9090
+        isDefault: true
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+      - name: AMD GPU Mock
+        type: file
+        options:
+          path: /var/lib/grafana/dashboards
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}-grafana-dashboard
+  namespace: {{ .Release.Namespace }}
+data:
+  amd-real-exporter.json: |
+{{ .Files.Get "files/amd-real-exporter.json" | indent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}-grafana
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ $name }}-grafana
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ $name }}-grafana
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 472
+        runAsGroup: 472
+        fsGroup: 472
+      containers:
+        - name: grafana
+          image: {{ .Values.monitoring.grafana.image | quote }}
+          env:
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $name }}-grafana
+                  key: admin-password
+            - name: GF_ANALYTICS_REPORTING_ENABLED
+              value: "false"
+          ports:
+            - name: http
+              containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+          resources:
+            {{- toYaml .Values.monitoring.grafana.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/grafana
+            - name: provisioning
+              mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
+              subPath: datasources.yaml
+              readOnly: true
+            - name: provisioning
+              mountPath: /etc/grafana/provisioning/dashboards/dashboards.yaml
+              subPath: dashboards.yaml
+              readOnly: true
+            - name: dashboard
+              mountPath: /var/lib/grafana/dashboards
+              readOnly: true
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: provisioning
+          configMap:
+            name: {{ $name }}-grafana-provisioning
+        - name: dashboard
+          configMap:
+            name: {{ $name }}-grafana-dashboard
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}-grafana
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: {{ $name }}-grafana
+  ports:
+    - name: http
+      port: 3000
+      targetPort: http
+      nodePort: {{ .Values.monitoring.grafana.nodePort }}
+{{- end }}
+{{- end }}

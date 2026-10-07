@@ -1,0 +1,5 @@
+apiVersion: v2
+name: amd-mock-kind-config
+description: Render kind ports from the same values used to install the demo
+version: 0.1.0
+type: application

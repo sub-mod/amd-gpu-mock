@@ -25,6 +25,7 @@ jobs:
       - name: Install mock and Operator
         run: |
           helm install amd-gpu-mock deployments/helm/amd-gpu-mock \
+            --set monitoring.enabled=false --set metricsExporter.enabled=false \
             -n amd-mock --create-namespace --set devicePlugin.enabled=false --set dra.enabled=false
           kubectl -n amd-mock rollout status ds/amd-gpu-mock --timeout=120s
           helm install cert-manager cert-manager --repo https://charts.jetstack.io \

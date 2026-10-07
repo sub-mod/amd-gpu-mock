@@ -1,4 +1,7 @@
 # KIND cluster config for the AMD GPU mock.
+# For dashboard enable switches and custom ports in one file, use
+# demo/config.yaml with demo/setup.sh. Plain kind config only maps ports;
+# Helm controls whether the dashboard workloads/Services are enabled.
 # Use with the custom node image:
 #   kind create cluster --name amd-mock \
 #     --image docker.io/submod/amd-mock-kind-node:0.2.2 \
@@ -11,6 +14,11 @@ nodes:
     extraPortMappings:
       - containerPort: 30080
         hostPort: 8080
+        listenAddress: "127.0.0.1"
+        protocol: TCP
+      # Grafana is installed by default by chart 0.2.6+.
+      - containerPort: 30300
+        hostPort: 3000
         listenAddress: "127.0.0.1"
         protocol: TCP
     labels:

@@ -102,3 +102,8 @@ upstream Operator PR is part of this telemetry release. The smoke test covers
 controller identity, init completion, plugin/labeller readiness, eight-GPU
 capacity and exact one-GPU injection. Operator-managed DRA, remediation,
 KMM, NFD and the full exporter operand stack remain unvalidated.
+
+Chart 0.2.7 can run its standalone exporter and bundled Prometheus/Grafana
+alongside the Operator smoke setup. Those collectors are owned by the mock
+chart, not the Operator. The isolated Operator CI job disables bundled
+monitoring so it continues to test only controller/plugin/labeller behavior.

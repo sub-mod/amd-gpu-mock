@@ -21,6 +21,7 @@ args=()
 [[ "$CHART" != oci://* ]] || args+=(--version "$CHART_VERSION")
 helm upgrade "$MOCK_RELEASE" "$CHART" "${args[@]}" --namespace "$MOCK_NAMESPACE" --reset-values -f "$values" \
  --set image.tag="v$MOCK_IMAGE_VERSION" \
+ --set monitoring.enabled=false \
  --set metricsExporter.enabled=true \
  --set metricsExporter.image="$IMAGE_REGISTRY/amd-device-metrics-exporter:$METRICS_EXPORTER_TAG" \
  --set metricsExporter.serviceMonitor.enabled=true \

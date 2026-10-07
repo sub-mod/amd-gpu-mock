@@ -7,7 +7,7 @@ A scheduled GPU pod proves allocation and device injection, not GPU execution.
 ## From quick start to a GPU pod
 
 1. The published kind image starts Kubernetes v1.37.0 with CDI enabled.
-2. Chart 0.2.5 starts the mock node agent and AMD DRA driver by default.
+2. Chart 0.2.7 starts the mock node agent and AMD DRA driver by default.
 3. The agent reads a profile, writes mock KFD/PCI/DRM/driver sysfs, creates
    character devices and initializes runtime state.
 4. AMD's unchanged driver discovers the mounted sysfs and publishes ResourceSlices.
@@ -41,7 +41,7 @@ Its GPU values come directly from node-agent runtime state. Healthy readings
 vary each second. Overheat, Busy, Idle, Crash, Recover and ECC controls modify
 that state and synchronize mock sysfs and atomic per-GPU SMI snapshot files.
 
-The optional [monitoring setup](guides/telemetry.md) installs the real AMD
+The default chart [monitoring setup](guides/telemetry.md) installs the real AMD
 Device Metrics Exporter and GPU Agent. Their binaries remain unchanged. GPU
 Agent invokes a replacement AMD SMI device library that reads the snapshots;
 it returns values through AMD's official ABI 27 structures. The exporter
@@ -93,3 +93,7 @@ implement AMD compute partition isolation, NVIDIA MIG, MxGPU or SR-IOV.
 The [testing guide](guides/testing.md) distinguishes validated contracts from
 unimplemented hardware behavior. The Tiny LLM demo produces scripted output;
 it downloads no model weights and runs no inference.
+
+The [demo folder](../demo/README.md) provides presenter commands and a shared
+configuration for both dashboard ports and enable switches. The default
+Grafana host port is 3000; both dashboards work without port-forwards.

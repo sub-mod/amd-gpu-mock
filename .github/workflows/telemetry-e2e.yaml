@@ -61,6 +61,7 @@ jobs:
           if [ "$ALLOCATOR" = device-plugin ]; then dra=false; plugin=true; fi
           helm install amd-gpu-mock deployments/helm/amd-gpu-mock -n amd-mock --create-namespace \
             --set image.repository=local/amd-gpu-mock --set image.tag=test \
+            --set monitoring.enabled=false \
             --set dra.enabled="$dra" --set devicePlugin.enabled="$plugin" \
             --set metricsExporter.enabled=true --set metricsExporter.image=local/amd-device-metrics-exporter:test \
             --set metricsExporter.serviceMonitor.enabled=true --wait --timeout 5m

@@ -14,7 +14,7 @@ set -uo pipefail
 GPU_PROFILE="${1:-mi300x}"
 CLUSTER_NAME="amd-mock"
 CHART="oci://docker.io/submod/amd-gpu-mock"
-CHART_VERSION="0.1.0"
+CHART_VERSION="0.2.7"
 
 if [ "${1:-}" = "--teardown" ]; then
   echo "Tearing down..."
@@ -84,7 +84,9 @@ echo "Step 3/5: Creating KIND cluster..."
 export KIND_EXPERIMENTAL_PROVIDER=podman
 
 kind delete cluster --name "$CLUSTER_NAME" 2>/dev/null || true
-kind create cluster --name "$CLUSTER_NAME"
+kind create cluster --name "$CLUSTER_NAME" \
+  --image docker.io/submod/amd-mock-kind-node:0.2.2 \
+  --config "$(cd "$(dirname "$0")/.." && pwd)/deployments/kind-node/kind-config.yaml"
 kubectl wait --for=condition=Ready node/${CLUSTER_NAME}-control-plane --timeout=60s
 echo ""
 
@@ -93,7 +95,8 @@ echo "Step 4/5: Installing AMD GPU mock..."
 helm install amd-gpu-mock "$CHART" \
   --version "$CHART_VERSION" \
   --namespace amd-mock --create-namespace \
-  --set gpu.profile="$GPU_PROFILE"
+  --set gpu.profile="$GPU_PROFILE" \
+  --set dra.enabled=false --set devicePlugin.enabled=true
 
 echo "  Waiting for mock..."
 kubectl -n amd-mock rollout status ds/amd-gpu-mock --timeout=120s
@@ -117,7 +120,8 @@ if [ "$GPU_COUNT" = "8" ] || [ "$GPU_COUNT" = "4" ]; then
   echo "============================================"
   echo ""
   echo "  Dashboard:"
-  echo "    kubectl -n amd-mock port-forward ds/amd-gpu-mock 8080:8080"
+  echo "    http://localhost:8080"
+  echo "  Grafana: http://localhost:3000 (admin / amdmock)"
   echo "    open http://localhost:8080"
   echo ""
   echo "  Deploy LLM demo:"
