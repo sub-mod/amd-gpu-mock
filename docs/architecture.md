@@ -261,6 +261,12 @@ increase allocator capacity or implement AMD MxGPU/SR-IOV passthrough. Active
 claims must not be combined with live profile changes. Profile/count changes
 require consumer rediscovery and matching device nodes.
 
-Fixed MI300X DPX/NPS2 startup topology now exposes independently schedulable
-partitions through AMD DRA. See [same-GPU partition allocation](guides/partition-allocation.md).
-The virtual dashboard API described above remains a separate display simulation.
+## Fixed DPX/NPS2 allocation
+
+A fixed MI300X DPX/NPS2 startup uses partition-specific card/render/KFD nodes
+and shared physical PCI/KFD identity. It exposes sixteen DRA devices across
+eight physical GPUs. The scheduler matches the physical parent attribute;
+AMD NodePrepare produces per-request CDI edits and the runtime applies them.
+See [the partition architecture and responsibility table](guides/partition-allocation.md#allocation-path)
+for the ASCII path, lifecycle, and verified boundaries. This startup topology
+is separate from the virtual dashboard API transitions described above.

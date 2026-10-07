@@ -1,5 +1,9 @@
 # Multi-GPU and concurrent consumers
 
+The examples and captured logs below use SPX whole GPUs. For two containers
+with slices of one physical GPU, use [same-GPU partition allocation](../partition-allocation/README.md).
+A generic count of two does not enforce a shared parent on a partitioned fleet.
+
 ```bash
 # One pod, two physical GPU card/render pairs.
 python3 demo/run.py multi-gpu --count 2

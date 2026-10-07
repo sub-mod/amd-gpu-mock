@@ -1,5 +1,9 @@
 # Tiny LLM: GPU scheduling
 
+This is the SPX one-GPU workload presentation. For per-container same-parent
+slice allocation, use [partition allocation](../partition-allocation/README.md);
+neither demo executes real GPU inference.
+
 ```bash
 python3 demo/run.py llm
 kubectl -n amd-demo-llm get pods,resourceclaims

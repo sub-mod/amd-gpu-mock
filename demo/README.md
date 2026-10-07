@@ -91,6 +91,7 @@ python3 demo/run.py list
 | Folder | What to show | Command |
 | --- | --- | --- |
 | [llm](llm/README.md) | Tiny LLM scheduling and scripted output with one GPU | `python3 demo/run.py llm` |
+| [partition-allocation](partition-allocation/README.md) | Two containers, distinct 96-GiB partitions of one MI300X; requires DPX/NPS2 startup | `./demo/partition-allocation/run.sh` |
 | [partitioning](partitioning/README.md) | SPX/DPX/QPX/CPX virtual dashboard state | `python3 demo/run.py partitioning --mode CPX` |
 | [dra](dra/README.md) | ResourceSlice, ResourceClaim allocation and CDI devices | `python3 demo/run.py dra` |
 | [faults](faults/README.md) | Overheat, ECC, crash and recovery across real telemetry | `python3 demo/run.py faults --action overheat` |
@@ -100,8 +101,9 @@ python3 demo/run.py list
 | [profiles](profiles/README.md) | Model catalog and physical GPU inventory | `python3 demo/run.py profiles` |
 
 Run on a dedicated demonstration cluster. Workloads remain running so you can
-inspect them; they consume GPUs until cleanup. Each demo uses a namespace
-labelled `amd-gpu-mock/demo=true`, with names such as `amd-demo-llm`.
+inspect them; they consume GPUs until cleanup. The main runner uses namespaces labelled `amd-gpu-mock/demo=true`, such as
+`amd-demo-llm`. The standalone partition-allocation runner uses
+`amd-demo-partition-allocation`, which must be deleted explicitly.
 
 ## Recorded output from real runs
 
@@ -114,6 +116,7 @@ Print any recorded demo directly from the runner without changing the cluster:
 python3 demo/run.py llm --show-captured
 python3 demo/run.py multi-gpu --show-captured
 python3 demo/run.py faults --show-captured
+./demo/partition-allocation/run.sh --show-captured
 ```
 
 Omit `--show-captured` to execute the live demo.
@@ -164,7 +167,7 @@ cluster is deleted.
 | --- | --- |
 | Chart (default dashboards) | 0.2.11 |
 | kind node / Kubernetes | 0.2.2 / v1.37.0 |
-| Mock node-agent image | v0.2.4 |
+| Mock node-agent image | v0.2.6 |
 | AMD exporter runtime | v1.5.2-mock.2 |
 
 These versions are independent: changing chart configuration does not require
@@ -174,8 +177,37 @@ rebuilding an unchanged node image. The build pins are in
 See [demo validation](../docs/guides/testing.md#presenter-demos-and-default-dashboards)
 and [telemetry details](../docs/guides/telemetry.md) for tests and limitations.
 
-## Same-GPU allocation
+## Same-GPU allocation presentation
 
-[Partition allocation](partition-allocation/README.md) uses the fixed DPX/NPS2
-startup topology and proves two containers receive different slices of one
-physical GPU. This is separate from the virtual partition display demo.
+The default presentation uses SPX whole GPUs. For the ninth demo,
+[partition allocation](partition-allocation/README.md), prepare a separate fresh
+cluster using the same setup script and published artifacts. Copy `config.yaml`
+and set `gpu.partition: DPX`; keep `gpu.profile: mi300x` and DRA enabled.
+Change both host ports if the normal demo cluster is still running.
+
+```bash
+cp demo/config.yaml /tmp/partition-demo.yaml
+# Edit gpu.partition to DPX and choose free dashboard/Grafana host ports.
+KUBECONFIG=/tmp/partition-demo.kubeconfig CLUSTER_NAME=amd-partition-demo \
+  ./demo/setup.sh --config /tmp/partition-demo.yaml
+KUBECONFIG=/tmp/partition-demo.kubeconfig ./demo/partition-allocation/run.sh
+```
+
+Show the printed ResourceClaim/ResourceSlice evidence and both container logs.
+The two consumers get distinct render devices and 96 GiB advertised capacity
+from one physical GPU. The script also demonstrates exhaustion, CDI cleanup,
+reuse and driver restart, and leaves the final two-container pod Running.
+It is a standalone runner; `demo/run.py list` lists the eight SPX presentations.
+
+For this topology, remove the demo namespace explicitly:
+
+```bash
+kubectl --kubeconfig /tmp/partition-demo.kubeconfig \
+  delete namespace amd-demo-partition-allocation
+```
+
+The generic cleanup/teardown script resets virtual SPX state and is intended
+for the normal SPX presentation. A fixed DPX cluster rejects that API request;
+after releasing its demo claims, remove the dedicated cluster directly with
+`KUBECONFIG=/tmp/partition-demo.kubeconfig kind delete cluster --name amd-partition-demo`.
+Do not change a live cluster's partition mode while claims exist.

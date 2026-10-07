@@ -1,5 +1,9 @@
 # Dashboard failure injection
 
+The captured fault/telemetry evidence below is for the SPX whole-GPU setup.
+Physical fault propagation across sibling partitions is outside the
+[same-GPU allocation proof](../partition-allocation/README.md).
+
 Open the mock dashboard and Grafana side by side. Use the buttons directly,
 or run the equivalent actions:
 

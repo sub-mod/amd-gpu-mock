@@ -1,5 +1,9 @@
 # DRA: request, allocation, prepare and injection
 
+This presentation uses the normal SPX inventory. The additional
+[same-GPU partition demo](../partition-allocation/README.md) exercises the same
+unchanged driver with fixed DPX/NPS2 discovery and same-parent constraints.
+
 Requires the default DRA installation.
 
 ```bash

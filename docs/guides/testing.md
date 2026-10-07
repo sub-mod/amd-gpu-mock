@@ -10,6 +10,7 @@ rejects before any GPU test runs.
 go test ./...
 tests/dra/chart-validation.sh
 tests/dra/discovery-check.sh
+PARTITION_MODE=DPX tests/dra/discovery-check.sh mi300x
 ```
 
 The Go tests compare all seven YAML profiles with rendered KFD names,
@@ -65,7 +66,8 @@ and the published chart/images. These allocators run in separate clusters.
 ## Scope
 
 The virtual-partition tests cover the dashboard API's display state. The
-same-GPU allocation suite separately covers fixed MI300X DPX/NPS2 topology. The API does not increase Kubernetes capacity when CPX is selected.
+same-GPU allocation suite separately covers fixed MI300X DPX/NPS2 topology.
+The API does not increase Kubernetes capacity when CPX is selected.
 Fault tests use an explicit device-plugin restart; they do not promise
 continuous device-health detection without rediscovery.
 
@@ -154,7 +156,8 @@ native AMD64 path. The tests invoke dashboard endpoints, not browser clicks.
 ## Presenter demos and default dashboards
 
 `demo/` contains runnable LLM, DRA, virtual partitioning, fault injection,
-multi-GPU, allocation/release, telemetry and profile presentations. See its
+multi-GPU, allocation/release, telemetry, profile and fixed same-GPU partition
+presentations. See its
 [presenter guide](../../demo/README.md). Chart 0.2.11 installs built-in
 Prometheus/Grafana and the real exporter by default; the shared kind config
 exposes Grafana at localhost:3000 and the mock dashboard at localhost:8080.
@@ -176,6 +179,25 @@ fault recovery and Grafana, and verifies disabling/re-enabling both dashboards.
 Do not run competing fault-injection suites simultaneously. The demos leave
 workloads for inspection; `demo/run.py cleanup` removes labelled namespaces.
 
-Fixed MI300X DPX/NPS2 startup topology now exposes independently schedulable
-partitions through AMD DRA. See [same-GPU partition allocation](partition-allocation.md).
-The virtual dashboard API described above remains a separate display simulation.
+## Same-GPU partition allocation tests
+
+On a dedicated fixed MI300X DPX/NPS2 cluster, run:
+
+```bash
+python3 tests/dra/partition-allocation.py
+```
+
+The `same-gpu-partition-allocation` workflow runs source and published-image
+paths. It checks sixteen partition devices across eight parents, capacities,
+same-parent allocations, per-container device visibility, exhaustion, CDI
+cleanup, released-device reuse, sibling continuity, and driver pod replacement.
+The final two-container pod remains Running; delete its namespace explicitly.
+See the [allocation guide](partition-allocation.md) and
+[captured presentation](../../demo/partition-allocation/README.md).
+
+The low-level discovery script passes the selected mode explicitly into the
+probe inside its private mount namespace, including the Linux `sudo` fallback.
+Rendering and comparison therefore use the same partition configuration.
+This suite proves allocation/injection through real layers, not hardware
+compute or memory isolation. Per-partition exporter attribution and physical
+fault propagation remain outside this allocation test.

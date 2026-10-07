@@ -4,6 +4,10 @@ Install chart 0.2.11 with `--set gpu.partition=DPX` on a fresh quick-start
 cluster. The same published node image, AMD DRA driver and normal dashboard
 port mappings are used. See [installation and architecture](../../docs/guides/partition-allocation.md).
 
+For a dedicated cluster with an isolated kubeconfig and custom ports, follow
+the [demo-room setup](../README.md#same-gpu-allocation-presentation). This runner
+uses the current kubeconfig, so select the DPX cluster explicitly.
+
 ```bash
 ./demo/partition-allocation/run.sh
 ```

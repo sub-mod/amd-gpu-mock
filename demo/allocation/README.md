@@ -1,5 +1,9 @@
 # Allocation, deletion and reuse
 
+For partition-specific exhaustion, exact sibling-preserving reuse and CDI
+cleanup, use [same-GPU partition allocation](../partition-allocation/README.md).
+The whole-GPU reuse capture below remains historical SPX evidence.
+
 ```bash
 python3 demo/run.py allocation
 ```

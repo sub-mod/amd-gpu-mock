@@ -1,5 +1,9 @@
 # Real AMD telemetry and workload attribution
 
+The recorded workload attribution below uses SPX whole GPUs. Correct
+per-partition exporter attribution is outside the
+[same-GPU allocation proof](../partition-allocation/README.md).
+
 Grafana starts with the demo setup at http://localhost:3000, with the dashboard
 **AMD GPU Fleet — Device Metrics Exporter** already provisioned.
 

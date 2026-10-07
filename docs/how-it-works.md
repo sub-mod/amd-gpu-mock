@@ -72,9 +72,19 @@ still lacks immediate renderer synchronization.
 
 The partition API models SPX/DPX/QPX/CPX as virtual entries. Eight MI300X GPUs
 produce 64 dashboard entries in CPX, each reporting one eighth of the physical
-memory. Kubernetes still has eight physical allocation units. The
+memory. With the default SPX startup, Kubernetes still has eight physical allocation units. The
 `partition-demo.yaml` schedules four workloads on physical GPUs; it does not
 implement AMD compute partition isolation, NVIDIA MIG, MxGPU or SR-IOV.
+
+## Fixed same-GPU partitions
+
+With `gpu.partition=DPX`, MI300X starts in DPX/NPS2 topology: two logical
+96-GiB devices per physical parent. AMD's unchanged DRA driver discovers
+sixteen partitions across eight parents. Kubernetes enforces the same-parent
+constraint and the runtime exposes each container's assigned render device.
+The [allocation guide](guides/partition-allocation.md) documents each layer's
+responsibility, the real captured checks, and simulation boundaries. Runtime
+profile, tray and virtual partition changes are blocked in this startup mode.
 
 ## Where the implementation lives
 
@@ -97,7 +107,3 @@ it downloads no model weights and runs no inference.
 The [demo folder](../demo/README.md) provides presenter commands and a shared
 configuration for both dashboard ports and enable switches. The default
 Grafana host port is 3000; both dashboards work without port-forwards.
-
-Fixed MI300X DPX/NPS2 startup topology now exposes independently schedulable
-partitions through AMD DRA. See [same-GPU partition allocation](guides/partition-allocation.md).
-The virtual dashboard API described above remains a separate display simulation.

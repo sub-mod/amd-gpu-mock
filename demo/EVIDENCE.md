@@ -148,6 +148,15 @@ These demos establish discovery, scheduling, allocation, preparation, device
 injection and telemetry against mock device interfaces. They do not establish
 real GPU computation, performance, hardware isolation, AMD hardware partition
 management, automatic alerts/eviction, or independently schedulable CPX slices.
-The proposed same-GPU partition-allocation demo is not implemented yet. The
-individual guides identify what each command directly checks and what requires
-additional inspection.
+The [same-GPU allocation demo](partition-allocation/README.md) verifies fixed
+MI300X DPX/NPS2 partitions through unchanged AMD DRA, the scheduler, kubelet
+and CDI runtime. Its [layer responsibilities](../docs/guides/partition-allocation.md#responsibilities-of-each-layer)
+and separate captured log describe allocation visibility, not hardware isolation.
+Individual guides identify what each command directly checks.
+
+## Fixed partition demo lifecycle
+
+The standalone partition runner leaves `amd-demo-partition-allocation` for
+inspection. Delete that namespace explicitly to release its claims. It is not
+labelled for the generic runner cleanup, and fixed DPX startup rejects virtual
+SPX reset/profile changes. See the [presentation setup](README.md#same-gpu-allocation-presentation).

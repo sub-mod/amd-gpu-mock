@@ -1,5 +1,9 @@
 # GPU partitioning: virtual state versus physical allocation
 
+This demo changes virtual dashboard state on an SPX startup fleet. For
+schedulable slices, use [same-GPU partition allocation](../partition-allocation/README.md)
+on a separate fixed DPX/NPS2 cluster. Runtime changes are blocked there.
+
 ```bash
 python3 demo/run.py partitioning --mode CPX
 # Show 64 virtual entries for eight MI300X physical GPUs.

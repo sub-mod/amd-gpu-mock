@@ -7,8 +7,9 @@ Some captures precede the newer explanatory runner output; no explanatory
 `PASS` lines were inserted into those older logs. Dynamic readings and names
 vary on subsequent runs.
 
-All eight demos already had successful captures, so this update reused them
-without changing the live workloads or injecting new faults.
+The eight original SPX presentations retain their successful chart 0.2.9
+captures. The ninth, fixed DPX/NPS2 allocation demo, has a separate chart
+0.2.11 capture from the published v0.2.6 mock image.
 
 - [Complete DRA presenter suite](dra-suite.log)
 - [Complete device-plugin presenter suite](device-plugin-suite.log)
@@ -33,7 +34,9 @@ A separate supplemental crash check used the wrong metric name and timed out;
 it is not represented as a successful check here. The recorded main suites
 cover overheat, ECC and recovery. Busy/idle/crash action descriptions do not
 imply that every action has a retained end-to-end passing transcript in this
-folder. Independently schedulable same-GPU partitions remain unimplemented.
+folder. The separate [same-GPU partition capture](../partition-allocation/captured.log)
+proves fixed DPX/NPS2 allocation, CDI cleanup, reuse and driver restart.
+Its [provenance](../partition-allocation/provenance.json) includes runtime image IDs.
 
 To print a retained log through the demo script, use
 `python3 demo/run.py <demo> --show-captured`. This is explicitly recorded output
@@ -51,3 +54,7 @@ kubectl -n amd-demo-multi-gpu logs consumer-0 | tee /tmp/amd-multi-gpu-pod.log
 Use the recorded outputs in each demo's README to narrate an actual run, then
 use [EVIDENCE.md](../EVIDENCE.md) for fresh layer-by-layer inspection. A historical
 capture does not certify the current state of another cluster.
+
+Replay the ninth demo with `./demo/partition-allocation/run.sh --show-captured`.
+Historical logs and their recorded image/chart versions have not been rewritten
+to imply they were captured against the current release.

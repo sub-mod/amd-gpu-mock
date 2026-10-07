@@ -1,5 +1,8 @@
 # GPU models and physical inventory
 
+This catalog presentation uses an SPX startup fleet. Fixed DPX/NPS2 mode
+blocks runtime profile/tray changes; see [partition allocation](../partition-allocation/README.md).
+
 ```bash
 python3 demo/run.py profiles
 ```
