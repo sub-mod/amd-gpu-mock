@@ -18,3 +18,26 @@ exporter binaries. The mock is at AMD SMI's device API layer. AMD's x86
 collector is explicitly emulated on ARM64. This is different from scraping
 the node agent's separate diagnostic `/metrics` endpoint. See the
 [telemetry guide](../../docs/guides/telemetry.md) for provenance and limits.
+
+## What to watch and what the logs prove
+
+The runner prints metrics obtained by calling Grafana's Prometheus datasource.
+For each value, correlate `gpu_id` with the mock inventory and check the
+optional `namespace/pod/container` label. These labels come from kubelet's
+pod-resources association in the AMD exporter; DRA or the device plugin first
+allocates the device. DRA does not transport the metric itself.
+
+The query output proves that data is available through Grafana. To prove the
+entire path, follow [EVIDENCE.md](../EVIDENCE.md), hold one injected condition,
+and compare the mock snapshot, real exporter's endpoint and Prometheus.
+Readings can differ slightly because dynamic simulation continues between
+samples. ECC or fixed overheating is easier to correlate than changing activity.
+
+Grafana refreshes every 5 seconds. Allow collection/scraping delay; reload an
+already-open page after a dashboard upgrade. The default Grafana memory limit
+is 1 GiB; inspect pod restarts and `lastState` if the UI stops updating.
+A successfully rendered graph is not proof of real GPU execution or an alert
+reaction. ARM64 runs AMD's unchanged x86 collector binaries through QEMU.
+
+See the [shared evidence checklist](../EVIDENCE.md) for commands, provenance,
+and how to distinguish direct observations from inferred intermediate steps.

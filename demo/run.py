@@ -87,9 +87,49 @@ def mock(path, method=None):
     return request(os.environ.get("MOCK_URL", cfg["mockURL"]), path, method)
 
 
+def workload_evidence(namespace, name, mode, count=1):
+    pod = json.loads(k("get", "pod", name, "-n", namespace, "-o", "json"))
+    devices = k("exec", name, "-n", namespace, "--", "sh", "-c",
+                'test -c /dev/kfd || exit 1; '
+                'for d in /dev/dri/renderD*; do test -c "$d" || exit 1; done; '
+                'ls /dev/dri/renderD*').splitlines()
+    if len(devices) != count:
+        raise RuntimeError("Expected %d render devices, got %r" % (count, devices))
+    print("EVIDENCE pod %s/%s scheduled on %s; /dev/kfd is a character device; render devices: %s" %
+          (namespace, name, pod["spec"]["nodeName"], ", ".join(devices)))
+    if mode == "dra":
+        slices = json.loads(k("get", "resourceslices", "-o", "json"))["items"]
+        allocated = []
+        for ref in pod["status"].get("resourceClaimStatuses", []):
+            claim = json.loads(k("get", "resourceclaim", ref["resourceClaimName"],
+                                 "-n", namespace, "-o", "json"))
+            for result in claim["status"]["allocation"]["devices"]["results"]:
+                matches = [d for s in slices if s["spec"]["driver"] == result["driver"]
+                           and s["spec"]["pool"]["name"] == result["pool"]
+                           for d in s["spec"].get("devices", []) if d["name"] == result["device"]]
+                if not matches:
+                    raise RuntimeError("Allocated device absent from current ResourceSlices: " + str(result))
+                print("EVIDENCE claim %s -> driver=%s pool=%s device=%s; advertised capacity=%s" %
+                      (claim["metadata"]["name"], result["driver"], result["pool"],
+                       result["device"], matches[0].get("capacity", {})))
+                # The pinned AMD driver names devices gpu-<card>-<render>.
+                expected = "/dev/dri/renderD" + result["device"].split("-")[-1]
+                if expected not in devices:
+                    raise RuntimeError("Allocated render device was not injected: " + expected)
+                allocated.append(expected)
+        if len(allocated) != count:
+            raise RuntimeError("Claim allocation count does not match the requested GPU count")
+        print("PASS AMD DRA advertised device -> allocated claim -> matching injected render device")
+    else:
+        print("EVIDENCE request amd.com/gpu=%d -> scheduler placement -> injected render devices" % count)
+        print("PASS device-plugin allocation/injection; no DRA claim is involved")
+    print("This proves mock device allocation and injection, not GPU execution or hardware isolation.")
+    return devices
+
+
 def consumer(namespace, name, mode, count=1):
     container = {"name": "consumer", "image": "docker.io/library/busybox:1.36",
-                 "command": ["sh", "-c", "test -c /dev/kfd; ls -l /dev/kfd /dev/dri; sleep 3600"]}
+                 "command": ["sh", "-c", "test -c /dev/kfd && ls -l /dev/kfd /dev/dri && sleep 3600"]}
     spec = {"restartPolicy": "Never", "terminationGracePeriodSeconds": 0, "containers": [container]}
     if mode == "dra":
         apply({"apiVersion": "resource.k8s.io/v1", "kind": "ResourceClaimTemplate",
@@ -102,9 +142,7 @@ def consumer(namespace, name, mode, count=1):
         container["resources"] = {"limits": {"amd.com/gpu": count}}
     apply({"apiVersion": "v1", "kind": "Pod", "metadata": {"name": name, "namespace": namespace}, "spec": spec})
     k("wait", "pod/" + name, "-n", namespace, "--for=condition=Ready", "--timeout=180s")
-    devices = k("exec", name, "-n", namespace, "--", "sh", "-c", "test -c /dev/kfd && ls /dev/dri/renderD*").splitlines()
-    if len(devices) != count:
-        raise RuntimeError("Expected %d render devices, got %r" % (count, devices))
+    devices = workload_evidence(namespace, name, mode, count)
     print(k("logs", name, "-n", namespace))
     if mode == "dra":
         print(k("get", "resourceclaims", "-n", namespace, "-o", "wide"))
@@ -116,6 +154,10 @@ def main():
         for name, description in COMMANDS.items():
             print("%-14s %s" % (name, description))
         return
+    print("DEMO: " + COMMANDS[args.command], flush=True)
+    if args.command != "cleanup":
+        print("Guide: demo/%s/README.md; inspect pods across namespaces with kubectl get pods -A" % args.command,
+              flush=True)
     if args.command == "llm":
         mode = allocator()
         namespace = ns("llm")
@@ -124,6 +166,10 @@ def main():
         k("rollout", "status", "deployment/" + deployment, "-n", namespace, "--timeout=180s")
         time.sleep(5)  # Let scripted model-loading messages appear.
         print(k("logs", "deployment/" + deployment, "-n", namespace, "--tail=70"))
+        pods = json.loads(k("get", "pods", "-n", namespace, "-o", "json"))["items"]
+        for pod in pods:
+            if not pod["metadata"].get("deletionTimestamp"):
+                workload_evidence(namespace, pod["metadata"]["name"], mode)
         print("Scripted output only: no model weights or GPU inference.")
     elif args.command == "dra":
         if allocator() != "dra":
@@ -134,13 +180,20 @@ def main():
         print(k("get", "resourceslices"))
         print(k("get", "resourceclaims", "-n", namespace, "-o", "yaml"))
         print(k("logs", "dra-gpu-demo", "-n", namespace))
+        workload_evidence(namespace, "dra-gpu-demo", "dra")
     elif args.command == "multi-gpu":
         if args.count < 1 or args.replicas < 1:
             raise RuntimeError("--count and --replicas must be positive")
         mode = allocator()
         namespace = ns("multi-gpu")
+        allocated = set()
         for index in range(args.replicas):
-            consumer(namespace, "consumer-%d" % index, mode, args.count)
+            devices = consumer(namespace, "consumer-%d" % index, mode, args.count)
+            if allocated.intersection(devices):
+                raise RuntimeError("Independent consumers received overlapping render devices")
+            allocated.update(devices)
+        print("PASS %d consumers use %d distinct render devices on this single-node demo cluster" %
+              (args.replicas, len(allocated)))
         print("Each independent request receives its own physical GPU allocation.")
     elif args.command == "allocation":
         mode = allocator()
@@ -160,10 +213,13 @@ def main():
     elif args.command == "partitioning":
         print(json.dumps(mock("/api/partitions/set?mode=" + args.mode, "POST"), indent=2))
         print("Virtual dashboard entries only; allocator capacity remains physical. Reset with --mode SPX.")
+        print("Evidence boundary: this action exercises the mock API/display; it does not create DRA slices.")
     elif args.command == "faults":
         print(json.dumps(mock("/api/actions/" + args.action + "?gpu=" + str(args.gpu), "POST"), indent=2))
         print("Watch the mock dashboard and Grafana. Recover with --action recover.")
         print("Fault injection does not automatically revoke claims or restart workloads.")
+        print("The JSON above confirms mock state only. Run telemetry and inspect the exporter/Prometheus")
+        print("as described in demo/faults/README.md to prove downstream propagation after collection.")
     elif args.command == "profiles":
         print("PROFILE    MODEL                     DEVICES  GiB/DEVICE  TDP/W")
         for profile in mock("/api/profiles"):
@@ -182,6 +238,9 @@ def main():
         password = os.environ.get("GRAFANA_ADMIN_PASSWORD", cfg["grafanaPassword"])
         dashboard = request(url, "/api/dashboards/uid/amd-real-exporter", password=password)
         print("Dashboard:", dashboard["dashboard"]["title"])
+        print("PATH: mocked AMD SMI -> real AMD GPU Agent -> real AMD exporter -> Prometheus -> Grafana")
+        print("These queries prove Grafana datasource results; use the guide's snapshot/exporter checks")
+        print("to correlate a controlled change across every layer. DRA is the allocation path, not a metric hop.")
         for metric in ["amd_gpu_edge_temperature", "amd_gpu_ecc_uncorrect_total", "amd_gpu_gfx_activity", "amd_gpu_used_vram"]:
             result = request(url, "/api/ds/query", data={"from": "now-5m", "to": "now", "queries": [{
                 "refId": "A", "expr": metric, "instant": True, "format": "table",

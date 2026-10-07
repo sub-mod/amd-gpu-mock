@@ -30,3 +30,28 @@ kubectl -n amd-demo-partitioning get pods
 ```
 
 Those replicas request full physical GPUs, not CPX partitions.
+
+## What to watch and what the logs prove
+
+Compare the API's entry count and per-entry memory before/after the command.
+For the default eight-GPU MI300X fleet, SPX/DPX/QPX/CPX displays 8/16/32/64
+entries. These counts describe the mock dashboard's virtual layout only.
+
+```bash
+kubectl get resourceslices -o yaml
+kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.allocatable.amd\.com/gpu}{"\n"}{end}'
+```
+
+With DRA, inspect the actual advertised devices and their full-device capacity;
+with the device plugin, inspect the physical resource count. The scheduler's
+inventory does not become 64 independent GPUs when the dashboard shows CPX.
+The command creates no workload pods and emits API JSON, not AMD driver
+partition-management logs. It proves only virtual state/display handling.
+
+A separate same-physical-GPU partition-allocation demo is planned, but is not
+implemented here. That demo must prove separate partition discovery, claims,
+container-specific device injection and partition release before being called
+hardware-slice allocation. This display demo is not a substitute.
+
+See the [shared evidence checklist](../EVIDENCE.md) for commands, provenance,
+and how to distinguish direct observations from inferred intermediate steps.

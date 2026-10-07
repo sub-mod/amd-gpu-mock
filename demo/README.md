@@ -103,6 +103,18 @@ Run on a dedicated demonstration cluster. Workloads remain running so you can
 inspect them; they consume GPUs until cleanup. Each demo uses a namespace
 labelled `amd-gpu-mock/demo=true`, with names such as `amd-demo-llm`.
 
+## How to read the evidence
+
+Every demo guide explains what to watch, how to read the logs, the layers
+exercised, and the limits of the evidence. Start with [EVIDENCE.md](EVIDENCE.md)
+for provenance, allocation/CDI checks and a controlled fault traced through
+AMD SMI, the real GPU Agent/exporter, Prometheus and Grafana. Workload runners
+print `EVIDENCE` and `PASS` only for the checks they actually perform.
+
+Use `kubectl get pods -A` to see demo namespaces. Individual commands leave
+workloads running; the automated presenter suite removes them. Several demos
+only inspect or change state and create no pods.
+
 ## Suggested ten-minute presentation
 
 1. Open both dashboards; point out eight physical MI300X devices.
