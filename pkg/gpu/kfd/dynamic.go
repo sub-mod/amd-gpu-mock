@@ -17,13 +17,19 @@ type DynamicSimulator struct {
 	state   *FleetState
 	rng     *rand.Rand
 	epoch   time.Time
+	onTick  func(*GPUState)
 }
 
-func NewDynamicSimulator(state *FleetState) *DynamicSimulator {
+func NewDynamicSimulator(state *FleetState, callbacks ...func(*GPUState)) *DynamicSimulator {
+	var callback func(*GPUState)
+	if len(callbacks) > 0 {
+		callback = callbacks[0]
+	}
 	return &DynamicSimulator{
-		state: state,
-		rng:   rand.New(rand.NewSource(time.Now().UnixNano())),
-		epoch: time.Now(),
+		onTick: callback,
+		state:  state,
+		rng:    rand.New(rand.NewSource(time.Now().UnixNano())),
+		epoch:  time.Now(),
 	}
 }
 
@@ -66,6 +72,13 @@ func (d *DynamicSimulator) loop(interval time.Duration) {
 func (d *DynamicSimulator) tick() {
 	d.state.mu.Lock()
 	defer d.state.mu.Unlock()
+	defer func() {
+		if d.onTick != nil {
+			for i := range d.state.GPUs {
+				d.onTick(&d.state.GPUs[i])
+			}
+		}
+	}()
 
 	elapsed := time.Since(d.epoch).Seconds()
 

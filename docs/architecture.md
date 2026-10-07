@@ -1,112 +1,94 @@
 # Architecture
 
-## Design principle
-
-Simulate the contract surfaces that AMD GPU consumers read, not the GPUs
-themselves. If software **reads** hardware state — the mock answers.
-If software **executes** on the GPU — it needs real hardware.
+The mock supplies device contracts read by AMD software. It does not execute
+HIP kernels, emulate GPU memory or implement KFD ioctls.
 
 ## System overview
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    YOUR APPLICATION                             │
-│    (LLM, training job, inference server)                        │
-│    Requests: amd.com/gpu: 1                                     │
-│    ↓ gets scheduled by Kubernetes                               │
-├─────────────────────────────────────────────────────────────────┤
-│              AMD GPU OPERATOR (SIM_ENABLE mode)                 │
-│    ├── Device Plugin      → reads mock sysfs                    │
-│    ├── Metrics Exporter   → reads mock libamd_smi.so            │
-│    └── Node Labeller      → reads mock sysfs                    │
-│    ↓ registers amd.com/gpu with kubelet                         │
-├─────────────────────────────────────────────────────────────────┤
-│              amd-gpu-mock (Node Agent DaemonSet)                │
-│    ├── KFD sysfs topology (/sys/class/kfd/kfd/topology/)        │
-│    ├── Device nodes (/dev/kfd, /dev/dri/renderD*, /dev/dri/card*)│
-│    ├── PCI sysfs (/sys/bus/pci/devices/)                        │
-│    ├── Driver module (/sys/module/amdgpu/)                      │
-│    ├── Mock libamd_smi.so (185 symbols)                         │
-│    ├── CDI specs (/var/lib/amd-gpu-mock/cdi/amd.json)           │
-│    ├── Prometheus /metrics endpoint                             │
-│    └── Web dashboard + REST API                                 │
-├─────────────────────────────────────────────────────────────────┤
-│              KIND Node (docker.io/submod/amd-mock-kind-node)    │
-│    ├── amd-container-runtime (CDI runtime handler)              │
-│    ├── containerd: enable_cdi = true, AMD runtime registered    │
-│    └── CDI specs at /etc/cdi/ resolved at container creation    │
-├─────────────────────────────────────────────────────────────────┤
-│              Podman (macOS) or Docker (Linux)                   │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    Profile[GPU profile YAML] --> Agent[Mock node agent]
+    Agent --> Sysfs[KFD / PCI / DRM / driver sysfs]
+    Agent --> Devices[Character devices]
+    Agent --> State[Atomic AMD SMI snapshots]
+    Agent --> Dashboard[Dashboard and fault API]
+    Sysfs --> DRA[AMD DRA driver: default allocator]
+    Sysfs --> Plugin[AMD device plugin: alternative allocator]
+    DRA --> Claims[ResourceSlices and ResourceClaims]
+    Claims --> CDI[Per-claim CDI specs]
+    Plugin --> Resources[amd.com/gpu requests]
+    CDI --> Runtime[Containerd device injection]
+    Resources --> Runtime
+    Devices --> Runtime
+    State --> SMI[Mock AMD SMI ABI 27]
+    SMI --> GPUAgent[Unmodified AMD GPU Agent]
+    GPUAgent --> Exporter[Unmodified AMD Device Metrics Exporter]
+    Exporter --> Prometheus
+    Prometheus --> Grafana
 ```
 
-## Components
+DRA and the device plugin are mutually exclusive. Telemetry works alongside
+either allocator and reads kubelet's real pod-resources socket for workload
+labels. The optional Operator smoke path uses its own device plugin and node
+labeller; disable both bundled allocators before using it.
 
-### Node Agent (DaemonSet)
+## Node agent
 
-The core component. Reads a GPU profile YAML and stages all simulated
-surfaces onto the host filesystem:
+The chart deploys a privileged DaemonSet. It stages mock sysfs under
+`/var/lib/amd-gpu-mock/sys`, creates `/dev/kfd` and DRM character devices,
+and writes CDI specs. KFD properties include vendor/device IDs, SIMD counts,
+GFX targets and memory. PCI/DRM links supply physical identity and topology.
+The staged driver module and bindings allow discovery without an AMD driver.
 
-- **KFD sysfs** — `/sys/class/kfd/kfd/topology/nodes/*/properties` with
-  per-GPU properties (SIMD count, VRAM, vendor ID, device ID, gfx target)
-- **Device nodes** — `/dev/kfd` (char 234:0), `/dev/dri/renderD128..N`
-  (char 226:128+N), `/dev/dri/card0..N` (char 226:N)
-- **PCI sysfs** — vendor/device/class/numa_node per GPU, root complex symlinks
-- **Driver module** — `/sys/module/amdgpu/initstate` (live), version, refcount,
-  driver bindings per BDF with DRM card entries
-- **CDI specs** — `amd.json` matching `amd-ctk cdi generate` format
-- **Mock library** — `libamd_smi.so` staged for metrics exporter
-- **Dynamic metrics** — time-varying temperature, power, utilization, clocks
-- **API server** — REST endpoints for fleet management and fault injection
-- **Prometheus metrics** — `/metrics` endpoint with per-GPU labels
+Profiles initialize runtime state. The simulator updates healthy temperature,
+power, activity and clocks each second. Dashboard actions update that same
+state and synchronize the staged sysfs and atomic AMD SMI snapshots. The
+node agent also serves its own diagnostic `/metrics`; the real exporter
+setup scrapes the separate AMD collector endpoint instead.
 
-### KIND Node Image
+## Allocation and runtime
 
-`docker.io/submod/amd-mock-kind-node:latest` — includes:
+Chart 0.2.4 defaults to AMD's unchanged DRA v1.0.0 driver, republished for
+AMD64 and ARM64. Its chart mounts mock sysfs at the driver's `/sys`. Kubernetes
+allocates ResourceClaims; kubelet calls prepare/unprepare; the driver writes
+per-claim CDI specs. Containerd injects only the allocated card/render devices
+and shared `/dev/kfd`. See the [DRA guide](guides/dra.md).
 
-- **amd-container-runtime** — CDI-aware OCI runtime hook, registered with
-  containerd as the default runc handler. When a container references a CDI
-  device (`amd.com/gpu=0`), the runtime resolves the CDI spec and injects
-  the device nodes, mounts, and environment variables.
-- **amd-ctk** — CDI spec toolkit (not used at runtime, but available for
-  manual spec generation)
-- **containerd config** — `enable_cdi = true` with AMD runtime registered
-- **CDI spec directories** — `/etc/cdi/` and `/var/run/cdi/` where the
-  node agent writes the mock CDI specs
+The alternative device plugin reads the same sysfs and registers physical
+GPU capacity as `amd.com/gpu`. See the [device-plugin guide](guides/device-plugin.md).
 
-Cross-compiled from [ROCm/container-toolkit](https://github.com/ROCm/container-toolkit)
-source for native arm64 (macOS) and amd64 (Linux).
+The published `amd-mock-kind-node:0.2.2` contains Kubernetes v1.37.0 and AMD's
+container toolkit, with CDI enabled. Both allocation paths use this image.
+Chart 0.2.4 uses node-agent image `amd-gpu-mock:v0.2.4`. The kind configuration
+maps localhost:8080 to dashboard NodePort 30080 automatically.
 
-### GPU Operator Integration (SIM_ENABLE)
+## Telemetry
 
-The AMD GPU Operator (v1.5.0) runs in `SIM_ENABLE` mode using a patched
-controller image (`docker.io/submod/gpu-operator-sim:latest`). When
-`SIM_ENABLE=true`:
+The optional chart exporter DaemonSet contains unchanged AMD v1.5.2 collector
+binaries and a dedicated AMD SMI replacement compiled against the matching
+GPU Agent ABI 27 header. It reads node-agent snapshots through a read-only
+host mount. This replacement is separate from the legacy handwritten library
+staged for other consumers. Unsupported APIs return NOT_SUPPORTED.
 
-- Init containers skip `/sys/class/kfd` and `/sys/module/amdgpu` checks
-- Operand pods mount mock sysfs from `/var/lib/amd-gpu-mock/sys` at `/sys`
-- Device plugin discovers GPUs from mock sysfs topology
-- Metrics exporter reads mock `libamd_smi.so`
-- Node labeller derives GPU labels from mock properties
+AMD's published collector is x86-64. AMD64 executes it directly; ARM64 uses
+explicit QEMU emulation. Prometheus, Grafana, Kubernetes and the node agent
+run natively. The ServiceMonitor preserves consumer labels and the provisioned
+Grafana dashboard queries AMD metric names. See the [telemetry guide](guides/telemetry.md)
+for setup, fault flows, tests, provenance and limitations.
 
-### Helm Chart
+## Operator scope
 
-`oci://docker.io/submod/amd-gpu-mock:0.1.0` — deploys the node agent
-DaemonSet and device plugin as a single install. Includes:
-- ConfigMap with GPU profile
-- DaemonSet (node agent + device plugin)
-- Service for metrics scraping
-- ServiceMonitor for Prometheus auto-discovery (opt-in)
+The published SIM_ENABLE controller fork bypasses driver init checks and
+mounts mock sysfs for its plugin/labeller. The smoke test covers reconciliation,
+readiness, capacity and device injection. This does not validate every
+Operator operand. Operator-owned exporter, DRA and remediation remain separate
+integration work; the tested real telemetry setup is the standalone chart
+path. See the [Operator guide](guides/gpu-operator.md).
 
-## Mock surfaces and consumers
+## Partitioning limits
 
-| Mock Surface | Created by | Read by |
-|---|---|---|
-| KFD sysfs topology | Node Agent | Device Plugin, Node Labeller |
-| Driver module sysfs | Node Agent | Device Plugin (discovery), Node Labeller |
-| Device nodes | Node Agent (mknod) | Device Plugin (health check), kubelet (pod mount) |
-| PCI sysfs | Node Agent | Node Labeller (topology labels) |
-| CDI specs | Node Agent | containerd (device injection) |
-| Mock libamd_smi.so | Node Agent (staged) | Metrics Exporter (gpuagent), amd-smi |
-| /metrics endpoint | Node Agent API | Prometheus |
-| Dashboard API | Node Agent API | Web browser |
+SPX/DPX/QPX/CPX API transitions create virtual dashboard entries and divide
+reported memory. They do not create independently schedulable partitions,
+increase allocator capacity or implement AMD MxGPU/SR-IOV passthrough. Active
+claims must not be combined with live profile changes. Profile/count changes
+require consumer rediscovery and matching device nodes.

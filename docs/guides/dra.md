@@ -12,7 +12,7 @@ that containerd uses to inject the allocated devices.
 ## Use the default quick start: published images only
 
 Install kind v0.33.0 or newer, kubectl v1.37, Helm, and a running Docker or
-Podman runtime. Release 0.2.2 supports Kubernetes 1.37 only. Linux
+Podman runtime. Chart/mock release 0.2.4 uses the 0.2.2 node image and supports Kubernetes 1.37 only. Linux
 AMD64 and Linux ARM64 nodes are supported; Apple-silicon Macs run ARM64
 nodes inside the container runtime's Linux VM. Internet access is needed
 to pull images and the chart. No Go compiler or local image build is required.
@@ -270,3 +270,10 @@ access. The script pins upstream commits, builds both architectures, includes
 licenses, and packages the chart. Users following the quick start do not run it.
 Release pins are recorded in `scripts/release.env`. Do not overwrite an existing
 release tag with different source; update the version and chart defaults together.
+
+## Telemetry for DRA consumers
+
+Install the optional [AMD telemetry pipeline](telemetry.md) on the same cluster.
+The real exporter reads kubelet pod-resources to attach consumer pod, namespace
+and container labels to allocated GPUs. Dashboard fault controls update the
+same state read by AMD SMI; they do not promise DRA deallocation or remediation.

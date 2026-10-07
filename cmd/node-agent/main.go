@@ -126,7 +126,11 @@ func main() {
 		}
 		log.Printf("loaded %d profiles from %s", len(state.ProfileCatalog), *profilesDir)
 	}
-	sim := kfd.NewDynamicSimulator(state)
+	sim := kfd.NewDynamicSimulator(state, func(gpu *kfd.GPUState) {
+		if err := renderer.WriteSMIState(gpu); err != nil {
+			log.Printf("warning: AMD SMI state sync: %v", err)
+		}
+	})
 	sim.Start(1000)
 	defer sim.Stop()
 

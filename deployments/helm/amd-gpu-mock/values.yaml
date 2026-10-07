@@ -53,3 +53,12 @@ dra:
   kubeletPlugin:
     # Match nodeSelector above when limiting the mock to particular nodes.
     nodeSelector: {}
+
+# Real AMD exporter + GPU Agent, using the AMD SMI mock backend.
+metricsExporter:
+  enabled: false
+  image: docker.io/submod/amd-device-metrics-exporter:v1.5.2-mock.1
+  imagePullPolicy: IfNotPresent
+  serviceMonitor:
+    enabled: false
+    interval: 15s

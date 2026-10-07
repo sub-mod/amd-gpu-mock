@@ -1,0 +1,130 @@
+{{- if .Values.metricsExporter.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "amd-gpu-mock.fullname" . }}-metrics-exporter
+  labels:
+    {{- include "amd-gpu-mock.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "amd-gpu-mock.fullname" . }}-metrics-exporter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "amd-gpu-mock.fullname" . }}-metrics-exporter
+    spec:
+      serviceAccountName: {{ include "amd-gpu-mock.fullname" . }}-metrics-exporter
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+        {{- toYaml .Values.tolerations | nindent 8 }}
+      containers:
+        - name: metrics-exporter
+          image: {{ .Values.metricsExporter.image | quote }}
+          imagePullPolicy: {{ .Values.metricsExporter.imagePullPolicy }}
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: MOCK_AMDSMI_STATE_DIR
+              value: /var/lib/amd-gpu-mock/smi
+          ports:
+            - name: metrics
+              containerPort: 5000
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          volumeMounts:
+            - name: sys
+              mountPath: /sys
+              readOnly: true
+            - name: pod-resources
+              mountPath: /var/lib/kubelet/pod-resources
+              readOnly: true
+            - name: state
+              mountPath: /var/lib/amd-gpu-mock/smi
+              readOnly: true
+      volumes:
+        - name: sys
+          hostPath:
+            path: {{ .Values.mockRootDir }}/sys
+            type: Directory
+        - name: pod-resources
+          hostPath:
+            path: /var/lib/kubelet/pod-resources
+            type: Directory
+        - name: state
+          hostPath:
+            path: {{ .Values.mockRootDir }}/smi
+            type: Directory
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "amd-gpu-mock.fullname" . }}-metrics-exporter
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "amd-gpu-mock.fullname" . }}-metrics-exporter-{{ .Release.Namespace }}
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "amd-gpu-mock.fullname" . }}-metrics-exporter-{{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "amd-gpu-mock.fullname" . }}-metrics-exporter-{{ .Release.Namespace }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "amd-gpu-mock.fullname" . }}-metrics-exporter
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "amd-gpu-mock.fullname" . }}-metrics-exporter
+  labels:
+    app.kubernetes.io/name: {{ include "amd-gpu-mock.fullname" . }}-metrics-exporter
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "amd-gpu-mock.fullname" . }}-metrics-exporter
+  ports:
+    - name: metrics
+      port: 5000
+      targetPort: metrics
+{{- if .Values.metricsExporter.serviceMonitor.enabled }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "amd-gpu-mock.fullname" . }}-metrics-exporter
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "amd-gpu-mock.fullname" . }}-metrics-exporter
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  endpoints:
+    - port: metrics
+      honorLabels: true
+      path: /metrics
+      interval: {{ .Values.metricsExporter.serviceMonitor.interval }}
+{{- end }}
+{{- end }}

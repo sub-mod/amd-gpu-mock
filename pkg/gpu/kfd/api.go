@@ -74,6 +74,7 @@ func (s *APIServer) handleGPU(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "gpu not found", http.StatusNotFound)
 			return
 		}
+		s.syncSysfs(&gpu)
 		log.Printf("GPU %d updated via API", idx)
 		writeJSON(w, gpu)
 		return
@@ -342,10 +343,10 @@ func (s *APIServer) handleTrayLayout(w http.ResponseWriter, r *http.Request) {
 	canSplit := ProfileAllowsSplit(currentName)
 
 	writeJSON(w, map[string]any{
-		"tray_size":  ServerTraySize(len(gpus)),
-		"can_split":  canSplit,
-		"gpu_count":  len(gpus),
-		"profile":    currentName,
+		"tray_size": ServerTraySize(len(gpus)),
+		"can_split": canSplit,
+		"gpu_count": len(gpus),
+		"profile":   currentName,
 	})
 }
 

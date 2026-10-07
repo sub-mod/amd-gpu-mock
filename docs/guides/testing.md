@@ -74,10 +74,10 @@ controller, device-plugin and node-labeller readiness, eight-GPU capacity,
 and one-GPU workload injection. It disables DME, KMM and NFD to isolate
 Operator reconciliation and scheduling; it does not claim their validation.
 
-These suites do not validate the real AMD metrics exporter,
-full amd-smi CLI, CVS/RVS, node reboot/failure, or multi-node placement.
-Those remain separate consumer-validation tasks. GPU computation is outside
-the mock's control-plane scope.
+The separate telemetry suite below validates the real AMD exporter. Full
+amd-smi CLI, CVS/RVS, node reboot/failure and multi-node placement remain
+separate consumer-validation tasks. GPU computation is outside the mock's
+control-plane scope.
 
 ## Tiny LLM and virtual partition demos
 
@@ -120,5 +120,33 @@ the host URL. Use `DASHBOARD_URL=http://127.0.0.1:9090` when testing a custom
 kind host port. Change that mapping before creating the cluster; container
 port mappings cannot be added to an existing kind node by a Helm upgrade.
 The DRA and Operator CI jobs run this check with the same kind configuration.
-Chart 0.2.3 exposes the dashboard while reusing the published 0.2.2 mock/node
-images; the node image still runs Kubernetes 1.37.
+Chart 0.2.4 uses mock image v0.2.4 and node image 0.2.2; the node image
+still runs Kubernetes 1.37.
+
+## Real AMD exporter telemetry
+
+See the [telemetry guide](telemetry.md) for monitoring installation and ports.
+With Prometheus on localhost:9090, Grafana on localhost:3000 and the mock
+on localhost:8080:
+
+```bash
+./tests/telemetry/abi.sh # Podman; CONTAINER_RUNTIME=docker also supported
+python3 tests/telemetry/e2e.py
+ALLOCATOR=dra python3 tests/telemetry/attribution.py
+# Or ALLOCATOR=device-plugin on that installation.
+```
+
+The ABI suite checks enumeration, buffers, units, ECC, graphics clocks,
+unsupported APIs and concurrent readers. The live suite checks GPU identity,
+VRAM units, ServiceMonitor health, every per-GPU dashboard action (Overheat,
+Busy, Idle, Crash, Recover and ECC), and every Grafana panel query. It restores
+GPU 0 after fault testing. Run on a dedicated cluster with GPU 0 healthy and
+no concurrent fault actions. Healthy readings fluctuate under dynamic simulation.
+
+The attribution suite creates and cleans up a GPU consumer and checks its
+pod/namespace/container labels from the real kubelet pod-resources socket.
+`telemetry-e2e` CI covers AMD64 and ARM64 runners with both allocators and
+repeats telemetry tests after exporter restart. ARM64 runs AMD's unchanged
+x86 collector under QEMU; the surrounding cluster and node agent run natively.
+Local validation passed on ARM64 Podman; CI results are the evidence for the
+native AMD64 path. The tests invoke dashboard endpoints, not browser clicks.

@@ -43,12 +43,15 @@ func (r *Renderer) SwitchProfile(profile *Profile) error {
 	if err := r.renderHostCompat(); err != nil {
 		return fmt.Errorf("host compat: %w", err)
 	}
-	return nil
+	return r.renderSMIState()
 }
 
 // UpdateGPUSysfs writes runtime state changes for a single GPU back to the
 // staged sysfs tree, so the device plugin and other consumers see the change.
 func (r *Renderer) UpdateGPUSysfs(gpu *GPUState) error {
+	if err := r.WriteSMIState(gpu); err != nil {
+		return err
+	}
 	nodeIdx := gpu.Index + 1 // KFD node 0 is CPU
 	topoDir := filepath.Join(r.rootDir, "sys/class/kfd/kfd/topology")
 	nodeDir := filepath.Join(topoDir, fmt.Sprintf("nodes/%d", nodeIdx))
@@ -140,7 +143,7 @@ func (r *Renderer) RenderAll() error {
 	if err := r.renderHostCompat(); err != nil {
 		return fmt.Errorf("host compat: %w", err)
 	}
-	return nil
+	return r.renderSMIState()
 }
 
 // renderHostCompat creates sysfs paths that the container runtime or KIND

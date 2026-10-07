@@ -48,7 +48,7 @@ for arch in amd64 arm64; do
     cp "$REPO_ROOT"/deployments/kind-node/*.toml "$context/node/"
     cp "$BUILD_DIR/toolkit/LICENSE" "$context/node/TOOLKIT-LICENSE"
     "$RUNTIME" build --platform "linux/$arch" -f "$REPO_ROOT/Dockerfile.prebuilt" \
-        -t "$IMAGE_REGISTRY/amd-gpu-mock:v$RELEASE_VERSION-$arch" "$context/mock"
+        -t "$IMAGE_REGISTRY/amd-gpu-mock:v${MOCK_IMAGE_VERSION:-$RELEASE_VERSION}-$arch" "$context/mock"
     "$RUNTIME" build --platform "linux/$arch" --build-arg "UPSTREAM_COMMIT=$DRA_COMMIT" \
         -f "$REPO_ROOT/deployments/dra/image/Dockerfile" \
         -t "$IMAGE_REGISTRY/amd-gpu-dra-driver:$DRA_IMAGE_TAG-$arch" "$context/driver"
@@ -59,7 +59,7 @@ done
 for artifact in amd-gpu-mock amd-gpu-dra-driver amd-mock-kind-node; do
     tag="$RELEASE_VERSION"
     [ "$artifact" != amd-gpu-dra-driver ] || tag="$DRA_IMAGE_TAG"
-    [ "$artifact" != amd-gpu-mock ] || tag="v$RELEASE_VERSION"
+    [ "$artifact" != amd-gpu-mock ] || tag="v${MOCK_IMAGE_VERSION:-$RELEASE_VERSION}"
     manifest="$IMAGE_REGISTRY/$artifact:$tag"
     "$RUNTIME" manifest rm "$manifest" >/dev/null 2>&1 || true
     "$RUNTIME" manifest create "$manifest"

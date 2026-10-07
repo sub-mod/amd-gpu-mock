@@ -1,8 +1,9 @@
 # AMD GPU Operator
 
 Deploy the AMD GPU Operator on top of amd-gpu-mock. The Operator's device
-plugin, metrics exporter, and node labeller run against the mock
-infrastructure using `SIM_ENABLE` mode.
+plugin and node labeller are covered by the SIM_ENABLE smoke test.
+Operator-owned metrics exporter integration is not yet validated. For tested
+real AMD telemetry, use the separate [telemetry setup](telemetry.md).
 
 ## Prerequisites
 
@@ -24,10 +25,14 @@ kubectl label node --all feature.node.kubernetes.io/amd-gpu=true
 
 # Install GPU Operator (driver disabled for mock)
 helm repo add rocm https://rocm.github.io/gpu-operator
-SIM_ENABLE=true helm install amd-gpu-operator rocm/gpu-operator-charts \
+helm install amd-gpu-operator rocm/gpu-operator-charts \
   --namespace kube-amd-gpu --create-namespace \
+  --version v1.5.0 \
   --set kmm.enabled=false --set kmm.watch=false \
-  --set deviceConfig.spec.driver.enable=false
+  --set remediation.enabled=false \
+  --set node-feature-discovery.enabled=false --set installdefaultNFDRule=false \
+  --set deviceConfig.spec.driver.enable=false \
+  --set deviceConfig.spec.metricsExporter.enable=false
 
 # Use mock-aware controller image with SIM_ENABLE
 kubectl -n kube-amd-gpu set image deployment/amd-gpu-operator-gpu-operator-charts-controller-manager \
@@ -62,15 +67,15 @@ Fork: [github.com/sub-mod/gpu-operator](https://github.com/sub-mod/gpu-operator)
 ## Verify
 
 ```bash
-# All operands should be Running
+# Inspect enabled operands
 kubectl -n kube-amd-gpu get pods
 
 # GPUs registered by the Operator's device plugin
 kubectl get node -o jsonpath='{.items[0].status.allocatable.amd\.com/gpu}'
 # → 8
 
-# Full stack validation (27 tests, 8 layers)
-./tests/validate_full.sh
+# Current Operator smoke suite (DME, KMM and NFD disabled)
+python3 tests/operator-e2e.py
 ```
 
 ## What the Operator deploys
@@ -78,12 +83,22 @@ kubectl get node -o jsonpath='{.items[0].status.allocatable.amd\.com/gpu}'
 | Operand | What it reads | What it produces |
 |---------|-------------|-----------------|
 | Device Plugin | Mock sysfs (`/sys/module/amdgpu/drivers/`) | `amd.com/gpu: 8` on the node |
-| Metrics Exporter | Mock `libamd_smi.so` | Prometheus GPU metrics |
+| Metrics Exporter | Requires matching AMD SMI runtime and mounts | Operator-owned deployment not validated; use telemetry guide |
 | Node Labeller | Mock sysfs (KFD topology properties) | GPU node labels (model, VRAM, CUs) |
-| NFD Worker | PCI vendor ID from feature file | `feature.node.kubernetes.io/amd-gpu=true` |
+| NFD Worker | PCI discovery | Disabled in current smoke coverage |
 
 ## Uninstall
 
 ```bash
 helm uninstall amd-gpu-operator --namespace kube-amd-gpu
 ```
+
+## Validation limits
+
+SIM_ENABLE bypasses readiness checks; it does not prove the device library
+or every Operator operand works. The published controller is a fork image,
+not a merged upstream AMD feature. The upstream draft PR was closed; no new
+upstream Operator PR is part of this telemetry release. The smoke test covers
+controller identity, init completion, plugin/labeller readiness, eight-GPU
+capacity and exact one-GPU injection. Operator-managed DRA, remediation,
+KMM, NFD and the full exporter operand stack remain unvalidated.

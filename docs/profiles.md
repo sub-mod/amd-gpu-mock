@@ -29,13 +29,13 @@ device_defaults:
   name: "AMD Instinct MI300X"     # GPU name shown in amd-smi
   vendor_id: 0x1002               # Always 0x1002 for AMD
   device_id: 0x74a1               # PCI device ID
-  gfx_target_version: 90400       # gfx942 encoded as MMMNNRR
+  gfx_target_version: 90402       # gfx942 encoded as MMMNNRR
   architecture: "cdna3"           # cdna2, cdna3, rdna3
 
   compute:                        # Compute unit configuration
     cu_count: 304
     simd_per_cu: 4
-    simd_count: 912
+    simd_count: 1216
     wave_front_size: 64
     num_xcc: 8                    # XCD count (MI300X = 8)
 
@@ -109,3 +109,15 @@ Key fields to change for a new GPU model:
 - `device_defaults.memory.vram_size_bytes` — VRAM
 - `xgmi.*` — interconnect topology
 - `devices` — per-GPU BDFs and render minors
+
+## Runtime and telemetry limits
+
+Use `--set gpu.profile=<slug>` at installation for allocation tests. Healthy
+telemetry varies dynamically rather than remaining at YAML defaults. The real
+exporter reads runtime name, canonical device UUID, PCI BDF, memory and sensor
+values through the [SMI bridge](guides/telemetry.md). Its initial ASIC metadata,
+PCIe limits and clock ranges still use MI300X constants; all-profile telemetry
+fidelity is not claimed. Allocation discovery tests separately cover all seven
+profiles. Live profile switching requires consumer rediscovery; per-tray
+switching lacks immediate renderer synchronization. Virtual partition state
+does not create schedulable hardware slices.

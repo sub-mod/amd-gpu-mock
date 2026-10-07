@@ -1,0 +1,31 @@
+# GPU telemetry stack; unrelated host/cluster collectors are optional.
+alertmanager:
+  enabled: false
+nodeExporter:
+  enabled: false
+kubeStateMetrics:
+  enabled: false
+defaultRules:
+  create: false
+prometheusOperator:
+  image:
+    registry: ghcr.io
+    repository: prometheus-operator/prometheus-operator
+  prometheusConfigReloader:
+    image:
+      registry: ghcr.io
+      repository: prometheus-operator/prometheus-config-reloader
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    image:
+      registry: docker.io
+      repository: prom/prometheus
+      tag: v3.15.0-distroless
+grafana:
+  sidecar:
+    image:
+      registry: docker.io
+      repository: kiwigrid/k8s-sidecar
+    dashboards:
+      searchNamespace: ALL

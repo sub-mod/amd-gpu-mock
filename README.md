@@ -3,16 +3,17 @@
 Simulate AMD Instinct GPU infrastructure on CPU-only Kubernetes nodes.
 No AMD hardware required.
 
-Inspired by the Mokka GPU simulation framework.
+Inspired by NVIDIA’s [Moka GPU simulation framework](https://github.com/NVIDIA/k8s-test-infra).
 Reach for amd-gpu-mock when your system **reads** hardware state and reacts
 to it, and for real hardware when it **executes** work.
 
 ## What it does
 
-Turns any laptop into an 8-GPU AMD Instinct MI300X cluster. The AMD GPU
-Operator, device plugin, metrics exporter, and node labeller all run
-against the mock — Kubernetes schedules GPU workloads and dashboards
-show live telemetry, all without a single real GPU.
+Turns any laptop into an 8-GPU AMD Instinct MI300X cluster. Kubernetes
+schedules GPU workloads through DRA or the device plugin.
+The dashboard provides fault controls, and the optional real AMD metrics
+exporter feeds Prometheus and Grafana. A separate SIM_ENABLE Operator
+smoke test covers the controller, device plugin and node labeller.
 
 ## Quick start
 
@@ -24,7 +25,7 @@ kind create cluster --name amd-mock \
     --config deployments/kind-node/kind-config.yaml
 
 helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-    --version 0.2.3 --namespace amd-mock --create-namespace
+    --version 0.2.4 --namespace amd-mock --create-namespace
 ```
 
 You now have eight mock MI300X GPUs available through DRA. See the
@@ -65,29 +66,11 @@ real OAM baseboard layouts.
 ## Grafana telemetry
 
 ```bash
-# Prometheus + Grafana
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm install monitoring prometheus-community/kube-prometheus-stack \
-  --namespace monitoring --create-namespace \
-  --set grafana.adminPassword=amdmock \
-  --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false
-
-# Enable ServiceMonitor for GPU metrics
-helm upgrade amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-  --version 0.2.3 --namespace amd-mock \
-  --set prometheus.serviceMonitor.enabled=true
-
-# Import dashboard
-kubectl apply -f deployments/grafana-dashboard.yaml
-
-# Access Grafana
+./scripts/setup-monitoring.sh
 kubectl -n monitoring port-forward svc/monitoring-grafana 3000:80
-open http://localhost:3000    # admin / amdmock
 ```
 
-Prometheus scrapes 8 GPU metrics (`gpu_temperature`, `gpu_power`,
-`gpu_gfx_activity`, `gpu_used_vram`, `gpu_total_vram`, `gpu_clock`,
-`gpu_ecc_uncorrectable`, `gpu_power_cap`) every 15 seconds.
+Open http://localhost:3000 (`admin` / `amdmock`). See the [AMD telemetry guide](docs/guides/telemetry.md) for the real exporter pipeline, metrics, tests, and image builds.
 
 ## LLM demo
 
@@ -129,7 +112,9 @@ For four concurrent workloads on physical GPUs, use the
 
 ## GPU fault injection
 
-Inject GPU health changes from the dashboard or API:
+Inject GPU health changes from the dashboard or API. See the
+[telemetry guide](docs/guides/telemetry.md#other-dashboard-actions) for
+exported values and the limits of crash simulation:
 
 ```bash
 # Crash 7 of 8 GPUs
@@ -146,7 +131,7 @@ curl -X POST 'http://localhost:8080/api/actions/recover?gpu=3'
 | Profile | GPU | Memory | Architecture | TDP |
 |---------|-----|--------|-------------|-----|
 | `mi210` | AMD Instinct MI210 | 64 GB HBM2e | CDNA 2 | 300W |
-| `mi250x` | AMD Instinct MI250X | 128 GB HBM2e | CDNA 2 | 500W |
+| `mi250x` | AMD Instinct MI250X | 64 GB HBM2e per GCD (16 devices) | CDNA 2 | 500W |
 | `mi300a` | AMD Instinct MI300A | 128 GB HBM3 | CDNA 3 | 550W |
 | `mi300x` (default) | AMD Instinct MI300X | 192 GB HBM3 | CDNA 3 | 750W |
 | `mi325x` | AMD Instinct MI325X | 256 GB HBM3E | CDNA 3 | 1000W |
@@ -162,10 +147,10 @@ curl -X POST 'http://localhost:8080/api/actions/recover?gpu=3'
 | **PCI sysfs** | Vendor `0x1002`, device IDs, NUMA nodes, root complex symlinks |
 | **DRM sysfs** | xGMI hive IDs, device IDs, NUMA association |
 | **Driver module** | `/sys/module/amdgpu/` — version, refcount, initstate, driver bindings |
-| **Mock `libamd_smi.so`** | 185 symbols matching the real AMD SMI library |
+| **Mock AMD SMI** | Device API replacements; the real exporter uses official ABI 27 types |
 | **CDI specs** | Container Device Interface specs matching `amd-ctk` format |
 | **Dynamic metrics** | Time-varying temperature, power, utilization, clocks |
-| **Prometheus metrics** | `/metrics` endpoint with per-GPU labels |
+| **Prometheus metrics** | Real AMD exporter metrics; separate node-agent diagnostic endpoint |
 
 ## What it does NOT simulate
 
@@ -200,18 +185,16 @@ KIND Node (docker.io/submod/amd-mock-kind-node)
          ▼ CDI path: containerd → amd-container-runtime → resolves CDI spec
          │           → injects /dev/kfd + libraries into containers
          │
-    AMD GPU Operator (SIM_ENABLE mode)
-    ├── Device Plugin      → reads mock sysfs → amd.com/gpu: 8
-    ├── Metrics Exporter   → reads mock libamd_smi.so → Prometheus
-    └── Node Labeller      → reads mock sysfs → GPU node labels
-         │
-         ▼
-    Pods requesting amd.com/gpu get scheduled
+    Default allocator: AMD DRA Driver
+        → ResourceSlices → ResourceClaims → per-claim CDI injection
 
-Alternative allocator (device plugin disabled):
-    AMD DRA Driver → ResourceSlices → ResourceClaims
-        → kubelet PrepareResourceClaims → per-claim CDI spec
-        → containerd injects the allocated device nodes
+    Alternative: AMD device plugin → amd.com/gpu scheduling
+
+Optional telemetry (either allocator):
+    Node Agent shared device state → mock AMD SMI ABI 27
+        → real GPU Agent → real AMD exporter → Prometheus → Grafana
+
+Optional Operator smoke: SIM_ENABLE controller → plugin + node labeller
 ```
 
 ## Validation
@@ -230,11 +213,11 @@ Cluster test commands and their prerequisites are in the
 
 | Consumer | What works | Guide |
 |---|---|---|
-| AMD GPU Operator (v1.5.0) | Controller, device plugin, metrics exporter, node labeller | [GPU Operator guide](docs/guides/gpu-operator.md) |
+| AMD GPU Operator (v1.5.0) | Controller, device plugin and node labeller smoke-tested; Operator-owned exporter not validated | [GPU Operator guide](docs/guides/gpu-operator.md) |
 | AMD K8s Device Plugin | Physical GPU discovery and `amd.com/gpu` scheduling | [Device-plugin guide](docs/guides/device-plugin.md) |
 | AMD GPU DRA Driver (v1.0.0) | 7-profile discovery; claim allocation, selectors, exact CDI device injection, deletion/reallocation, and lifecycle tests | [DRA guide](docs/guides/dra.md) |
 | AMD SMI Python interface | Loads mock library, enumerates GPUs, returns "AMD Instinct MI300X" | — |
-| Prometheus + Grafana | 8 GPU metrics scraped, "AMD GPU Mock Fleet" dashboard | See [Grafana telemetry](#grafana-telemetry) |
+| Prometheus + Grafana | Real AMD v1.5.2 exporter telemetry and dashboard actions | See [Grafana telemetry](#grafana-telemetry) |
 
 ## Version matrix
 
@@ -244,7 +227,8 @@ Cluster test commands and their prerequisites are in the
 | kind | v0.33.0 or newer | Cluster creation |
 | ROCm Platform | 10.0.0 | [ROCm/rocm-systems](https://github.com/ROCm/rocm-systems) |
 | amdgpu driver | 6.19.4 | [ROCm/amdgpu](https://github.com/ROCm/amdgpu) |
-| AMD SMI library | 27.0.0 | ROCm/rocm-systems |
+| AMD SMI library ABI | 27.0.0 | GPU Agent release-v1.5.2 header |
+| Device Metrics Exporter | v1.5.2 | [ROCm/device-metrics-exporter](https://github.com/ROCm/device-metrics-exporter) |
 | GPU Operator | v1.5.0 | [ROCm/gpu-operator](https://github.com/ROCm/gpu-operator) |
 | K8s Device Plugin | v1.31.0.11 | [ROCm/k8s-device-plugin](https://github.com/ROCm/k8s-device-plugin) |
 | GPU DRA Driver | v1.0.0 | [ROCm/k8s-gpu-dra-driver](https://github.com/ROCm/k8s-gpu-dra-driver) |
@@ -255,9 +239,10 @@ Cluster test commands and their prerequisites are in the
 | Artifact | Location |
 |---|---|
 | KIND node image | `docker.io/submod/amd-mock-kind-node:0.2.2` |
-| Helm chart (OCI) | `oci://docker.io/submod/amd-gpu-mock:0.2.3` |
-| Mock container image | `docker.io/submod/amd-gpu-mock:v0.2.2` (AMD64/ARM64) |
+| Helm chart (OCI) | `oci://docker.io/submod/amd-gpu-mock:0.2.4` |
+| Mock container image | `docker.io/submod/amd-gpu-mock:v0.2.4` (AMD64/ARM64) |
 | DRA driver image | `docker.io/submod/amd-gpu-dra-driver:v1.0.0-mock.3` (AMD64/ARM64; unchanged upstream source) |
+| Real AMD metrics exporter runtime | `docker.io/submod/amd-device-metrics-exporter:v1.5.2-mock.1` (AMD64/ARM64; collector emulated on ARM64) |
 | GPU Operator (SIM_ENABLE) | `docker.io/submod/gpu-operator-sim:latest` |
 | GPU Operator fork | [github.com/sub-mod/gpu-operator](https://github.com/sub-mod/gpu-operator) |
 
@@ -265,7 +250,8 @@ Cluster test commands and their prerequisites are in the
 
 ```bash
 scripts/build-images.sh          # build all three images for AMD64 and ARM64
-scripts/build-images.sh --push   # publish image manifests and the OCI chart
+scripts/build-images.sh --push   # publish base images and the OCI chart
+scripts/build-telemetry-images.sh --push # publish mock, collector runtime and chart
 ```
 
 The script pins AMD's driver and container-toolkit commits in

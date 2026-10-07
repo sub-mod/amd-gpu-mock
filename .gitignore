@@ -7,3 +7,7 @@ nri-plugin
 bin/
 /tmp/
 *.tar
+
+/pkg/mocksmi/exporter/*.so.*
+
+__pycache__/

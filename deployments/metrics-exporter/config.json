@@ -1,0 +1,26 @@
+{
+  "ServerPort": 5000,
+  "CommonConfig": {
+    "MetricsFieldPrefix": "amd_",
+    "HealthService": {
+      "Enable": false
+    }
+  },
+  "GPUConfig": {
+    "Fields": [
+      "GPU_NODES_TOTAL",
+      "GPU_PACKAGE_POWER",
+      "GPU_AVERAGE_PACKAGE_POWER",
+      "GPU_EDGE_TEMPERATURE",
+      "GPU_JUNCTION_TEMPERATURE",
+      "GPU_MEMORY_TEMPERATURE",
+      "GPU_GFX_ACTIVITY",
+      "GPU_CLOCK",
+      "GPU_TOTAL_VRAM",
+      "GPU_ECC_CORRECT_TOTAL",
+      "GPU_ECC_UNCORRECT_TOTAL",
+      "GPU_USED_VRAM",
+      "GPU_FREE_VRAM"
+    ]
+  }
+}

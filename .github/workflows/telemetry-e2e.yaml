@@ -1,0 +1,95 @@
+name: telemetry-e2e
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  telemetry:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        allocator: [dra, device-plugin]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: azure/setup-helm@v4
+      - uses: docker/setup-qemu-action@v3
+      - name: Unit and ABI contracts
+        env:
+          CONTAINER_RUNTIME: docker
+        run: |
+          go test -race ./...
+          ./tests/telemetry/abi.sh
+      - name: Build this checkout's mock and real collector runtime
+        run: |
+          mkdir -p tmp/ci/bin tmp/ci/pkg/mocksmi
+          cp -R profiles tmp/ci/
+          CGO_ENABLED=0 GOOS=linux go build -o tmp/ci/bin/node-agent ./cmd/node-agent
+          CGO_ENABLED=0 GOOS=linux go build -o tmp/ci/bin/nri-plugin ./cmd/nri-plugin
+          docker run --rm -v "$PWD/pkg/mocksmi:/src:ro" -v "$PWD/tmp/ci/pkg/mocksmi:/out" gcc:14 \
+            gcc -shared -fPIC -O2 -Wl,-soname,libamd_smi.so.27 -o /out/libamd_smi.so /src/mock_amdsmi.c /src/stubs.c
+          docker build -f Dockerfile.prebuilt -t local/amd-gpu-mock:test tmp/ci
+          docker build -f deployments/metrics-exporter/Dockerfile -t local/amd-device-metrics-exporter:test .
+      - uses: helm/kind-action@v1
+        with:
+          version: v0.33.0
+          kubectl_version: v1.37.0
+          node_image: docker.io/submod/amd-mock-kind-node:0.2.2
+          cluster_name: amd-telemetry-test
+          config: deployments/kind-node/kind-config.yaml
+          ignore_failed_clean: true
+          wait: 120s
+      - name: Install Prometheus, Grafana and mock with real AMD collector
+        env:
+          ALLOCATOR: ${{ matrix.allocator }}
+        run: |
+          kind load docker-image local/amd-gpu-mock:test local/amd-device-metrics-exporter:test --name amd-telemetry-test
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm install monitoring prometheus-community/kube-prometheus-stack --version 92.0.0 \
+            -n monitoring --create-namespace -f deployments/metrics-exporter/monitoring-values.yaml \
+            --set grafana.adminPassword=amdmock --wait --timeout 8m
+          dra=true
+          plugin=false
+          if [ "$ALLOCATOR" = device-plugin ]; then dra=false; plugin=true; fi
+          helm install amd-gpu-mock deployments/helm/amd-gpu-mock -n amd-mock --create-namespace \
+            --set image.repository=local/amd-gpu-mock --set image.tag=test \
+            --set dra.enabled="$dra" --set devicePlugin.enabled="$plugin" \
+            --set metricsExporter.enabled=true --set metricsExporter.image=local/amd-device-metrics-exporter:test \
+            --set metricsExporter.serviceMonitor.enabled=true --wait --timeout 5m
+          kubectl apply -f deployments/metrics-exporter/grafana-dashboard.yaml
+      - name: Telemetry, dashboard actions, workload labels and restart recovery
+        env:
+          ALLOCATOR: ${{ matrix.allocator }}
+        run: |
+          kubectl -n monitoring port-forward svc/monitoring-kube-prometheus-prometheus 9090:9090 > /tmp/prometheus-forward.log 2>&1 &
+          prom_pid=$!
+          kubectl -n monitoring port-forward svc/monitoring-grafana 3000:80 > /tmp/grafana-forward.log 2>&1 &
+          grafana_pid=$!
+          trap 'kill "$prom_pid" "$grafana_pid" 2>/dev/null || true' EXIT
+          python3 -u tests/telemetry/e2e.py
+          python3 -u tests/telemetry/attribution.py
+          kubectl -n amd-mock rollout restart ds/amd-gpu-mock-metrics-exporter
+          kubectl -n amd-mock rollout status ds/amd-gpu-mock-metrics-exporter --timeout=120s
+          python3 -u tests/telemetry/e2e.py
+          python3 tests/dashboard-e2e.py
+      - name: Diagnostics
+        if: always()
+        run: |
+          mkdir -p artifacts
+          kubectl get pods -A -o wide > artifacts/pods.txt 2>&1 || true
+          kubectl get events -A --sort-by=.lastTimestamp > artifacts/events.txt 2>&1 || true
+          kubectl -n amd-mock logs ds/amd-gpu-mock-metrics-exporter > artifacts/exporter.log 2>&1 || true
+          kubectl -n amd-mock get servicemonitor -o yaml > artifacts/servicemonitor.yaml 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: telemetry-${{ matrix.runner }}-${{ matrix.allocator }}
+          path: artifacts/
