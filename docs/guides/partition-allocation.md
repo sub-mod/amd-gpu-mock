@@ -66,6 +66,54 @@ Pod deletion + claim deletion -> AMD NodeUnprepare -> remove claim CDI spec
                              -> released partition available for reuse
 ```
 
+## Responsibilities of each layer
+
+| Layer | Responsibility | Mocked or real |
+| --- | --- | --- |
+| Mock node agent | Renders fixed DPX/NPS2 DRM/KFD sysfs topology, capacities, shared parent BDF/KFD identity and distinct logical card/render devices. Creates fake character device nodes. | Mock hardware/driver discovery surfaces |
+| AMD DRA discovery | Reads those surfaces, recognizes pre-partitioned AMD devices, and publishes their attributes and capacities in ResourceSlices. | Unchanged upstream AMD driver |
+| Kubernetes API server | Stores and validates DeviceClasses, ResourceSlices, ResourceClaims and Pods. | Real Kubernetes |
+| Kubernetes scheduler | Selects available partitions, enforces the same-parent PCI constraint, and writes the claim allocation. Keeps consumers Pending when no matching partition is free. | Real Kubernetes |
+| Kubelet | Requests preparation of allocated claims and passes the driver's per-request CDI references to the container runtime. | Real Kubernetes |
+| AMD DRA NodePrepare | Creates claim-specific CDI device specifications for the allocated partitions. | Unchanged upstream AMD driver |
+| Container runtime | Applies CDI edits, exposing each container's assigned card/render devices and the shared KFD interface. | Real container runtime |
+| AMD DRA NodeUnprepare | Removes the released claim's CDI specification. Deleting the explicit ResourceClaim releases its allocation for subsequent scheduling. | Unchanged upstream AMD driver plus real Kubernetes claim lifecycle |
+| Demo/test runner | Creates normal claims and pods, reads their allocations, checks device visibility, and captures logs. | Test orchestration; does not assign devices itself |
+
+The allocation implementation does not write fabricated ResourceSlices,
+patch claim allocation status, bypass the scheduler, or mount chosen render
+devices directly into demo pods. The mock supplies the discovery inputs;
+the AMD driver, Kubernetes and container runtime produce the allocation and
+injection results through their normal interfaces.
+
+### Simulation boundaries
+
+Synthetic sysfs and fake character nodes intentionally replace hardware-facing
+surfaces. They describe the topology and permit device-injection tests; they
+do not provide a functional AMD kernel driver or GPU execution. The published
+mock stack also uses container/node integration to expose the staged discovery
+surfaces to the driver. The AMD DRA driver source remains unchanged.
+
+For telemetry, the mock AMD SMI library supplies synthetic device state to the
+real AMD metrics exporter. This is a separate path from DRA allocation.
+The same-GPU allocation suite does not establish correct per-partition exporter
+workload attribution or physical fault propagation across sibling partitions.
+
+The dashboard's runtime SPX/DPX/QPX/CPX controls remain a virtual display
+simulation when using the normal SPX startup configuration. They do not create
+schedulable partitions. Schedulable DPX/NPS2 comes from the fixed startup
+configuration described here, which blocks runtime topology changes.
+
+### What the recorded checks establish
+
+The [captured demo evidence](../../demo/partition-allocation/README.md) verifies
+AMD discovery and advertised capacities, same-parent scheduler allocation,
+per-container character-device visibility, exhaustion, claim CDI cleanup,
+released-device reuse, sibling continuity, and allocation continuity through
+a driver pod replacement. This supports the allocation path above. It does
+not certify the entire project as free of workarounds, or establish hardware
+compute, DMA or memory isolation.
+
 ## Two containers, one physical GPU
 
 A ResourceClaim has two named requests, each selecting `amdgpu-partition`.
