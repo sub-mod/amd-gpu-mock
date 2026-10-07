@@ -34,6 +34,15 @@ int main(void) {
   assert(amdsmi_get_gpu_asic_info(handles[0], &asic) == 0 &&
          asic.device_id == 0x74a1);
   amdsmi_error_count_t ecc;
+  uint64_t bdf;
+  assert(amdsmi_get_gpu_bdf_id(handles[0], &bdf) == 0 && bdf == 0x500);
+  assert(amdsmi_get_gpu_bdf_id(handles[1], &bdf) == 0 &&
+         bdf == UINT64_C(0x10000261a));
+  amdsmi_kfd_info_t kfd;
+  assert(amdsmi_get_gpu_kfd_info(handles[0], &kfd) == 0 &&
+         kfd.kfd_id == 1 && kfd.node_id == 1);
+  assert(amdsmi_get_gpu_kfd_info(handles[7], &kfd) == 0 &&
+         kfd.kfd_id == 8 && kfd.node_id == 8);
   assert(amdsmi_get_gpu_total_ecc_count(handles[0], &ecc) == 0 &&
          ecc.uncorrectable_count == 7);
   amdsmi_gpu_metrics_t bulk;

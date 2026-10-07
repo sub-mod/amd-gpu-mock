@@ -120,7 +120,7 @@ the host URL. Use `DASHBOARD_URL=http://127.0.0.1:9090` when testing a custom
 kind host port. Change that mapping before creating the cluster; container
 port mappings cannot be added to an existing kind node by a Helm upgrade.
 The DRA and Operator CI jobs run this check with the same kind configuration.
-Chart 0.2.4 uses mock image v0.2.4 and node image 0.2.2; the node image
+Chart 0.2.5 uses mock image v0.2.4 and node image 0.2.2; the node image
 still runs Kubernetes 1.37.
 
 ## Real AMD exporter telemetry

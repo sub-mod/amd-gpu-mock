@@ -12,7 +12,7 @@ that containerd uses to inject the allocated devices.
 ## Use the default quick start: published images only
 
 Install kind v0.33.0 or newer, kubectl v1.37, Helm, and a running Docker or
-Podman runtime. Chart/mock release 0.2.4 uses the 0.2.2 node image and supports Kubernetes 1.37 only. Linux
+Podman runtime. Chart 0.2.5 / mock release 0.2.4 uses the 0.2.2 node image and supports Kubernetes 1.37 only. Linux
 AMD64 and Linux ARM64 nodes are supported; Apple-silicon Macs run ARM64
 nodes inside the container runtime's Linux VM. Internet access is needed
 to pull images and the chart. No Go compiler or local image build is required.

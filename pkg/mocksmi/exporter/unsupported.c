@@ -84,10 +84,7 @@ amdsmi_get_gpu_pci_bandwidth(amdsmi_processor_handle processor_handle,
                              amdsmi_pcie_bandwidth_t *bandwidth) {
   return AMDSMI_STATUS_NOT_SUPPORTED;
 }
-amdsmi_status_t amdsmi_get_gpu_bdf_id(amdsmi_processor_handle processor_handle,
-                                      uint64_t *bdfid) {
-  return AMDSMI_STATUS_NOT_SUPPORTED;
-}
+
 amdsmi_status_t
 amdsmi_get_gpu_topo_numa_affinity(amdsmi_processor_handle processor_handle,
                                   int32_t *numa_node) {

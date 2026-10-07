@@ -112,6 +112,15 @@ amdsmi_status_t amdsmi_get_gpu_device_bdf(amdsmi_processor_handle h,
   p->function_number = function;
   return 0;
 }
+amdsmi_status_t amdsmi_get_gpu_bdf_id(amdsmi_processor_handle h, uint64_t *p) {
+  VALID(h, p);
+  unsigned domain, bus, device, function;
+  if (sscanf(state.bdf, "%x:%x:%x.%x", &domain, &bus, &device, &function) != 4)
+    return AMDSMI_STATUS_INVAL;
+  *p = ((uint64_t)domain << 32) | ((uint64_t)bus << 8) |
+       ((uint64_t)device << 3) | function;
+  return AMDSMI_STATUS_SUCCESS;
+}
 amdsmi_status_t amdsmi_get_gpu_device_uuid(amdsmi_processor_handle h,
                                            unsigned int *n, char *p) {
   VALID(h, n);
@@ -214,7 +223,7 @@ amdsmi_status_t amdsmi_get_gpu_kfd_info(amdsmi_processor_handle h,
                                         amdsmi_kfd_info_t *p) {
   VALID(h, p);
   memset(p, 0, sizeof(*p));
-  p->kfd_id = index_of(h);
+  p->kfd_id = index_of(h) + 1;
   p->node_id = index_of(h) + 1;
   return 0;
 }

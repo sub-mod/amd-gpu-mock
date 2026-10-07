@@ -30,8 +30,8 @@ Published inputs:
 | Component | Version |
 | --- | --- |
 | Mock node agent | `docker.io/submod/amd-gpu-mock:v0.2.4` |
-| AMD collector with mock SMI backend | `docker.io/submod/amd-device-metrics-exporter:v1.5.2-mock.1` |
-| Mock Helm chart | `0.2.4` |
+| AMD collector with mock SMI backend | `docker.io/submod/amd-device-metrics-exporter:v1.5.2-mock.2` |
+| Mock Helm chart | `0.2.5` |
 | Existing Kubernetes node image | `docker.io/submod/amd-mock-kind-node:0.2.2` |
 
 Images support Linux AMD64 and ARM64. AMD's published collector binaries are x86-64: the ARM64 runtime explicitly executes them using QEMU. The GPU Agent and exporter binaries are unchanged; ARM64 collector execution is emulated, while the mock node agent, Kubernetes, Prometheus and Grafana run natively. This costs more CPU than a native collector.
