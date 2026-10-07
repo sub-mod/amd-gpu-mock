@@ -14,7 +14,7 @@ flowchart LR
 
 This follows the same principle as [NVIDIA Moka](https://github.com/NVIDIA/k8s-test-infra): simulate the vendor device interface and keep its consumers real. NVIDIA DCGM Exporter obtains telemetry through DCGM; AMD's exporter talks to GPU Agent, which invokes AMD SMI. These are different implementations, rather than interchangeable libraries.
 
-## Default dashboards (chart 0.2.6+)
+## Default dashboards (chart 0.2.7)
 
 The default chart installs the real AMD exporter, Prometheus and Grafana.
 The shared kind configuration maps the mock dashboard to localhost:8080 and

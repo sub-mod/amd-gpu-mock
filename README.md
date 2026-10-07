@@ -25,7 +25,7 @@ kind create cluster --name amd-mock \
     --config deployments/kind-node/kind-config.yaml
 
 helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-    --version 0.2.5 --namespace amd-mock --create-namespace
+    --version 0.2.7 --namespace amd-mock --create-namespace
 ```
 
 You now have eight mock MI300X GPUs available through DRA. See the
@@ -65,12 +65,13 @@ real OAM baseboard layouts.
 
 ## Grafana telemetry
 
-```bash
-./scripts/setup-monitoring.sh
-kubectl -n monitoring port-forward svc/monitoring-grafana 3000:80
-```
+The quick start starts the real AMD exporter, Prometheus, and Grafana automatically.
+Open [localhost:3000](http://localhost:3000) (`admin` / `amdmock`); no port-forward is needed.
 
-Open http://localhost:3000 (`admin` / `amdmock`). See the [AMD telemetry guide](docs/guides/telemetry.md) for the real exporter pipeline, metrics, tests, and image builds.
+To change the Grafana host port, edit `hostPort: 3000` in
+`deployments/kind-node/kind-config.yaml` before creating the cluster.
+See the [demo configuration](demo/README.md) for dashboard enable switches and
+the [AMD telemetry guide](docs/guides/telemetry.md) for metrics, tests, and image builds.
 
 ## LLM demo
 
@@ -239,7 +240,7 @@ Cluster test commands and their prerequisites are in the
 | Artifact | Location |
 |---|---|
 | KIND node image | `docker.io/submod/amd-mock-kind-node:0.2.2` |
-| Helm chart (OCI) | `oci://docker.io/submod/amd-gpu-mock:0.2.5` |
+| Helm chart (OCI) | `oci://docker.io/submod/amd-gpu-mock:0.2.7` |
 | Mock container image | `docker.io/submod/amd-gpu-mock:v0.2.4` (AMD64/ARM64) |
 | DRA driver image | `docker.io/submod/amd-gpu-dra-driver:v1.0.0-mock.3` (AMD64/ARM64; unchanged upstream source) |
 | Real AMD metrics exporter runtime | `docker.io/submod/amd-device-metrics-exporter:v1.5.2-mock.2` (AMD64/ARM64; collector emulated on ARM64) |

@@ -86,7 +86,7 @@ implement AMD compute partition isolation, NVIDIA MIG, MxGPU or SR-IOV.
 | `pkg/mocksmi` | Legacy SMI library for other consumers |
 | `deployments/helm/amd-gpu-mock` | Node agent, allocator selection and optional exporter |
 | `deployments/metrics-exporter` | Collector runtime, monitoring values and Grafana dashboard |
-| `scripts/setup-monitoring.sh` | Published monitoring installation |
+| `scripts/setup-monitoring.sh` | Optional external Prometheus Operator monitoring installation |
 | `scripts/build-telemetry-images.sh` | Reproducible maintainer build and publication |
 | `tests/telemetry` | ABI, dashboard actions, Grafana queries and consumer attribution |
 
