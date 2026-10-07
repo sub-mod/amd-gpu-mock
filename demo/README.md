@@ -135,7 +135,7 @@ cluster is deleted.
 
 | Component | Version |
 | --- | --- |
-| Chart (default dashboards) | 0.2.7 |
+| Chart (default dashboards) | 0.2.9 |
 | kind node / Kubernetes | 0.2.2 / v1.37.0 |
 | Mock node-agent image | v0.2.4 |
 | AMD exporter runtime | v1.5.2-mock.2 |

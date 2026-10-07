@@ -53,6 +53,8 @@ def gpu_count():
 
 wait(lambda: get("/api/health").get("database") == "ok", "Grafana host access without port-forward")
 dashboard = wait(lambda: get("/api/dashboards/uid/amd-real-exporter"), "AMD dashboard provisioned by default")["dashboard"]
+assert dashboard.get("refresh") == "5s", "GPU dashboard must refresh automatically"
+print("PASS automatic 5-second dashboard refresh", flush=True)
 wait(gpu_count, "real AMD exporter GPU count through built-in Prometheus")
 for panel in dashboard["panels"]:
     for target in panel.get("targets", []):

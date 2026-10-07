@@ -192,5 +192,6 @@ data:
         "to": "now"
       },
       "title": "AMD GPU Fleet \u2014 Device Metrics Exporter",
-      "uid": "amd-real-exporter"
+      "uid": "amd-real-exporter",
+      "refresh": "5s"
     }

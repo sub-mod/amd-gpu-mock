@@ -25,7 +25,7 @@ kind create cluster --name amd-mock \
     --config deployments/kind-node/kind-config.yaml
 
 helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-    --version 0.2.7 --namespace amd-mock --create-namespace
+    --version 0.2.9 --namespace amd-mock --create-namespace
 ```
 
 You now have eight mock MI300X GPUs available through DRA. See the
@@ -240,7 +240,7 @@ Cluster test commands and their prerequisites are in the
 | Artifact | Location |
 |---|---|
 | KIND node image | `docker.io/submod/amd-mock-kind-node:0.2.2` |
-| Helm chart (OCI) | `oci://docker.io/submod/amd-gpu-mock:0.2.7` |
+| Helm chart (OCI) | `oci://docker.io/submod/amd-gpu-mock:0.2.9` |
 | Mock container image | `docker.io/submod/amd-gpu-mock:v0.2.4` (AMD64/ARM64) |
 | DRA driver image | `docker.io/submod/amd-gpu-dra-driver:v1.0.0-mock.3` (AMD64/ARM64; unchanged upstream source) |
 | Real AMD metrics exporter runtime | `docker.io/submod/amd-device-metrics-exporter:v1.5.2-mock.2` (AMD64/ARM64; collector emulated on ARM64) |

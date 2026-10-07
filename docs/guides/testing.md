@@ -120,7 +120,7 @@ the host URL. Use `DASHBOARD_URL=http://127.0.0.1:9090` when testing a custom
 kind host port. Change that mapping before creating the cluster; container
 port mappings cannot be added to an existing kind node by a Helm upgrade.
 The DRA and Operator CI jobs run this check with the same kind configuration.
-Chart 0.2.7 uses mock image v0.2.4 and node image 0.2.2; the node image
+Chart 0.2.9 uses mock image v0.2.4 and node image 0.2.2; the node image
 still runs Kubernetes 1.37.
 
 ## Real AMD exporter telemetry
@@ -155,7 +155,7 @@ native AMD64 path. The tests invoke dashboard endpoints, not browser clicks.
 
 `demo/` contains runnable LLM, DRA, virtual partitioning, fault injection,
 multi-GPU, allocation/release, telemetry and profile presentations. See its
-[presenter guide](../../demo/README.md). Chart 0.2.7 installs built-in
+[presenter guide](../../demo/README.md). Chart 0.2.9 installs built-in
 Prometheus/Grafana and the real exporter by default; the shared kind config
 exposes Grafana at localhost:3000 and the mock dashboard at localhost:8080.
 

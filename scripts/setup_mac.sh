@@ -14,7 +14,7 @@ set -uo pipefail
 GPU_PROFILE="${1:-mi300x}"
 CLUSTER_NAME="amd-mock"
 CHART="oci://docker.io/submod/amd-gpu-mock"
-CHART_VERSION="0.2.7"
+CHART_VERSION="0.2.9"
 
 if [ "${1:-}" = "--teardown" ]; then
   echo "Tearing down..."
