@@ -97,6 +97,13 @@ func (r *Renderer) UpdateGPUSysfs(gpu *GPUState) error {
 	renderNode := fmt.Sprintf("/dev/dri/renderD%d", 128+gpu.Index)
 	cardNode := fmt.Sprintf("/dev/dri/card%d", gpu.Index)
 	bdfDriverDir := filepath.Join(driverDir, bdf)
+	if r.profile.DeviceDefault.Partition.Mode == "DPX" {
+		if gpu.PartitionIndex > 0 {
+			bdfDriverDir = filepath.Join(r.rootDir, fmt.Sprintf("sys/devices/platform/amdgpu_xcp_%d", gpu.Index))
+		} else {
+			bdfDriverDir = filepath.Join(bdfDriverDir, "drm")
+		}
+	}
 
 	if gpu.Status == "crashed" {
 		writeFile(crashMarker, "1\n")
@@ -342,7 +349,7 @@ func (r *Renderer) renderGPUNode(dir string, dev *DeviceConfig) error {
 
 	// xGMI links to other GPUs
 	for _, peer := range r.profile.Devices {
-		if peer.Index == dev.Index {
+		if peer.PCIBDF == dev.PCIBDF {
 			continue
 		}
 		xgmiProps := []string{
@@ -378,6 +385,14 @@ func (r *Renderer) renderGPUNode(dir string, dev *DeviceConfig) error {
 // renderDriverBDF restores the driver sysfs directory for a single GPU.
 // Called when recovering a crashed GPU.
 func (r *Renderer) renderDriverBDF(gpu *GPUState) {
+	if gpu.PartitionIndex > 0 {
+		dir := filepath.Join(r.rootDir, fmt.Sprintf("sys/devices/platform/amdgpu_xcp_%d/drm", gpu.Index))
+		for _, name := range []string{fmt.Sprintf("card%d", gpu.Index), fmt.Sprintf("renderD%d", 128+gpu.Index)} {
+			writeFile(filepath.Join(dir, name, "device/vendor"), fmt.Sprintf("0x%04x\n", r.profile.DeviceDefault.VendorID))
+		}
+		return
+	}
+
 	moduleDir := filepath.Join(r.rootDir, "sys/module/amdgpu")
 	driverDir := filepath.Join(moduleDir, "drivers/pci:amdgpu")
 	bdfDir := filepath.Join(driverDir, gpu.PCIBDF)
@@ -391,7 +406,7 @@ func (r *Renderer) renderDriverBDF(gpu *GPUState) {
 	}
 	writeFile(filepath.Join(bdfDir, "numa_node"), fmt.Sprintf("%d\n", numaNode))
 	writeFile(filepath.Join(bdfDir, "current_compute_partition"), gpu.Partition+"\n")
-	writeFile(filepath.Join(bdfDir, "current_memory_partition"), "NPS1\n")
+	writeFile(filepath.Join(bdfDir, "current_memory_partition"), r.profile.DeviceDefault.Partition.NPSMode+"\n")
 	writeFile(filepath.Join(bdfDir, "vendor"), fmt.Sprintf("0x%04x\n", r.profile.DeviceDefault.VendorID))
 	writeFile(filepath.Join(bdfDir, "device"), fmt.Sprintf("0x%04x\n", r.profile.DeviceDefault.DeviceID))
 	cardDir := filepath.Join(bdfDir, fmt.Sprintf("drm/card%d/device", gpu.Index))
@@ -463,6 +478,9 @@ func (r *Renderer) renderDeviceNodes() error {
 }
 
 func (r *Renderer) renderDriverModule() error {
+	if err := r.renderPartitionDevices(); err != nil {
+		return err
+	}
 	moduleDir := filepath.Join(r.rootDir, "sys/module/amdgpu")
 
 	if err := writeFile(filepath.Join(moduleDir, "refcnt"), "1\n"); err != nil {
@@ -483,6 +501,9 @@ func (r *Renderer) renderDriverModule() error {
 	// reading 0x1002 for the plugin to recognize it as an AMD GPU.
 	driverDir := filepath.Join(moduleDir, "drivers/pci:amdgpu")
 	for _, dev := range r.profile.Devices {
+		if dev.PartitionIndex > 0 {
+			continue
+		}
 		bdfDir := filepath.Join(driverDir, dev.PCIBDF)
 		numaNode := r.numaForBDF(dev.PCIBDF)
 
@@ -628,8 +649,14 @@ func relSymlink(target, link string) error {
 }
 
 func (r *Renderer) ioLinkCount(dev *DeviceConfig) int {
-	// 1 PCIe link + N-1 xGMI links to peers
-	return 1 + len(r.profile.Devices) - 1
+	// Sibling compute partitions are not separate physical xGMI peers.
+	count := 1
+	for _, peer := range r.profile.Devices {
+		if peer.PCIBDF != dev.PCIBDF {
+			count++
+		}
+	}
+	return count
 }
 
 func (r *Renderer) numaForBDF(bdf string) int {

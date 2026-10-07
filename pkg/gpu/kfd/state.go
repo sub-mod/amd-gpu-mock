@@ -13,24 +13,26 @@ import (
 
 // GPUState holds the mutable runtime state for a single GPU.
 type GPUState struct {
-	Index          int    `json:"index"`
-	UUID           string `json:"uuid"`
-	Name           string `json:"name"`
-	PCIBDF         string `json:"pci_bdf"`
-	NUMANode       int    `json:"numa_node"`
-	Architecture   string `json:"architecture"`
-	Status         string `json:"status"`
-	TemperatureC   int    `json:"temperature_c"`
-	PowerW         int    `json:"power_w"`
-	PowerCapW      int    `json:"power_cap_w"`
-	UtilizationPct int    `json:"utilization_pct"`
-	MemoryUsedMB   int    `json:"memory_used_mb"`
-	MemoryTotalMB  int    `json:"memory_total_mb"`
-	ECCErrors      int    `json:"ecc_errors"`
-	ClockGFXMHz    int    `json:"clock_gfx_mhz"`
-	ClockMemMHz    int    `json:"clock_mem_mhz"`
-	Partition      string `json:"partition"`
-	ProfileSlug    string `json:"profile_slug"`
+	PartitionIndex  int    `json:"partition_index"`
+	MemoryPartition string `json:"memory_partition"`
+	Index           int    `json:"index"`
+	UUID            string `json:"uuid"`
+	Name            string `json:"name"`
+	PCIBDF          string `json:"pci_bdf"`
+	NUMANode        int    `json:"numa_node"`
+	Architecture    string `json:"architecture"`
+	Status          string `json:"status"`
+	TemperatureC    int    `json:"temperature_c"`
+	PowerW          int    `json:"power_w"`
+	PowerCapW       int    `json:"power_cap_w"`
+	UtilizationPct  int    `json:"utilization_pct"`
+	MemoryUsedMB    int    `json:"memory_used_mb"`
+	MemoryTotalMB   int    `json:"memory_total_mb"`
+	ECCErrors       int    `json:"ecc_errors"`
+	ClockGFXMHz     int    `json:"clock_gfx_mhz"`
+	ClockMemMHz     int    `json:"clock_mem_mhz"`
+	Partition       string `json:"partition"`
+	ProfileSlug     string `json:"profile_slug"`
 }
 
 // ProfileInfo is the summary for the profile selector.
@@ -318,24 +320,26 @@ func gpusFromProfile(profile *Profile, slug string) []GPUState {
 
 	for i, dev := range profile.Devices {
 		gpus[i] = GPUState{
-			Index:          dev.Index,
-			UUID:           dev.UUID,
-			Name:           d.Name,
-			PCIBDF:         dev.PCIBDF,
-			NUMANode:       numaForBDFStatic(dev.PCIBDF, profile),
-			Architecture:   d.Architecture,
-			Status:         "healthy",
-			TemperatureC:   int(d.Thermal.EdgeTempC),
-			PowerW:         int(d.Power.CurrentSocketPowerW),
-			PowerCapW:      int(d.Power.MaxPowerCapW),
-			UtilizationPct: int(d.Utilization.GFXActivityPercent),
-			MemoryUsedMB:   int(d.Memory.VRAMUsedBytes / (1024 * 1024)),
-			MemoryTotalMB:  int(d.Memory.VRAMSizeBytes / (1024 * 1024)),
-			ECCErrors:      0,
-			ClockGFXMHz:    int(d.Clocks.CurrentGFXClkMHz),
-			ClockMemMHz:    int(d.Clocks.CurrentMemClkMHz),
-			Partition:      d.Partition.Mode,
-			ProfileSlug:    slug,
+			Index:           dev.Index,
+			PartitionIndex:  dev.PartitionIndex,
+			MemoryPartition: d.Partition.NPSMode,
+			UUID:            dev.UUID,
+			Name:            d.Name,
+			PCIBDF:          dev.PCIBDF,
+			NUMANode:        numaForBDFStatic(dev.PCIBDF, profile),
+			Architecture:    d.Architecture,
+			Status:          "healthy",
+			TemperatureC:    int(d.Thermal.EdgeTempC),
+			PowerW:          int(d.Power.CurrentSocketPowerW),
+			PowerCapW:       int(d.Power.MaxPowerCapW),
+			UtilizationPct:  int(d.Utilization.GFXActivityPercent),
+			MemoryUsedMB:    int(d.Memory.VRAMUsedBytes / (1024 * 1024)),
+			MemoryTotalMB:   int(d.Memory.VRAMSizeBytes / (1024 * 1024)),
+			ECCErrors:       0,
+			ClockGFXMHz:     int(d.Clocks.CurrentGFXClkMHz),
+			ClockMemMHz:     int(d.Clocks.CurrentMemClkMHz),
+			Partition:       d.Partition.Mode,
+			ProfileSlug:     slug,
 		}
 	}
 	return gpus

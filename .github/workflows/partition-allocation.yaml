@@ -1,0 +1,63 @@
+name: same-gpu-partition-allocation
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  allocation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        stack: [source, published]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+      - uses: azure/setup-helm@v4
+      - uses: helm/kind-action@v1
+        with:
+          version: v0.33.0
+          kubectl_version: v1.37.0
+          cluster_name: amd-partitions
+          node_image: docker.io/submod/amd-mock-kind-node:0.2.2
+          config: deployments/kind-node/kind-config.yaml
+          wait: 120s
+      - name: Build source mock
+        if: matrix.stack == 'source'
+        run: |
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/node-agent ./cmd/node-agent
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/nri-plugin ./cmd/nri-plugin
+          make -C pkg/mocksmi
+          docker build -f Dockerfile.prebuilt -t amd-gpu-mock:partition-test .
+          kind load docker-image amd-gpu-mock:partition-test --name amd-partitions
+          helm install amd-gpu-mock deployments/helm/amd-gpu-mock \
+            -n amd-mock --create-namespace --set gpu.partition=DPX \
+            --set image.repository=amd-gpu-mock --set image.tag=partition-test \
+            --set image.pullPolicy=Never --wait --timeout 5m
+      - name: Install published partition quick start
+        if: matrix.stack == 'published'
+        run: |
+          helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
+            --version 0.2.11 -n amd-mock --create-namespace \
+            --set gpu.partition=DPX --wait --timeout 5m
+      - name: Same-parent allocation, exhaustion, release, reuse and restart
+        run: python3 -u tests/dra/partition-allocation.py | tee partition-allocation.log
+      - name: Diagnostics
+        if: always()
+        run: |
+          mkdir -p artifacts
+          cp partition-allocation.log artifacts/ 2>/dev/null || true
+          kubectl get pods,resourceclaims -A -o yaml > artifacts/workloads.yaml
+          kubectl get resourceslices -o yaml > artifacts/resourceslices.yaml
+          kubectl -n amd-mock logs ds/amd-gpu-mock-dra-kubeletplugin --all-containers --tail=300 > artifacts/driver.log 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: partition-${{ matrix.stack }}
+          path: artifacts/

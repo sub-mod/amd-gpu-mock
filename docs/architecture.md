@@ -214,7 +214,7 @@ setup scrapes the separate AMD collector endpoint instead.
 
 ## Allocation and runtime
 
-Chart 0.2.9 defaults to AMD's unchanged DRA v1.0.0 driver, republished for
+Chart 0.2.11 defaults to AMD's unchanged DRA v1.0.0 driver, republished for
 AMD64 and ARM64. Its chart mounts mock sysfs at the driver's `/sys`. Kubernetes
 allocates ResourceClaims; kubelet calls prepare/unprepare; the driver writes
 per-claim CDI specs. Containerd injects only the allocated card/render devices
@@ -225,7 +225,7 @@ GPU capacity as `amd.com/gpu`. See the [device-plugin guide](guides/device-plugi
 
 The published `amd-mock-kind-node:0.2.2` contains Kubernetes v1.37.0 and AMD's
 container toolkit, with CDI enabled. Both allocation paths use this image.
-Chart 0.2.9 uses node-agent image `amd-gpu-mock:v0.2.4`. The kind configuration
+Chart 0.2.11 uses node-agent image `amd-gpu-mock:v0.2.6`. The kind configuration
 maps localhost:8080 to dashboard NodePort 30080 automatically.
 
 ## Telemetry
@@ -260,3 +260,7 @@ reported memory. They do not create independently schedulable partitions,
 increase allocator capacity or implement AMD MxGPU/SR-IOV passthrough. Active
 claims must not be combined with live profile changes. Profile/count changes
 require consumer rediscovery and matching device nodes.
+
+Fixed MI300X DPX/NPS2 startup topology now exposes independently schedulable
+partitions through AMD DRA. See [same-GPU partition allocation](guides/partition-allocation.md).
+The virtual dashboard API described above remains a separate display simulation.

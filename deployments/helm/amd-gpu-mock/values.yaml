@@ -1,6 +1,8 @@
 gpu:
   # GPU profile: mi210, mi250x, mi300a, mi300x, mi325x, mi350x, mi355x
   profile: mi300x
+  # Fixed schedulable topology: SPX or MI300X DPX/NPS2 (two 96-GiB partitions).
+  partition: SPX
   # Number of mock GPUs per node (empty = derive from profile)
   count: ""
 

@@ -43,7 +43,7 @@ jobs:
           python3 tests/demo/presenter-e2e.py
       - name: Disable and restore both dashboards
         run: |
-          helm upgrade amd-gpu-mock oci://docker.io/submod/amd-gpu-mock --version 0.2.9 \
+          helm upgrade amd-gpu-mock oci://docker.io/submod/amd-gpu-mock --version 0.2.11 \
             -n amd-mock --reuse-values --set dashboard.enabled=false \
             --set monitoring.grafana.enabled=false --wait --timeout 3m
           python3 tests/demo/dashboards-disabled.py

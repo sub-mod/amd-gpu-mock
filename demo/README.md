@@ -162,7 +162,7 @@ cluster is deleted.
 
 | Component | Version |
 | --- | --- |
-| Chart (default dashboards) | 0.2.9 |
+| Chart (default dashboards) | 0.2.11 |
 | kind node / Kubernetes | 0.2.2 / v1.37.0 |
 | Mock node-agent image | v0.2.4 |
 | AMD exporter runtime | v1.5.2-mock.2 |
@@ -173,3 +173,9 @@ rebuilding an unchanged node image. The build pins are in
 
 See [demo validation](../docs/guides/testing.md#presenter-demos-and-default-dashboards)
 and [telemetry details](../docs/guides/telemetry.md) for tests and limitations.
+
+## Same-GPU allocation
+
+[Partition allocation](partition-allocation/README.md) uses the fixed DPX/NPS2
+startup topology and proves two containers receive different slices of one
+physical GPU. This is separate from the virtual partition display demo.

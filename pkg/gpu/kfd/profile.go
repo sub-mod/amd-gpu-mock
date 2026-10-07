@@ -143,6 +143,7 @@ type RootComplex struct {
 }
 
 type DeviceConfig struct {
+	PartitionIndex int    `yaml:"partition_index" json:"partition_index"`
 	Index          int    `yaml:"index"`
 	UUID           string `yaml:"uuid"`
 	PCIBDF         string `yaml:"pci_bdf"`

@@ -25,7 +25,7 @@ if [ "$(uname -s)" = Darwin ]; then
     command -v "$runtime" >/dev/null || { echo "$runtime not found" >&2; exit 1; }
     exec "$runtime" run --rm --privileged \
         -v "$REPO_ROOT:/src:ro" -w /src \
-        -e "DRA_REPO=$DRA_REPO" -e "DRA_REF=$DRA_REF" \
+        -e "DRA_REPO=$DRA_REPO" -e "DRA_REF=$DRA_REF" -e "PARTITION_MODE=${PARTITION_MODE:-}" \
         docker.io/library/golang:1.24-bookworm \
         bash tests/dra/discovery-check.sh "$@"
 fi

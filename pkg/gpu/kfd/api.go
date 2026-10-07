@@ -289,6 +289,11 @@ func (s *APIServer) handleProfiles(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *APIServer) handleSwitchProfile(w http.ResponseWriter, r *http.Request) {
+	if s.renderer != nil && s.renderer.profile.DeviceDefault.Partition.Mode == "DPX" {
+		http.Error(w, "fixed DPX/NPS2 topology: drain claims and restart with a new startup configuration", http.StatusConflict)
+		return
+	}
+
 	slug := r.URL.Query().Get("profile")
 	if slug == "" {
 		http.Error(w, "?profile=<slug> required", http.StatusBadRequest)
@@ -313,6 +318,11 @@ func (s *APIServer) handleSwitchProfile(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *APIServer) handleSwitchTray(w http.ResponseWriter, r *http.Request) {
+	if s.renderer != nil && s.renderer.profile.DeviceDefault.Partition.Mode == "DPX" {
+		http.Error(w, "fixed DPX/NPS2 topology: drain claims and restart with a new startup configuration", http.StatusConflict)
+		return
+	}
+
 	idx := parseQueryIndex(r)
 	slug := r.URL.Query().Get("profile")
 	if idx < 0 || slug == "" {
@@ -374,6 +384,11 @@ func (s *APIServer) handlePartitions(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *APIServer) handleSetPartition(w http.ResponseWriter, r *http.Request) {
+	if s.renderer != nil && s.renderer.profile.DeviceDefault.Partition.Mode == "DPX" {
+		http.Error(w, "fixed DPX/NPS2 topology: drain claims and restart with a new startup configuration", http.StatusConflict)
+		return
+	}
+
 	mode := r.URL.Query().Get("mode")
 	if mode == "" {
 		http.Error(w, "?mode=SPX|DPX|QPX|CPX required", http.StatusBadRequest)

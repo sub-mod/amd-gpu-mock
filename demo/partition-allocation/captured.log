@@ -1,0 +1,64 @@
+PASS: AMD driver advertises 16 partitions for 8 physical MI300X GPUs
+EVIDENCE: first/consumer: claim=first request=gpu device=gpu-1-129 parent=0000:05:00.0 memory=96Gi render=renderD129
+crw-r-----    1 root     root      234,   0 Oct  7 03:08 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   1 Oct  7 03:08 card1
+crw-r-----    1 root     root      226, 129 Oct  7 03:08 renderD129
+EVIDENCE: second/consumer: claim=second request=gpu device=gpu-0-128 parent=0000:05:00.0 memory=96Gi render=renderD128
+crw-r-----    1 root     root      234,   0 Oct  7 03:08 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   0 Oct  7 03:08 card0
+crw-r-----    1 root     root      226, 128 Oct  7 03:08 renderD128
+PASS: third consumer stays Pending when the selected physical GPU has no free partitions
+PASS: AMD NodeUnprepare removes the released claim CDI file
+EVIDENCE: waiting/consumer: claim=waiting request=gpu device=gpu-1-129 parent=0000:05:00.0 memory=96Gi render=renderD129
+crw-r-----    1 root     root      234,   0 Oct  7 03:09 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   1 Oct  7 03:09 card1
+crw-r-----    1 root     root      226, 129 Oct  7 03:09 renderD129
+EVIDENCE: second/consumer: claim=second request=gpu device=gpu-0-128 parent=0000:05:00.0 memory=96Gi render=renderD128
+crw-r-----    1 root     root      234,   0 Oct  7 03:08 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   0 Oct  7 03:08 card0
+crw-r-----    1 root     root      226, 128 Oct  7 03:08 renderD128
+PASS: released partition is reused while the sibling consumer remains Ready
+EVIDENCE: second/consumer: claim=second request=gpu device=gpu-0-128 parent=0000:05:00.0 memory=96Gi render=renderD128
+crw-r-----    1 root     root      234,   0 Oct  7 03:08 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   0 Oct  7 03:08 card0
+crw-r-----    1 root     root      226, 128 Oct  7 03:08 renderD128
+EVIDENCE: waiting/consumer: claim=waiting request=gpu device=gpu-1-129 parent=0000:05:00.0 memory=96Gi render=renderD129
+crw-r-----    1 root     root      234,   0 Oct  7 03:09 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   1 Oct  7 03:09 card1
+crw-r-----    1 root     root      226, 129 Oct  7 03:09 renderD129
+PASS: driver restart preserves both live allocations
+EVIDENCE: two-containers/left: claim=two-slices request=left device=gpu-14-142 parent=0000:e5:00.0 memory=96Gi render=renderD142
+crw-r-----    1 root     root      234,   0 Oct  7 03:09 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,  14 Oct  7 03:09 card14
+crw-r-----    1 root     root      226, 142 Oct  7 03:09 renderD142
+EVIDENCE: two-containers/right: claim=two-slices request=right device=gpu-15-143 parent=0000:e5:00.0 memory=96Gi render=renderD143
+crw-r-----    1 root     root      234,   0 Oct  7 03:09 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,  15 Oct  7 03:09 card15
+crw-r-----    1 root     root      226, 143 Oct  7 03:09 renderD143
+PASS: two containers in one pod receive distinct partitions of the same physical GPU
+Demo remains Running in namespace amd-demo-partition-allocation; delete that namespace to release its claims.
+PASS: all 16 published partitions have DPX/NPS2, 96Gi and 152 CU; eight parents each have two devices

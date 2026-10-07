@@ -27,3 +27,5 @@ jobs:
         run: go test ./pkg/gpu/kfd
       - name: AMD DRA driver discovery, all profiles
         run: tests/dra/discovery-check.sh
+      - name: AMD DRA driver discovery, MI300X DPX/NPS2
+        run: PARTITION_MODE=DPX tests/dra/discovery-check.sh mi300x

@@ -33,6 +33,13 @@ func main() {
 		usage()
 	}
 	p := loadProfile(os.Args[2])
+	if mode := os.Getenv("PARTITION_MODE"); mode != "" {
+		var err error
+		p, err = kfd.PartitionProfile(p, mode)
+		if err != nil {
+			fatalf("partition: %v", err)
+		}
+	}
 	switch os.Args[1] {
 	case "render":
 		if len(os.Args) != 4 {
@@ -80,7 +87,11 @@ func check(p *kfd.Profile) int {
 		if !bdfRe.MatchString(dev.PCIBDF) {
 			failf("%s: not a lowercase extended BDF; Kubernetes rejects it as pciBusID", dev.PCIBDF)
 		}
-		g, ok := got[dev.PCIBDF]
+		key := dev.PCIBDF
+		if dev.PartitionIndex > 0 {
+			key = fmt.Sprintf("amdgpu_xcp_%d", dev.Index)
+		}
+		g, ok := got[key]
 		if !ok {
 			failf("%s: not discovered", dev.PCIBDF)
 			continue

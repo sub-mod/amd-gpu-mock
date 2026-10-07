@@ -121,3 +121,7 @@ fidelity is not claimed. Allocation discovery tests separately cover all seven
 profiles. Live profile switching requires consumer rediscovery; per-tray
 switching lacks immediate renderer synchronization. Virtual partition state
 does not create schedulable hardware slices.
+
+Fixed MI300X DPX/NPS2 startup topology now exposes independently schedulable
+partitions through AMD DRA. See [same-GPU partition allocation](guides/partition-allocation.md).
+The virtual dashboard API described above remains a separate display simulation.

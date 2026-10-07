@@ -64,8 +64,8 @@ and the published chart/images. These allocators run in separate clusters.
 
 ## Scope
 
-Partition tests cover the API's virtual state, not schedulable hardware
-partitions. The API does not increase Kubernetes capacity when CPX is selected.
+The virtual-partition tests cover the dashboard API's display state. The
+same-GPU allocation suite separately covers fixed MI300X DPX/NPS2 topology. The API does not increase Kubernetes capacity when CPX is selected.
 Fault tests use an explicit device-plugin restart; they do not promise
 continuous device-health detection without rediscovery.
 
@@ -120,7 +120,7 @@ the host URL. Use `DASHBOARD_URL=http://127.0.0.1:9090` when testing a custom
 kind host port. Change that mapping before creating the cluster; container
 port mappings cannot be added to an existing kind node by a Helm upgrade.
 The DRA and Operator CI jobs run this check with the same kind configuration.
-Chart 0.2.9 uses mock image v0.2.4 and node image 0.2.2; the node image
+Chart 0.2.11 uses mock image v0.2.6 and node image 0.2.2; the node image
 still runs Kubernetes 1.37.
 
 ## Real AMD exporter telemetry
@@ -155,7 +155,7 @@ native AMD64 path. The tests invoke dashboard endpoints, not browser clicks.
 
 `demo/` contains runnable LLM, DRA, virtual partitioning, fault injection,
 multi-GPU, allocation/release, telemetry and profile presentations. See its
-[presenter guide](../../demo/README.md). Chart 0.2.9 installs built-in
+[presenter guide](../../demo/README.md). Chart 0.2.11 installs built-in
 Prometheus/Grafana and the real exporter by default; the shared kind config
 exposes Grafana at localhost:3000 and the mock dashboard at localhost:8080.
 
@@ -175,3 +175,7 @@ with both allocators. It covers the LLM, multi-GPU consumers, claim release,
 fault recovery and Grafana, and verifies disabling/re-enabling both dashboards.
 Do not run competing fault-injection suites simultaneously. The demos leave
 workloads for inspection; `demo/run.py cleanup` removes labelled namespaces.
+
+Fixed MI300X DPX/NPS2 startup topology now exposes independently schedulable
+partitions through AMD DRA. See [same-GPU partition allocation](partition-allocation.md).
+The virtual dashboard API described above remains a separate display simulation.

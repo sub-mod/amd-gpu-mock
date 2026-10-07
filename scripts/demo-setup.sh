@@ -16,7 +16,7 @@ set -euo pipefail
 CLUSTER_NAME="${CLUSTER_NAME:-amd-mock}"
 GPU_PROFILE="${GPU_PROFILE:-mi300x}"
 CHART="oci://docker.io/submod/amd-gpu-mock"
-CHART_VERSION="0.2.9"
+CHART_VERSION="0.2.11"
 SKIP_CLUSTER=false
 TEARDOWN=false
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"

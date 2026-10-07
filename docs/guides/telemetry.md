@@ -14,7 +14,7 @@ flowchart LR
 
 This follows the same principle as [NVIDIA Moka](https://github.com/NVIDIA/k8s-test-infra): simulate the vendor device interface and keep its consumers real. NVIDIA DCGM Exporter obtains telemetry through DCGM; AMD's exporter talks to GPU Agent, which invokes AMD SMI. These are different implementations, rather than interchangeable libraries.
 
-## Default dashboards (chart 0.2.9)
+## Default dashboards (chart 0.2.11)
 
 The default chart installs the real AMD exporter, Prometheus and Grafana.
 The shared kind configuration maps the mock dashboard to localhost:8080 and
@@ -60,9 +60,9 @@ Published inputs:
 
 | Component | Version |
 | --- | --- |
-| Mock node agent | `docker.io/submod/amd-gpu-mock:v0.2.4` |
+| Mock node agent | `docker.io/submod/amd-gpu-mock:v0.2.6` |
 | AMD collector with mock SMI backend | `docker.io/submod/amd-device-metrics-exporter:v1.5.2-mock.2` |
-| Mock Helm chart | `0.2.9` |
+| Mock Helm chart | `0.2.11` |
 | Existing Kubernetes node image | `docker.io/submod/amd-mock-kind-node:0.2.2` |
 
 Images support Linux AMD64 and ARM64. AMD's published collector binaries are x86-64: the ARM64 runtime explicitly executes them using QEMU. The GPU Agent and exporter binaries are unchanged; ARM64 collector execution is emulated, while the mock node agent, Kubernetes, Prometheus and Grafana run natively. This costs more CPU than a native collector.

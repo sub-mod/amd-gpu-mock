@@ -7,7 +7,7 @@ A scheduled GPU pod proves allocation and device injection, not GPU execution.
 ## From quick start to a GPU pod
 
 1. The published kind image starts Kubernetes v1.37.0 with CDI enabled.
-2. Chart 0.2.9 starts the mock node agent and AMD DRA driver by default.
+2. Chart 0.2.11 starts the mock node agent and AMD DRA driver by default.
 3. The agent reads a profile, writes mock KFD/PCI/DRM/driver sysfs, creates
    character devices and initializes runtime state.
 4. AMD's unchanged driver discovers the mounted sysfs and publishes ResourceSlices.
@@ -97,3 +97,7 @@ it downloads no model weights and runs no inference.
 The [demo folder](../demo/README.md) provides presenter commands and a shared
 configuration for both dashboard ports and enable switches. The default
 Grafana host port is 3000; both dashboards work without port-forwards.
+
+Fixed MI300X DPX/NPS2 startup topology now exposes independently schedulable
+partitions through AMD DRA. See [same-GPU partition allocation](guides/partition-allocation.md).
+The virtual dashboard API described above remains a separate display simulation.

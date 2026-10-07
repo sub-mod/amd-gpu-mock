@@ -19,6 +19,7 @@ func main() {
 	profilesDir := flag.String("profiles", "/etc/amd-gpu-mock/profiles", "directory containing all GPU profile YAML files")
 	rootDir := flag.String("root", "/var/lib/amd-gpu-mock", "root directory for staged surfaces")
 	apiAddr := flag.String("api", ":8080", "address for the status/control API and dashboard")
+	partitionMode := flag.String("partition", "SPX", "fixed startup compute partition: SPX or MI300X DPX/NPS2")
 	flag.Parse()
 
 	log.Printf("amd-gpu-mock node agent starting")
@@ -34,6 +35,12 @@ func main() {
 	if err := yaml.Unmarshal(data, &profile); err != nil {
 		log.Fatalf("parsing config: %v", err)
 	}
+
+	partitioned, err := kfd.PartitionProfile(&profile, *partitionMode)
+	if err != nil {
+		log.Fatalf("partition configuration: %v", err)
+	}
+	profile = *partitioned
 
 	log.Printf("profile: %s (%d GPUs, %s)",
 		profile.DeviceDefault.Name,

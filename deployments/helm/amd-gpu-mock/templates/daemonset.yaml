@@ -1,3 +1,10 @@
+{{- $partition := .Values.gpu.partition | default "SPX" -}}
+{{- if not (has $partition (list "SPX" "DPX")) -}}
+{{- fail "gpu.partition must be SPX or DPX" -}}
+{{- end -}}
+{{- if and (eq $partition "DPX") (ne .Values.gpu.profile "mi300x") -}}
+{{- fail "schedulable DPX/NPS2 partitions require gpu.profile=mi300x" -}}
+{{- end -}}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -30,6 +37,7 @@ spec:
           args:
             - node-agent
             - --config=/etc/amd-gpu-mock/config.yaml
+            - --partition={{ .Values.gpu.partition | default "SPX" }}
             - --root={{ .Values.mockRootDir }}
             - --api=:{{ .Values.api.port }}
           ports:

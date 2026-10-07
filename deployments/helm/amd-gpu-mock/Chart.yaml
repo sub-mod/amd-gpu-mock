@@ -2,8 +2,8 @@ apiVersion: v2
 name: amd-gpu-mock
 description: Mock AMD GPU infrastructure for Kubernetes testing
 type: application
-version: 0.2.9
-appVersion: "v0.2.4"
+version: 0.2.11
+appVersion: "v0.2.6"
 dependencies:
   - name: k8s-gpu-dra-driver
     alias: dra

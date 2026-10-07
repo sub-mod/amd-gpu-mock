@@ -1,0 +1,109 @@
+{
+  "apiVersion": "v1",
+  "kind": "List",
+  "items": [
+    {
+      "apiVersion": "resource.k8s.io/v1",
+      "kind": "ResourceClaim",
+      "metadata": {
+        "name": "two-slices"
+      },
+      "spec": {
+        "devices": {
+          "requests": [
+            {
+              "name": "left",
+              "exactly": {
+                "deviceClassName": "gpu.amd.com",
+                "count": 1,
+                "selectors": [
+                  {
+                    "cel": {
+                      "expression": "device.attributes[\"gpu.amd.com\"].type == \"amdgpu-partition\""
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "name": "right",
+              "exactly": {
+                "deviceClassName": "gpu.amd.com",
+                "count": 1,
+                "selectors": [
+                  {
+                    "cel": {
+                      "expression": "device.attributes[\"gpu.amd.com\"].type == \"amdgpu-partition\""
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "constraints": [
+            {
+              "requests": [
+                "left",
+                "right"
+              ],
+              "matchAttribute": "resource.kubernetes.io/pciBusID"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "two-containers"
+      },
+      "spec": {
+        "terminationGracePeriodSeconds": 1,
+        "restartPolicy": "Never",
+        "resourceClaims": [
+          {
+            "name": "partition",
+            "resourceClaimName": "two-slices"
+          }
+        ],
+        "containers": [
+          {
+            "name": "left",
+            "image": "docker.io/busybox:1.36",
+            "command": [
+              "sh",
+              "-c",
+              "test -c /dev/kfd; ls -l /dev/kfd /dev/dri; sleep 86400"
+            ],
+            "resources": {
+              "claims": [
+                {
+                  "name": "partition",
+                  "request": "left"
+                }
+              ]
+            }
+          },
+          {
+            "name": "right",
+            "image": "docker.io/busybox:1.36",
+            "command": [
+              "sh",
+              "-c",
+              "test -c /dev/kfd; ls -l /dev/kfd /dev/dri; sleep 86400"
+            ],
+            "resources": {
+              "claims": [
+                {
+                  "name": "partition",
+                  "request": "right"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "captured_utc": "2026-10-07T03:10:02.458694+00:00",
+  "cluster": "amd-partitions",
+  "runtime": "default Podman VM / ARM64",
+  "chart": "0.2.11",
+  "chart_digest": "sha256:50abd6531b1c35f8d872325e769c078fe665ce522be5d8818678e3b84d9c396c",
+  "kubernetes": "v1.37.0",
+  "mock_image": "docker.io/submod/amd-gpu-mock:v0.2.6",
+  "mock_image_id": "docker.io/submod/amd-gpu-mock@sha256:26e938337c957218cdd360d0a0f31447b9e7442cb5abef7865672dfd7835cded",
+  "dra_image": "docker.io/submod/amd-gpu-dra-driver:v1.0.0-mock.3",
+  "dra_image_id": "docker.io/submod/amd-gpu-dra-driver@sha256:1706ba88f44a9081e2986c321de6348f61d54c4f7185f93ad39e1ead4b7c3736"
+}

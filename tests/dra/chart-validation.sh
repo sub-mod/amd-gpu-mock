@@ -28,3 +28,8 @@ render --set dra.enabled=true --set devicePlugin.enabled=false \
     --set mockRootDir=/custom/mock --set dra.mockSysPath=/custom/mock/sys >"$WORK/custom.yaml"
 grep -Fq 'path: "/custom/mock/sys"' "$WORK/custom.yaml"
 echo 'PASS: default, DRA, and custom-root configurations render correctly'
+reject 'gpu.partition must be SPX or DPX' --set gpu.partition=CPX
+reject 'schedulable DPX/NPS2 partitions require gpu.profile=mi300x' --set gpu.partition=DPX --set gpu.profile=mi210
+render --set gpu.partition=DPX >"$WORK/partitions.yaml"
+grep -Fq -- '--partition=DPX' "$WORK/partitions.yaml"
+echo 'PASS: MI300X DPX startup configuration renders correctly'
