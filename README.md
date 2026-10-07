@@ -163,39 +163,37 @@ We simulate the **control plane**, not the **data plane**:
 
 ## Architecture
 
+```text
+Profile YAML --> Mock node agent <-- Dashboard fault controls (:8080)
+                         |
+           +-------------+--------------------------+
+           v                                        v
+    Mock sysfs + devices                    Shared sensor / ECC state
+           |                                        |
+           v                                        v
+    AMD DRA driver                            Mock AMD SMI ABI 27
+           |                                        |
+    ResourceSlices                                  v
+           |                                  Real AMD GPU Agent
+           v                                        |
+    API + scheduler <-- Pod / ResourceClaim          v
+           |                                  Real AMD exporter
+    allocated claim + bound Pod                     ^       |
+           |                                        |       v
+           v                             pod-resources   Prometheus
+        Kubelet ------------------------------------+       |
+           | prepare claim                                  v
+    DRA driver --> per-claim CDI spec                     Grafana
+           |
+    containerd / AMD runtime --> allocated devices --> Workload
+
+Alternative: device plugin --> amd.com/gpu capacity --> scheduler
+Fault telemetry does not automatically revoke claims or restart workloads.
 ```
-Profile YAML
-    │
-    ▼
-Node Agent (DaemonSet)
-    ├── KFD sysfs topology (/sys/class/kfd/...)
-    ├── Device nodes (/dev/kfd, /dev/dri/renderD*, /dev/dri/card*)
-    ├── PCI sysfs (/sys/bus/pci/devices/*)
-    ├── Driver module (/sys/module/amdgpu/)
-    ├── Mock libamd_smi.so (staged for consumers)
-    ├── CDI specs → /etc/cdi/amd.json
-    ├── Prometheus /metrics endpoint
-    └── API server (:8080) + Web dashboard
 
-KIND Node (docker.io/submod/amd-mock-kind-node)
-    ├── amd-container-runtime (registered with containerd)
-    ├── containerd: enable_cdi = true
-    └── CDI spec dirs: /etc/cdi/, /var/run/cdi/
-         │
-         ▼ CDI path: containerd → amd-container-runtime → resolves CDI spec
-         │           → injects /dev/kfd + libraries into containers
-         │
-    Default allocator: AMD DRA Driver
-        → ResourceSlices → ResourceClaims → per-claim CDI injection
-
-    Alternative: AMD device plugin → amd.com/gpu scheduling
-
-Optional telemetry (either allocator):
-    Node Agent shared device state → mock AMD SMI ABI 27
-        → real GPU Agent → real AMD exporter → Prometheus → Grafana
-
-Optional Operator smoke: SIM_ENABLE controller → plugin + node labeller
-```
+See the [full ASCII architecture and fault flows](docs/architecture.md)
+for discovery, scheduling, prepare/unprepare, workload attribution,
+the alternative allocator and the limits of failure propagation.
 
 ## Validation
 

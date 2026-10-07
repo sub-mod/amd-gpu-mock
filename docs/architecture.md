@@ -5,32 +5,198 @@ HIP kernels, emulate GPU memory or implement KFD ioctls.
 
 ## System overview
 
-```mermaid
-flowchart TD
-    Profile[GPU profile YAML] --> Agent[Mock node agent]
-    Agent --> Sysfs[KFD / PCI / DRM / driver sysfs]
-    Agent --> Devices[Character devices]
-    Agent --> State[Atomic AMD SMI snapshots]
-    Agent --> Dashboard[Dashboard and fault API]
-    Sysfs --> DRA[AMD DRA driver: default allocator]
-    Sysfs --> Plugin[AMD device plugin: alternative allocator]
-    DRA --> Claims[ResourceSlices and ResourceClaims]
-    Claims --> CDI[Per-claim CDI specs]
-    Plugin --> Resources[amd.com/gpu requests]
-    CDI --> Runtime[Containerd device injection]
-    Resources --> Runtime
-    Devices --> Runtime
-    State --> SMI[Mock AMD SMI ABI 27]
-    SMI --> GPUAgent[Unmodified AMD GPU Agent]
-    GPUAgent --> Exporter[Unmodified AMD Device Metrics Exporter]
-    Exporter --> Prometheus
-    Prometheus --> Grafana
+```text
+ HOST: Docker / Podman Linux VM
+ +-----------------------------------------------------------------------------------------+
+ | KIND NODE: Kubernetes 1.37 / containerd / AMD container runtime / CDI                   |
+ |                                                                                         |
+ |  Profile YAML -----+                  Browser: http://localhost:8080                    |
+ |                    |                              |                                     |
+ |                    v                              | dashboard actions + state polling   |
+ |            +----------------------+               v                                     |
+ |            | Mock node agent      |<--- NodePort 30080 <--- kind host-port mapping      |
+ |            | API + runtime state  |                                                     |
+ |            | dynamic simulator    |                                                     |
+ |            +----------------------+                                                     |
+ |                    | renders / synchronizes                                             |
+ |          +---------+---------------------------+                                        |
+ |          v                                     v                                        |
+ |  +--------------------------+          +----------------------------+                   |
+ |  | Mock device surfaces     |          | Atomic SMI device state    |                   |
+ |  | KFD / PCI / DRM sysfs    |          | /var/lib/amd-gpu-mock/smi  |                   |
+ |  | driver bindings + RAS    |          | per-GPU sensor snapshots   |                   |
+ |  | /dev/kfd + card/render   |          +----------------------------+                   |
+ |  +--------------------------+                      | read through vendor ABI            |
+ |          | discovery                                v                                   |
+ |          v                             +----------------------------+                   |
+ |  +--------------------------+          | Mock libamd_smi.so.27      |                   |
+ |  | AMD DRA driver (default) |          | identity / sensors / ECC   |                   |
+ |  | publishes ResourceSlices |          +----------------------------+                   |
+ |  | prepares/unprepares CDI  |                       | AMD SMI results                   |
+ |  +--------------------------+                       v                                   |
+ |          |                             +----------------------------+                   |
+ |          | Kubernetes API              | Real AMD GPU Agent         |                   |
+ |          v                             +----------------------------+                   |
+ |  +--------------------------+                       | GPU Agent RPC                     |
+ |  | API server               |                       v                                   |
+ |  | Pods / claims / slices   |          +----------------------------+                   |
+ |  +--------------------------+          | Real AMD metrics exporter  |                   |
+ |       ^               |                +----------------------------+                   |
+ |       | reads/writes  | bound Pod                    ^                  | /metrics      |
+ |  +-----------+        v                             |                  v                |
+ |  | Scheduler |  +-----------+   real pod-resources --+          +------------+          |
+ |  | DRA plugin|  | Kubelet   |                                  | Prometheus |           |
+ |  +-----------+  +-----------+                                  +------------+           |
+ |                       | prepare claim via DRA driver                  | queries         |
+ |                       v                                              v                  |
+ |                +-------------------------+                     +------------+           |
+ |                | containerd + AMD runtime |                     | Grafana    |          |
+ |                | inject allocated nodes  |                     +------------+           |
+ |                +-------------------------+                                              |
+ |                       |                                                                 |
+ |                       v                                                                 |
+ |                +-------------------------+                                              |
+ |                | Workload container      |                                              |
+ |                | /dev/kfd + selected GPU |                                              |
+ |                | no GPU compute backend  |                                              |
+ |                +-------------------------+                                              |
+ +-----------------------------------------------------------------------------------------+
+
+ ALTERNATIVE ALLOCATOR (instead of DRA):
+   Mock sysfs --> AMD device plugin --> kubelet device manager
+                         |                       |
+                         | capacity/health       +--> Allocate --> device injection
+                         v
+                    Node amd.com/gpu --> scheduler --> bound workload
+
+ OPTIONAL OPERATOR SMOKE (both bundled allocators disabled):
+   SIM_ENABLE controller --> its device plugin + node labeller --> mock sysfs
+   Operator-owned DRA / exporter / remediation are not validated by this smoke.
 ```
+
+The diagram shows data and control flow, not network isolation. API objects
+live in Kubernetes; the scheduler reads and updates them. Allocation details
+and the fault boundary are expanded below. Prometheus uses a ServiceMonitor
+for discovery; Grafana's provisioned dashboard queries the real AMD metrics.
 
 DRA and the device plugin are mutually exclusive. Telemetry works alongside
 either allocator and reads kubelet's real pod-resources socket for workload
 labels. The optional Operator smoke path uses its own device plugin and node
 labeller; disable both bundled allocators before using it.
+
+## DRA: discovery, scheduling and workload lifetime
+
+```text
+ DISCOVERY                      SCHEDULING / ALLOCATION              EXECUTION SETUP
+
+ Profile YAML
+      |
+      v
+ Mock sysfs --> AMD DRA driver --> ResourceSlices -----+
+                                                      |
+ Pod + ResourceClaimTemplate                          v
+      |                                  +-------------------------+
+      +--> generated ResourceClaim ----->| Kubernetes scheduler     |
+                                         | DRA allocation logic    |
+                                         | match class + selectors |
+                                         | choose devices + node   |
+                                         +-------------------------+
+                                                      |
+                              +-----------------------+--------------------+
+                              v                                            v
+                    Claim allocation in API                       Pod bound to node
+                              |                                            |
+                              +-----------------------+--------------------+
+                                                      v
+                                                  Kubelet
+                                                      |
+                                            prepare allocated claim
+                                                      v
+                                               AMD DRA driver
+                                                      |
+                                    write per-claim CDI spec on host
+                                    return allocated CDI device IDs
+                                                      v
+                                         containerd + AMD runtime
+                                                      |
+                                      inject shared /dev/kfd plus
+                                      allocated cardN / renderDN
+                                                      v
+                                             Workload container
+                                             (scripted Tiny LLM,
+                                              scheduling tests)
+                                                      |
+                                               delete consumer
+                                                      v
+                           kubelet --> DRA unprepare --> remove claim CDI spec
+                                         |
+                                         +--> release/deallocation + claim lifecycle
+                                              --> GPU reusable by another request
+```
+
+The scheduler acts on advertised devices and claim requests, not dashboard
+telemetry. A generated claim follows its pod's lifetime; an explicit claim
+can remain after its consumers leave. Shared explicit claims and restart
+checkpoint behavior are covered in the [DRA lifecycle guide](guides/dra.md#release-explicit-claims-and-driver-restarts).
+A prepared container has device nodes, but no real GPU execution backend.
+
+## Dashboard failures: two paths, different consequences
+
+```text
+ USER: Overheat / ECC Error / Crash / Busy / Idle / Recover
+                              |
+                              | POST /api/actions/<action>?gpu=N
+                              v
+                    +-------------------------+
+                    | Node-agent runtime state|
+                    +-------------------------+
+                              |
+                +-------------+----------------------------+
+                |                                          |
+                v                                          v
+      DEVICE / DISCOVERY PATH                     SENSOR / TELEMETRY PATH
+      mock sysfs + host devices                   atomic per-GPU SMI snapshot
+                |                                          |
+                | crash: remove driver binding             | temperature / power /
+                |        and card/render nodes             | activity / VRAM / ECC
+                | ECC: update RAS counters                 v
+                | overheat: update hwmon           mock AMD SMI ABI 27
+                | recover: restore surfaces                |
+                v                                          v
+      AMD discovery consumers                      real AMD GPU Agent
+                |                                          |
+                | explicit rediscovery                     v
+                | required by tested paths         real AMD metrics exporter
+                v                                          |
+      device plugin: reduced/restored capacity             v
+      after restart in profile fault tests          Prometheus --> Grafana
+                |                                          |
+                v                                          +--> visible readings
+      kubelet --> Node capacity --> scheduler               +--> workload labels via
+      affects NEW scheduling decisions                          kubelet pod-resources
+
+      DRA: no tested live device-health / hot-plug propagation
+       X--> automatic ResourceSlice health update
+       X--> automatic claim revocation or reallocation
+       X--> automatic eviction / restart of an existing workload
+
+      Telemetry:
+       X--> scheduler decisions from temperature or ECC metrics
+       X--> configured alerts / automatic remediation
+
+      Dashboard state polling <--- node-agent runtime state (direct, fast)
+      Prometheus / Grafana     <--- collector + scrape cycle (delayed)
+```
+
+`X-->` marks behavior the current setup does not implement or guarantee.
+A dashboard crash changes discovery surfaces and zeroes exported power,
+activity and clocks. It does not make AMD SMI report a lost device or force
+an already-running pod to terminate. Removing a host device path is not
+proof that existing container mounts disappear. DRA discovery occurs at
+startup; do not treat an injected fault as guaranteed deallocation.
+Recovery restores mock state; allocation consumers still require the
+appropriate rediscovery. See [dashboard action coverage](guides/telemetry.md#other-dashboard-actions)
+and [test scope](guides/testing.md).
 
 ## Node agent
 
