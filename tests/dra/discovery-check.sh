@@ -83,7 +83,9 @@ for name in "${profiles[@]}"; do
     root="$WORK/root-$name"
     echo "==> $name"
     "$WORK/probe" render "$profile" "$root"
-    if ! in_mock_sys "$root/sys" "$WORK/probe" check "$profile" 2>"$WORK/$name.log"; then
+    # sudo may remove PARTITION_MODE from the environment. Pass it as a command
+    # argument so render and check use the same topology across the boundary.
+    if ! in_mock_sys "$root/sys" env "PARTITION_MODE=${PARTITION_MODE:-}" "$WORK/probe" check "$profile" 2>"$WORK/$name.log"; then
         failed+=("$name")
         echo "    (AMD driver log: $(grep -c . "$WORK/$name.log") lines)"
         sed 's/^/    | /' "$WORK/$name.log" | grep -E 'W[0-9]|E[0-9]|F[0-9]' | head -20 || true
