@@ -13,7 +13,42 @@ The second consumer remains available for inspection. For stronger full-pool,
 same-GPU and explicit/shared-claim checks, use the
 [DRA lifecycle tests](../../docs/guides/dra.md#tests-and-evidence).
 
-## What to watch and what the logs prove
+## Recorded run output
+
+Captured on 2026-10-06 using Kubernetes v1.37.0, chart 0.2.9 and the
+ARM64 default Podman VM. Names, IDs and readings are specific to this run.
+[Full captured output](captured.log); [capture sources and complete suites](../logs/README.md).
+
+Actual captured output:
+
+```text
+crw-r-----    1 root     root      234,   0 Oct  7 02:11 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   3 Oct  7 02:11 card3
+crw-r-----    1 root     root      226, 131 Oct  7 02:11 renderD131
+
+NAME              STATE                AGE
+first-gpu-mc85q   allocated,reserved   1s
+
+Deleting first consumer; returning allocation to the pool...
+crw-r-----    1 root     root      234,   0 Oct  7 02:11 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   3 Oct  7 02:11 card3
+crw-r-----    1 root     root      226, 131 Oct  7 02:11 renderD131
+
+NAME               STATE                AGE
+second-gpu-8ctsj   allocated,reserved   1s
+
+PASS: allocation works after release (not a promise of the same GPU).
+```
+
+Both consumers received card3/renderD131 in this run, with different claim names. The first was deleted before the second was created. Exact-device reuse happened in this capture but is not guaranteed when other devices are free.
+
+## Reading this run
 
 The first consumer prints its claim/device evidence. The runner deletes that
 pod, waits for generated DRA claims to disappear, then creates `second` and

@@ -1,0 +1,13 @@
+crw-r-----    1 root     root      234,   0 Oct  7 02:11 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   1 Oct  7 02:11 card1
+crw-r-----    1 root     root      226,   2 Oct  7 02:11 card2
+crw-r-----    1 root     root      226, 129 Oct  7 02:11 renderD129
+crw-r-----    1 root     root      226, 130 Oct  7 02:11 renderD130
+
+NAME                   STATE                AGE
+consumer-0-gpu-wpk52   allocated,reserved   1s
+
+Each independent request receives its own physical GPU allocation.

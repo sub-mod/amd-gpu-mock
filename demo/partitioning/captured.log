@@ -1,0 +1,55 @@
+{
+  "mode": "CPX",
+  "partitions": 8,
+  "system": {
+    "amdgpu_version": "6.19.4",
+    "rocm_version": "7.14.0",
+    "amdsmi_version": "27.0.0",
+    "profile_name": "AMD Instinct MI300X",
+    "node_name": "mock-node"
+  },
+  "total_gpus": 64
+}
+Virtual dashboard entries only; allocator capacity remains physical. Reset with --mode SPX.
+
+PASS presenter command: partitioning
+
+{
+  "mode": "DPX",
+  "partitions": 2,
+  "system": {
+    "amdgpu_version": "6.19.4",
+    "rocm_version": "7.14.0",
+    "amdsmi_version": "27.0.0",
+    "profile_name": "AMD Instinct MI300X",
+    "node_name": "mock-node"
+  },
+  "total_gpus": 16
+}
+Virtual dashboard entries only; allocator capacity remains physical. Reset with --mode SPX.
+{
+  "mode": "QPX",
+  "partitions": 4,
+  "system": {
+    "amdgpu_version": "6.19.4",
+    "rocm_version": "7.14.0",
+    "amdsmi_version": "27.0.0",
+    "profile_name": "AMD Instinct MI300X",
+    "node_name": "mock-node"
+  },
+  "total_gpus": 32
+}
+Virtual dashboard entries only; allocator capacity remains physical. Reset with --mode SPX.
+{
+  "mode": "SPX",
+  "partitions": 1,
+  "system": {
+    "amdgpu_version": "6.19.4",
+    "rocm_version": "7.14.0",
+    "amdsmi_version": "27.0.0",
+    "profile_name": "AMD Instinct MI300X",
+    "node_name": "mock-node"
+  },
+  "total_gpus": 8
+}
+Virtual dashboard entries only; allocator capacity remains physical. Reset with --mode SPX.

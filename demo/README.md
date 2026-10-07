@@ -103,6 +103,21 @@ Run on a dedicated demonstration cluster. Workloads remain running so you can
 inspect them; they consume GPUs until cleanup. Each demo uses a namespace
 labelled `amd-gpu-mock/demo=true`, with names such as `amd-demo-llm`.
 
+## Recorded output from real runs
+
+Each demo guide includes actual captured output and a link to its full log.
+See [the capture index](logs/README.md) for provenance and complete DRA and
+device-plugin runs. These are recorded results, not invented sample output.
+Print any recorded demo directly from the runner without changing the cluster:
+
+```bash
+python3 demo/run.py llm --show-captured
+python3 demo/run.py multi-gpu --show-captured
+python3 demo/run.py faults --show-captured
+```
+
+Omit `--show-captured` to execute the live demo.
+
 ## How to read the evidence
 
 Every demo guide explains what to watch, how to read the logs, the layers

@@ -1,0 +1,99 @@
+{
+  "index": 0,
+  "uuid": "GPU-amd-mi300x-0000-0000-000000000000",
+  "name": "AMD Instinct MI300X",
+  "pci_bdf": "0000:05:00.0",
+  "numa_node": 0,
+  "architecture": "cdna3",
+  "status": "overheating",
+  "temperature_c": 105,
+  "power_w": 148,
+  "power_cap_w": 750,
+  "utilization_pct": 6,
+  "memory_used_mb": 300,
+  "memory_total_mb": 196608,
+  "ecc_errors": 0,
+  "clock_gfx_mhz": 415,
+  "clock_mem_mhz": 1300,
+  "partition": "SPX",
+  "profile_slug": "mi300x"
+}
+Watch the mock dashboard and Grafana. Recover with --action recover.
+Fault injection does not automatically revoke claims or restart workloads.
+
+PASS presenter command: faults
+PASS presenter overheat reaches Grafana
+{
+  "index": 0,
+  "uuid": "GPU-amd-mi300x-0000-0000-000000000000",
+  "name": "AMD Instinct MI300X",
+  "pci_bdf": "0000:05:00.0",
+  "numa_node": 0,
+  "architecture": "cdna3",
+  "status": "healthy",
+  "temperature_c": 49,
+  "power_w": 183,
+  "power_cap_w": 750,
+  "utilization_pct": 0,
+  "memory_used_mb": 300,
+  "memory_total_mb": 196608,
+  "ecc_errors": 0,
+  "clock_gfx_mhz": 500,
+  "clock_mem_mhz": 1300,
+  "partition": "SPX",
+  "profile_slug": "mi300x"
+}
+Watch the mock dashboard and Grafana. Recover with --action recover.
+Fault injection does not automatically revoke claims or restart workloads.
+
+PASS presenter command: faults
+{
+  "index": 0,
+  "uuid": "GPU-amd-mi300x-0000-0000-000000000000",
+  "name": "AMD Instinct MI300X",
+  "pci_bdf": "0000:05:00.0",
+  "numa_node": 0,
+  "architecture": "cdna3",
+  "status": "ecc_error",
+  "temperature_c": 49,
+  "power_w": 183,
+  "power_cap_w": 750,
+  "utilization_pct": 0,
+  "memory_used_mb": 300,
+  "memory_total_mb": 196608,
+  "ecc_errors": 1,
+  "clock_gfx_mhz": 500,
+  "clock_mem_mhz": 1300,
+  "partition": "SPX",
+  "profile_slug": "mi300x"
+}
+Watch the mock dashboard and Grafana. Recover with --action recover.
+Fault injection does not automatically revoke claims or restart workloads.
+
+PASS presenter command: faults
+PASS presenter ECC reaches Grafana
+{
+  "index": 0,
+  "uuid": "GPU-amd-mi300x-0000-0000-000000000000",
+  "name": "AMD Instinct MI300X",
+  "pci_bdf": "0000:05:00.0",
+  "numa_node": 0,
+  "architecture": "cdna3",
+  "status": "healthy",
+  "temperature_c": 49,
+  "power_w": 183,
+  "power_cap_w": 750,
+  "utilization_pct": 0,
+  "memory_used_mb": 300,
+  "memory_total_mb": 196608,
+  "ecc_errors": 0,
+  "clock_gfx_mhz": 500,
+  "clock_mem_mhz": 1300,
+  "partition": "SPX",
+  "profile_slug": "mi300x"
+}
+Watch the mock dashboard and Grafana. Recover with --action recover.
+Fault injection does not automatically revoke claims or restart workloads.
+
+PASS presenter command: faults
+PASS presenter recovery reaches Grafana

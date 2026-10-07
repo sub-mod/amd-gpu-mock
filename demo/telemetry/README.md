@@ -19,7 +19,44 @@ collector is explicitly emulated on ARM64. This is different from scraping
 the node agent's separate diagnostic `/metrics` endpoint. See the
 [telemetry guide](../../docs/guides/telemetry.md) for provenance and limits.
 
-## What to watch and what the logs prove
+## Recorded run output
+
+Captured on 2026-10-06 using Kubernetes v1.37.0, chart 0.2.9 and the
+ARM64 default Podman VM. Names, IDs and readings are specific to this run.
+[Full captured output](captured.log); [capture sources and complete suites](../logs/README.md).
+
+Actual output excerpt:
+
+```text
+DEMO: Real AMD exporter metrics queried through the provisioned Grafana
+Guide: demo/telemetry/README.md; inspect pods across namespaces with kubectl get pods -A
+Dashboard: AMD GPU Fleet — Device Metrics Exporter
+PATH: mocked AMD SMI -> real AMD GPU Agent -> real AMD exporter -> Prometheus -> Grafana
+These queries prove Grafana datasource results; use the guide's snapshot/exporter checks
+to correlate a controlled change across every layer. DRA is the allocation path, not a metric hop.
+amd_gpu_edge_temperature
+  GPU 5: 50
+  GPU 2: 34  consumer=amd-demo-multi-gpu/consumer-0/consumer
+  GPU 7: 56
+  GPU 1: 36  consumer=amd-demo-multi-gpu/consumer-0/consumer
+  GPU 3: 38  consumer=amd-demo-allocation/second/consumer
+  GPU 6: 57  consumer=amd-demo-llm/tiny-llm-dra-demo-69b9bb8dfd-g9rb8/llm-service
+  GPU 0: 44  consumer=amd-demo-dra/dra-gpu-demo/demo
+  GPU 4: 41  consumer=default/tiny-llm-dra-demo-69b9bb8dfd-zt99m/llm-service
+amd_gpu_ecc_uncorrect_total
+  GPU 5: 0
+  GPU 2: 0  consumer=amd-demo-multi-gpu/consumer-0/consumer
+  GPU 7: 0
+  GPU 1: 0  consumer=amd-demo-multi-gpu/consumer-0/consumer
+  GPU 3: 0  consumer=amd-demo-allocation/second/consumer
+  GPU 6: 0  consumer=amd-demo-llm/tiny-llm-dra-demo-69b9bb8dfd-g9rb8/llm-service
+  GPU 0: 0  consumer=amd-demo-dra/dra-gpu-demo/demo
+  GPU 4: 0  consumer=default/tiny-llm-dra-demo-69b9bb8dfd-zt99m/llm-service
+```
+
+The recorded Grafana datasource results associate GPUs 1 and 2 with the two-GPU consumer, GPU 0 with the DRA pod, and GPU 6 with the LLM pod. These are real exporter consumer labels attached to simulated device measurements.
+
+## Reading this run
 
 The runner prints metrics obtained by calling Grafana's Prometheus datasource.
 For each value, correlate `gpu_id` with the mock inventory and check the

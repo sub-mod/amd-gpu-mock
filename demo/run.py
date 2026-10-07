@@ -23,6 +23,8 @@ COMMANDS = {
 }
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("command", choices=["list", *COMMANDS])
+parser.add_argument("--show-captured", action="store_true",
+                    help="Print the recorded real-run log without contacting or changing the cluster")
 parser.add_argument("--config", default=str(ROOT / "demo/config.yaml"))
 parser.add_argument("--context", default=os.environ.get("DEMO_CONTEXT", "kind-" + os.environ.get("CLUSTER_NAME", "amd-mock")))
 parser.add_argument("--allocator", choices=["auto", "dra", "device-plugin"], default="auto")
@@ -150,6 +152,14 @@ def consumer(namespace, name, mode, count=1):
 
 
 def main():
+    if args.show_captured:
+        path = ROOT / "demo" / args.command / "captured.log"
+        if not path.is_file():
+            raise RuntimeError("No captured run for this command; see demo/logs/README.md")
+        print("RECORDED OUTPUT: 2026-10-06 run; this does not execute a live demo.")
+        print("Source: demo/%s/captured.log; provenance: demo/logs/README.md" % args.command)
+        print(path.read_text(), end="")
+        return
     if args.command == "list":
         for name, description in COMMANDS.items():
             print("%-14s %s" % (name, description))

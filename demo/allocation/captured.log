@@ -1,0 +1,22 @@
+crw-r-----    1 root     root      234,   0 Oct  7 02:11 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   3 Oct  7 02:11 card3
+crw-r-----    1 root     root      226, 131 Oct  7 02:11 renderD131
+
+NAME              STATE                AGE
+first-gpu-mc85q   allocated,reserved   1s
+
+Deleting first consumer; returning allocation to the pool...
+crw-r-----    1 root     root      234,   0 Oct  7 02:11 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   3 Oct  7 02:11 card3
+crw-r-----    1 root     root      226, 131 Oct  7 02:11 renderD131
+
+NAME               STATE                AGE
+second-gpu-8ctsj   allocated,reserved   1s
+
+PASS: allocation works after release (not a promise of the same GPU).

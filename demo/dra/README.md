@@ -19,7 +19,31 @@ The [allocation demo](../allocation/README.md) shows release. The full
 [DRA guide](../../docs/guides/dra.md) covers explicit/shared claims and restart
 checkpoint behavior. These are allocation contracts, not compute execution.
 
-## What to watch and what the logs prove
+## Recorded run output
+
+Captured on 2026-10-06 using Kubernetes v1.37.0, chart 0.2.9 and the
+ARM64 default Podman VM. Names, IDs and readings are specific to this run.
+[Full captured output](captured.log); [capture sources and complete suites](../logs/README.md).
+
+Actual output excerpt:
+
+```text
+crw-r-----    1 root     root      234,   0 Oct  7 02:11 /dev/kfd
+
+/dev/dri/:
+total 0
+crw-r-----    1 root     root      226,   0 Oct  7 02:11 card0
+crw-r-----    1 root     root      226, 128 Oct  7 02:11 renderD128
+
+EVIDENCE pod amd-demo-dra/dra-gpu-demo scheduled on amd-mock-control-plane; /dev/kfd is a character device; render devices: /dev/dri/renderD128
+EVIDENCE claim dra-gpu-demo-gpu-mtvr7 -> driver=gpu.amd.com pool=amd-mock-control-plane device=gpu-0-128; advertised capacity={'computeUnits': {'value': '304'}, 'memory': {'value': '192Gi'}, 'simdUnits': {'value': '1216'}}
+PASS AMD DRA advertised device -> allocated claim -> matching injected render device
+This proves mock device allocation and injection, not GPU execution or hardware isolation.
+```
+
+The recorded AMD claim selected `gpu-0-128`; the pod received card0/renderD128. The evidence check matched this device to the advertised ResourceSlice.
+
+## Reading this run
 
 Read the output in this order: ResourceSlice inventory, claim allocation,
 workload device listing, then the runner's `EVIDENCE`/`PASS` lines. The runner

@@ -1,0 +1,395 @@
+No resources found
+
+Demo workloads removed. Mock faults/partition state reset when API is enabled.
+
+PASS presenter command: cleanup
+============================================================
+  AMD GPU Mock — LLM Inference Demo
+============================================================
+
+Pod scheduled with a DRA ResourceClaim.
+GPU device: /dev/kfd = True
+DRI device: /dev/dri = True
+
+Simulating model loading: HuggingFaceTB/SmolLM-135M
+  [--------------------] 0%
+  [#####---------------] 25%
+  [##########----------] 50%
+  [###############-----] 75%
+  [####################] 100%
+Simulated model ready (no weights loaded)
+
+Prompt: "The future of AI is"
+Generating 5 tokens...
+  Token 1: bright
+  Token 2: and
+  Token 3: full
+  Token 4: of
+  Token 5: possibilities
+
+Generated: "The future of AI is bright and full of possibilities"
+
+In a real deployment, this would use ROCm/HIP on the MI300X.
+The mock proves Kubernetes GPU scheduling works end-to-end.
+
+LLM service ready. Listening for requests...
+
+Scripted output only: no model weights or GPU inference.
+
+PASS presenter command: llm
+NAME                                             NODE                     DRIVER        POOL                     AGE
+00000-gpu.amd.com-amd-mock-control-plane-phpgc   amd-mock-control-plane   gpu.amd.com   amd-mock-control-plane   13m
+
+apiVersion: v1
+items:
+- apiVersion: resource.k8s.io/v1
+  kind: ResourceClaim
+  metadata:
+    annotations:
+      resource.kubernetes.io/pod-claim-name: gpu
+    creationTimestamp: "2026-10-07T02:04:22Z"
+    finalizers:
+    - resource.kubernetes.io/delete-protection
+    generateName: dra-gpu-demo-gpu-
+    name: dra-gpu-demo-gpu-m6cl2
+    namespace: amd-demo-dra
+    ownerReferences:
+    - apiVersion: v1
+      controller: true
+      kind: Pod
+      name: dra-gpu-demo
+      uid: c665be20-861c-4536-b992-e6dbace96e39
+    resourceVersion: "2029"
+    uid: d6e9bb03-8ce6-492d-bdcd-da23d29a04b5
+  spec:
+    devices:
+      requests:
+      - exactly:
+          allocationMode: ExactCount
+          count: 1
+          deviceClassName: gpu.amd.com
+        name: gpu
+  status:
+    allocation:
+      allocationTimestamp: "2026-10-07T02:04:22Z"
+      devices:
+        results:
+        - device: gpu-1-129
+          driver: gpu.amd.com
+          pool: amd-mock-control-plane
+          request: gpu
+      nodeSelector:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - amd-mock-control-plane
+    reservedFor:
+    - name: dra-gpu-demo
+      resource: pods
+      uid: c665be20-861c-4536-b992-e6dbace96e39
+kind: List
+metadata:
+  resourceVersion: ""
+
+crw-r-----    1 root     root      234,   0 Oct  7 02:04 /dev/kfd
+
+/dev/dri/:
+total 0
+crw-r-----    1 root     root      226,   1 Oct  7 02:04 card1
+crw-r-----    1 root     root      226, 129 Oct  7 02:04 renderD129
+
+
+PASS presenter command: dra
+crw-r-----    1 root     root      234,   0 Oct  7 02:04 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   2 Oct  7 02:04 card2
+crw-r-----    1 root     root      226,   3 Oct  7 02:04 card3
+crw-r-----    1 root     root      226, 130 Oct  7 02:04 renderD130
+crw-r-----    1 root     root      226, 131 Oct  7 02:04 renderD131
+
+NAME                   STATE                AGE
+consumer-0-gpu-whr8r   allocated,reserved   1s
+
+Each independent request receives its own physical GPU allocation.
+
+PASS presenter command: multi-gpu
+crw-r-----    1 root     root      234,   0 Oct  7 02:04 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   4 Oct  7 02:04 card4
+crw-r-----    1 root     root      226, 132 Oct  7 02:04 renderD132
+
+NAME              STATE                AGE
+first-gpu-wtbxh   allocated,reserved   1s
+
+Deleting first consumer; returning allocation to the pool...
+crw-r-----    1 root     root      234,   0 Oct  7 02:04 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   4 Oct  7 02:04 card4
+crw-r-----    1 root     root      226, 132 Oct  7 02:04 renderD132
+
+NAME               STATE                AGE
+second-gpu-gz5t7   allocated,reserved   0s
+
+PASS: allocation works after release (not a promise of the same GPU).
+
+PASS presenter command: allocation
+PROFILE    MODEL                     DEVICES  GiB/DEVICE  TDP/W
+mi210      AMD Instinct MI210              8          64    300
+mi250x     AMD Instinct MI250X            16          64    500
+mi300a     AMD Instinct MI300A             4         128    550
+mi300x     AMD Instinct MI300X             8         192    750
+mi325x     AMD Instinct MI325X             8         256   1000
+mi350x     AMD Instinct MI350X             8         288   1000
+mi355x     AMD Instinct MI355X             8         288   1400
+
+Installed inventory:
+GPU 0  0000:05:00.0  NUMA=0 AMD Instinct MI300X       VRAM=196608 MiB status=healthy
+GPU 1  0000:26:00.0  NUMA=0 AMD Instinct MI300X       VRAM=196608 MiB status=healthy
+GPU 2  0000:46:00.0  NUMA=0 AMD Instinct MI300X       VRAM=196608 MiB status=healthy
+GPU 3  0000:65:00.0  NUMA=0 AMD Instinct MI300X       VRAM=196608 MiB status=healthy
+GPU 4  0000:85:00.0  NUMA=1 AMD Instinct MI300X       VRAM=196608 MiB status=healthy
+GPU 5  0000:a6:00.0  NUMA=1 AMD Instinct MI300X       VRAM=196608 MiB status=healthy
+GPU 6  0000:c6:00.0  NUMA=1 AMD Instinct MI300X       VRAM=196608 MiB status=healthy
+GPU 7  0000:e5:00.0  NUMA=1 AMD Instinct MI300X       VRAM=196608 MiB status=healthy
+Select a different profile at installation; avoid live switches with active consumers.
+
+PASS presenter command: profiles
+Dashboard: AMD GPU Fleet — Device Metrics Exporter
+amd_gpu_edge_temperature
+  GPU 1: 33
+  GPU 2: 31
+  GPU 3: 37
+  GPU 4: 44
+  GPU 5: 51
+  GPU 6: 56
+  GPU 7: 56  consumer=default/tiny-llm-dra-demo-69b9bb8dfd-qfpl9/llm-service
+  GPU 0: 42  consumer=amd-demo-llm/tiny-llm-dra-demo-69b9bb8dfd-4c74m/llm-service
+amd_gpu_ecc_uncorrect_total
+  GPU 1: 0
+  GPU 2: 0
+  GPU 3: 0
+  GPU 4: 0
+  GPU 5: 0
+  GPU 6: 0
+  GPU 7: 0  consumer=default/tiny-llm-dra-demo-69b9bb8dfd-qfpl9/llm-service
+  GPU 0: 0  consumer=amd-demo-llm/tiny-llm-dra-demo-69b9bb8dfd-4c74m/llm-service
+amd_gpu_gfx_activity
+  GPU 1: 4
+  GPU 2: 2
+  GPU 3: 4
+  GPU 4: 6
+  GPU 5: 2
+  GPU 6: 6
+  GPU 7: 1  consumer=default/tiny-llm-dra-demo-69b9bb8dfd-qfpl9/llm-service
+  GPU 0: 7  consumer=amd-demo-llm/tiny-llm-dra-demo-69b9bb8dfd-4c74m/llm-service
+amd_gpu_used_vram
+  GPU 1: 300
+  GPU 2: 300
+  GPU 3: 300
+  GPU 4: 300
+  GPU 5: 300
+  GPU 6: 300
+  GPU 7: 300  consumer=default/tiny-llm-dra-demo-69b9bb8dfd-qfpl9/llm-service
+  GPU 0: 300  consumer=amd-demo-llm/tiny-llm-dra-demo-69b9bb8dfd-4c74m/llm-service
+
+PASS presenter command: telemetry
+{
+  "index": 0,
+  "uuid": "GPU-amd-mi300x-0000-0000-000000000000",
+  "name": "AMD Instinct MI300X",
+  "pci_bdf": "0000:05:00.0",
+  "numa_node": 0,
+  "architecture": "cdna3",
+  "status": "overheating",
+  "temperature_c": 105,
+  "power_w": 148,
+  "power_cap_w": 750,
+  "utilization_pct": 6,
+  "memory_used_mb": 300,
+  "memory_total_mb": 196608,
+  "ecc_errors": 0,
+  "clock_gfx_mhz": 415,
+  "clock_mem_mhz": 1300,
+  "partition": "SPX",
+  "profile_slug": "mi300x"
+}
+Watch the mock dashboard and Grafana. Recover with --action recover.
+Fault injection does not automatically revoke claims or restart workloads.
+
+PASS presenter command: faults
+PASS presenter overheat reaches Grafana
+{
+  "index": 0,
+  "uuid": "GPU-amd-mi300x-0000-0000-000000000000",
+  "name": "AMD Instinct MI300X",
+  "pci_bdf": "0000:05:00.0",
+  "numa_node": 0,
+  "architecture": "cdna3",
+  "status": "healthy",
+  "temperature_c": 49,
+  "power_w": 183,
+  "power_cap_w": 750,
+  "utilization_pct": 0,
+  "memory_used_mb": 300,
+  "memory_total_mb": 196608,
+  "ecc_errors": 0,
+  "clock_gfx_mhz": 500,
+  "clock_mem_mhz": 1300,
+  "partition": "SPX",
+  "profile_slug": "mi300x"
+}
+Watch the mock dashboard and Grafana. Recover with --action recover.
+Fault injection does not automatically revoke claims or restart workloads.
+
+PASS presenter command: faults
+{
+  "index": 0,
+  "uuid": "GPU-amd-mi300x-0000-0000-000000000000",
+  "name": "AMD Instinct MI300X",
+  "pci_bdf": "0000:05:00.0",
+  "numa_node": 0,
+  "architecture": "cdna3",
+  "status": "ecc_error",
+  "temperature_c": 49,
+  "power_w": 183,
+  "power_cap_w": 750,
+  "utilization_pct": 0,
+  "memory_used_mb": 300,
+  "memory_total_mb": 196608,
+  "ecc_errors": 1,
+  "clock_gfx_mhz": 500,
+  "clock_mem_mhz": 1300,
+  "partition": "SPX",
+  "profile_slug": "mi300x"
+}
+Watch the mock dashboard and Grafana. Recover with --action recover.
+Fault injection does not automatically revoke claims or restart workloads.
+
+PASS presenter command: faults
+PASS presenter ECC reaches Grafana
+{
+  "index": 0,
+  "uuid": "GPU-amd-mi300x-0000-0000-000000000000",
+  "name": "AMD Instinct MI300X",
+  "pci_bdf": "0000:05:00.0",
+  "numa_node": 0,
+  "architecture": "cdna3",
+  "status": "healthy",
+  "temperature_c": 49,
+  "power_w": 183,
+  "power_cap_w": 750,
+  "utilization_pct": 0,
+  "memory_used_mb": 300,
+  "memory_total_mb": 196608,
+  "ecc_errors": 0,
+  "clock_gfx_mhz": 500,
+  "clock_mem_mhz": 1300,
+  "partition": "SPX",
+  "profile_slug": "mi300x"
+}
+Watch the mock dashboard and Grafana. Recover with --action recover.
+Fault injection does not automatically revoke claims or restart workloads.
+
+PASS presenter command: faults
+PASS presenter recovery reaches Grafana
+namespace "amd-demo-allocation" deleted
+namespace "amd-demo-dra" deleted
+namespace "amd-demo-llm" deleted
+namespace "amd-demo-multi-gpu" deleted
+
+Demo workloads removed. Mock faults/partition state reset when API is enabled.
+
+PASS presenter command: cleanup
+{
+  "mode": "CPX",
+  "partitions": 8,
+  "system": {
+    "amdgpu_version": "6.19.4",
+    "rocm_version": "7.14.0",
+    "amdsmi_version": "27.0.0",
+    "profile_name": "AMD Instinct MI300X",
+    "node_name": "mock-node"
+  },
+  "total_gpus": 64
+}
+Virtual dashboard entries only; allocator capacity remains physical. Reset with --mode SPX.
+
+PASS presenter command: partitioning
+{
+  "mode": "SPX",
+  "partitions": 1,
+  "system": {
+    "amdgpu_version": "6.19.4",
+    "rocm_version": "7.14.0",
+    "amdsmi_version": "27.0.0",
+    "profile_name": "AMD Instinct MI300X",
+    "node_name": "mock-node"
+  },
+  "total_gpus": 8
+}
+Virtual dashboard entries only; allocator capacity remains physical. Reset with --mode SPX.
+
+PASS presenter command: partitioning
+crw-r-----    1 root     root      234,   0 Oct  7 02:05 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   0 Oct  7 02:05 card0
+crw-r-----    1 root     root      226, 128 Oct  7 02:05 renderD128
+
+NAME                   STATE                AGE
+consumer-0-gpu-nks76   allocated,reserved   0s
+
+crw-r-----    1 root     root      234,   0 Oct  7 02:05 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   1 Oct  7 02:05 card1
+crw-r-----    1 root     root      226, 129 Oct  7 02:05 renderD129
+
+NAME                   STATE                AGE
+consumer-0-gpu-nks76   allocated,reserved   1s
+consumer-1-gpu-d59mj   allocated,reserved   0s
+
+crw-r-----    1 root     root      234,   0 Oct  7 02:05 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   2 Oct  7 02:05 card2
+crw-r-----    1 root     root      226, 130 Oct  7 02:05 renderD130
+
+NAME                   STATE                AGE
+consumer-0-gpu-nks76   allocated,reserved   2s
+consumer-1-gpu-d59mj   allocated,reserved   1s
+consumer-2-gpu-l6fzk   allocated,reserved   1s
+
+crw-r-----    1 root     root      234,   0 Oct  7 02:05 /dev/kfd
+
+/dev/dri:
+total 0
+crw-r-----    1 root     root      226,   3 Oct  7 02:05 card3
+crw-r-----    1 root     root      226, 131 Oct  7 02:05 renderD131
+
+NAME                   STATE                AGE
+consumer-0-gpu-nks76   allocated,reserved   2s
+consumer-1-gpu-d59mj   allocated,reserved   1s
+consumer-2-gpu-l6fzk   allocated,reserved   1s
+consumer-3-gpu-4t7tn   allocated,reserved   0s
+
+Each independent request receives its own physical GPU allocation.
+
+PASS presenter command: multi-gpu
+PASS four independent physical GPU allocations
+namespace "amd-demo-multi-gpu" deleted
+
+Demo workloads removed. Mock faults/partition state reset when API is enabled.
+
+PASS presenter command: cleanup

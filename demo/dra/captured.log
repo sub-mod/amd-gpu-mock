@@ -1,0 +1,69 @@
+DEMO: ResourceSlice -> claim -> CDI -> one-GPU consumer
+Guide: demo/dra/README.md; inspect pods across namespaces with kubectl get pods -A
+NAME                                             NODE                     DRIVER        POOL                     AGE
+00000-gpu.amd.com-amd-mock-control-plane-fgvmn   amd-mock-control-plane   gpu.amd.com   amd-mock-control-plane   11m
+
+apiVersion: v1
+items:
+- apiVersion: resource.k8s.io/v1
+  kind: ResourceClaim
+  metadata:
+    annotations:
+      resource.kubernetes.io/pod-claim-name: gpu
+    creationTimestamp: "2026-10-07T02:11:22Z"
+    finalizers:
+    - resource.kubernetes.io/delete-protection
+    generateName: dra-gpu-demo-gpu-
+    name: dra-gpu-demo-gpu-mtvr7
+    namespace: amd-demo-dra
+    ownerReferences:
+    - apiVersion: v1
+      controller: true
+      kind: Pod
+      name: dra-gpu-demo
+      uid: 50497c2f-437b-4ba3-ac89-9d168158ac60
+    resourceVersion: "3307"
+    uid: bcc197a7-e333-48aa-99a4-bddf25a80066
+  spec:
+    devices:
+      requests:
+      - exactly:
+          allocationMode: ExactCount
+          count: 1
+          deviceClassName: gpu.amd.com
+        name: gpu
+  status:
+    allocation:
+      allocationTimestamp: "2026-10-07T02:11:22Z"
+      devices:
+        results:
+        - device: gpu-0-128
+          driver: gpu.amd.com
+          pool: amd-mock-control-plane
+          request: gpu
+      nodeSelector:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - amd-mock-control-plane
+    reservedFor:
+    - name: dra-gpu-demo
+      resource: pods
+      uid: 50497c2f-437b-4ba3-ac89-9d168158ac60
+kind: List
+metadata:
+  resourceVersion: ""
+
+crw-r-----    1 root     root      234,   0 Oct  7 02:11 /dev/kfd
+
+/dev/dri/:
+total 0
+crw-r-----    1 root     root      226,   0 Oct  7 02:11 card0
+crw-r-----    1 root     root      226, 128 Oct  7 02:11 renderD128
+
+EVIDENCE pod amd-demo-dra/dra-gpu-demo scheduled on amd-mock-control-plane; /dev/kfd is a character device; render devices: /dev/dri/renderD128
+EVIDENCE claim dra-gpu-demo-gpu-mtvr7 -> driver=gpu.amd.com pool=amd-mock-control-plane device=gpu-0-128; advertised capacity={'computeUnits': {'value': '304'}, 'memory': {'value': '192Gi'}, 'simdUnits': {'value': '1216'}}
+PASS AMD DRA advertised device -> allocated claim -> matching injected render device
+This proves mock device allocation and injection, not GPU execution or hardware isolation.

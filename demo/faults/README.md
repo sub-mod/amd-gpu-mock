@@ -26,7 +26,39 @@ claim revocation; device-plugin fault tests use explicit restart/rediscovery.
 No automatic alert rules or remediation are installed. See the
 [ASCII fault path](../../docs/architecture.md#dashboard-failures-two-paths-different-consequences).
 
-## What to watch and what the logs prove
+## Recorded run output
+
+Captured on 2026-10-06 using Kubernetes v1.37.0, chart 0.2.9 and the
+ARM64 default Podman VM. Names, IDs and readings are specific to this run.
+[Full captured output](captured.log); [capture sources and complete suites](../logs/README.md).
+
+Selected lines from the actual capture (intermediate JSON fields omitted):
+
+```text
+  "status": "overheating",
+  "temperature_c": 105,
+  "ecc_errors": 0,
+PASS presenter command: faults
+PASS presenter overheat reaches Grafana
+  "status": "healthy",
+  "temperature_c": 49,
+  "ecc_errors": 0,
+PASS presenter command: faults
+  "status": "ecc_error",
+  "temperature_c": 49,
+  "ecc_errors": 1,
+PASS presenter command: faults
+PASS presenter ECC reaches Grafana
+  "status": "healthy",
+  "temperature_c": 49,
+  "ecc_errors": 0,
+PASS presenter command: faults
+PASS presenter recovery reaches Grafana
+```
+
+The ordered excerpts show overheating at 105 C, recovery, ECC count 1, then recovery to 0. The `PASS ... reaches Grafana` lines came from actual polling assertions in the presenter suite, not from the injection API response.
+
+## Reading this run
 
 The action prints the changed GPU JSON immediately. Then inspect the same GPU
 through the [layer-by-layer evidence commands](../EVIDENCE.md): mock snapshot,

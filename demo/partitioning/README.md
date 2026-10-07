@@ -31,7 +31,37 @@ kubectl -n amd-demo-partitioning get pods
 
 Those replicas request full physical GPUs, not CPX partitions.
 
-## What to watch and what the logs prove
+## Recorded run output
+
+Captured on 2026-10-06 using Kubernetes v1.37.0, chart 0.2.9 and the
+ARM64 default Podman VM. Names, IDs and readings are specific to this run.
+[Full captured output](captured.log); [capture sources and complete suites](../logs/README.md).
+
+Selected lines from the actual capture (intermediate JSON fields omitted):
+
+```text
+  "mode": "CPX",
+  "partitions": 8,
+  "total_gpus": 64
+Virtual dashboard entries only; allocator capacity remains physical. Reset with --mode SPX.
+PASS presenter command: partitioning
+  "mode": "DPX",
+  "partitions": 2,
+  "total_gpus": 16
+Virtual dashboard entries only; allocator capacity remains physical. Reset with --mode SPX.
+  "mode": "QPX",
+  "partitions": 4,
+  "total_gpus": 32
+Virtual dashboard entries only; allocator capacity remains physical. Reset with --mode SPX.
+  "mode": "SPX",
+  "partitions": 1,
+  "total_gpus": 8
+Virtual dashboard entries only; allocator capacity remains physical. Reset with --mode SPX.
+```
+
+CPX displayed 64 virtual entries, DPX 16, QPX 32, and SPX 8. This output records the display simulation, not independent DRA slice allocation.
+
+## Reading this run
 
 Compare the API's entry count and per-entry memory before/after the command.
 For the default eight-GPU MI300X fleet, SPX/DPX/QPX/CPX displays 8/16/32/64
