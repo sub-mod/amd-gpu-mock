@@ -1,5 +1,7 @@
 # Choose a demo
 
+Browse [Scenarios](scenarios.md) for component and workload walkthroughs.
+
 Install the [quick start](getting-started.md) first. Use the
 [presenter guide](../../demo/README.md) for commands, cleanup, and captured logs.
 
@@ -14,5 +16,6 @@ Install the [quick start](getting-started.md) first. Use the
 | [Profiles](../../demo/profiles/README.md) | See demo | GPU model inventory and topology |
 | [Fault injection](../../demo/faults/README.md) | Default | ECC, overheating and recovery visibility |
 | [Telemetry](../../demo/telemetry/README.md) | Default | Real exporter, Prometheus and Grafana |
+| [Spur batch scheduling](../../demo/spur/README.md) | Separate device-plugin cluster | Queueing, device injection, completion and release |
 | [GPU + NIC](../../demo/gpu-network/single-node/README.md) | Optional prepared ERNIC worker | Real GPU and NIC allocation paths for one application |
 | [Two-worker RDMA](../../demo/gpu-network/two-node/README.md) | In development | CPU-buffer transfer and checksums; no validated payload PASS yet |

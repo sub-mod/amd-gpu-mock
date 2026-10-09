@@ -49,7 +49,7 @@ def stage():
         else:
             shutil.copyfile(source, destination)
     landing = (STAGE / 'docs/site/index.md').read_text()
-    landing = landing.replace('(getting-started.md)', '(docs/site/getting-started.md)').replace('(demos.md)', '(docs/site/demos.md)').replace('(../architecture.md)', '(docs/architecture.md)').replace('(../how-it-works.md)', '(docs/how-it-works.md)').replace('(../guides/testing.md)', '(docs/guides/testing.md)')
+    landing = landing.replace('(getting-started.md)', '(docs/site/getting-started.md)').replace('(demos.md)', '(docs/site/demos.md)').replace('(scenarios.md)', '(docs/site/scenarios.md)').replace('(../architecture.md)', '(docs/architecture.md)').replace('(../how-it-works.md)', '(docs/how-it-works.md)').replace('(../guides/testing.md)', '(docs/guides/testing.md)')
     (STAGE / 'index.md').write_text(landing)
     readme = (STAGE / 'repository.md').read_text()
     quickstart = readme.split('## Quick start\n', 1)[1].split('## Dashboard\n', 1)[0]

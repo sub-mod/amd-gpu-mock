@@ -42,40 +42,45 @@ markdown_extensions:
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
 nav:
-  - Home: index.md
-  - Getting started:
-      - Quick start: docs/site/getting-started.md
-      - Choose a demo: docs/site/demos.md
-      - Dashboard and Grafana: docs/guides/telemetry.md
+  - General:
+      - Overview: index.md
+      - Getting started:
+          - Quick start: docs/site/getting-started.md
+          - Choose a demo: docs/site/demos.md
+      - Architecture:
+          - Component diagrams: docs/architecture.md
+          - Mock interfaces and responsibilities: docs/how-it-works.md
+      - Reference:
+          - GPU profiles: docs/profiles.md
+          - Prepared worker image: artifacts/ernic-worker/README.md
       - Troubleshooting: docs/site/troubleshooting.md
-  - Architecture:
-      - Component diagrams: docs/architecture.md
-      - Mock interfaces and responsibilities: docs/how-it-works.md
-      - GPU profiles: docs/profiles.md
   - Guides:
-      - DRA: docs/guides/dra.md
-      - Same-GPU partition allocation: docs/guides/partition-allocation.md
-      - Device plugin: docs/guides/device-plugin.md
-      - AMD GPU Operator: docs/guides/gpu-operator.md
-      - GPU and network worker: docs/guides/gpu-network.md
-      - Telemetry and faults: docs/guides/telemetry.md
-  - Demos:
-      - Presenter guide: demo/README.md
-      - Tiny LLM: demo/llm/README.md
-      - ResourceClaims: demo/dra/README.md
-      - Allocation and release: demo/allocation/README.md
-      - Multiple GPUs: demo/multi-gpu/README.md
-      - Same-GPU partitions: demo/partition-allocation/README.md
-      - Virtual partition controls: demo/partitioning/README.md
-      - GPU profiles: demo/profiles/README.md
-      - Fault injection: demo/faults/README.md
-      - Prometheus and Grafana: demo/telemetry/README.md
-      - GPU and NIC on one worker: demo/gpu-network/single-node/README.md
-      - Two-worker RDMA (in development): demo/gpu-network/two-node/README.md
-  - Development:
+      - Overview: docs/site/scenarios.md
+      - Scenarios:
+          - AMD device plugin: docs/guides/device-plugin.md
+          - AMD DRA driver: docs/guides/dra.md
+          - AMD GPU Operator: docs/guides/gpu-operator.md
+          - Tiny LLM: demo/llm/README.md
+          - DRA allocation: demo/dra/README.md
+          - Multiple GPUs: demo/multi-gpu/README.md
+          - Same-GPU partition allocation: demo/partition-allocation/README.md
+          - GPU and NIC worker: demo/gpu-network/single-node/README.md
+          - Spur batch scheduling: demo/spur/README.md
+          - Two-worker RDMA (in development): demo/gpu-network/two-node/README.md
+      - Tasks:
+          - Allocation and release: demo/allocation/README.md
+          - Failure injection: demo/faults/README.md
+          - Prometheus and Grafana: demo/telemetry/README.md
+          - Virtual partition controls: demo/partitioning/README.md
+          - Switching GPU profiles: demo/profiles/README.md
+      - Details:
+          - Presenter guide: demo/README.md
+          - Partition architecture: docs/guides/partition-allocation.md
+          - Telemetry architecture: docs/guides/telemetry.md
+          - GPU and network setup: docs/guides/gpu-network.md
+  - Contributing:
       - Testing: docs/guides/testing.md
-      - Prepared worker image: artifacts/ernic-worker/README.md
-      - Build this documentation: docs/site/maintaining.md
+      - Documentation site: docs/site/maintaining.md
 validation:
   nav:
     omitted_files: ignore

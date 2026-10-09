@@ -5,7 +5,7 @@ Kubernetes nodes. Real Kubernetes components work against synthetic GPU discover
 and management interfaces.
 
 Start with the [quick start](getting-started.md), then
-[choose a demo](demos.md). The mock dashboard and Grafana are available through
+[choose a demo](demos.md) or browse [Scenarios](scenarios.md). The mock dashboard and Grafana are available through
 the quick start's port mappings.
 
 ## What you can demonstrate
@@ -16,6 +16,7 @@ the quick start's port mappings.
 | Same-GPU partition allocation | Fixed MI300X DPX/NPS2 siblings allocated through the real AMD DRA driver |
 | Device plugin | Whole-GPU allocation through `amd.com/gpu` |
 | Telemetry and faults | Dashboard state flowing through mock AMD SMI, the real exporter, Prometheus and Grafana |
+| Spur batch scheduling | Unchanged upstream queueing, device-plugin GPU allocation, completion and reuse |
 | GPU and NIC worker | One application receiving a DRA GPU and an AMD Network Operator NIC |
 
 The GPU mock does not execute HIP kernels, implement DMA, or establish hardware
