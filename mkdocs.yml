@@ -1,0 +1,84 @@
+site_name: AMD GPU Mock
+site_description: Run AMD GPU orchestration and monitoring demos without physical GPUs.
+site_url: https://sub-mod.github.io/amd-gpu-mock/
+repo_url: https://github.com/sub-mod/amd-gpu-mock
+repo_name: sub-mod/amd-gpu-mock
+docs_dir: tmp/docs-source
+site_dir: tmp/docs-site
+use_directory_urls: true
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: deep orange
+      accent: orange
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: deep orange
+      accent: orange
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+plugins:
+  - search
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+nav:
+  - Home: index.md
+  - Getting started:
+      - Quick start: docs/site/getting-started.md
+      - Choose a demo: docs/site/demos.md
+      - Dashboard and Grafana: docs/guides/telemetry.md
+      - Troubleshooting: docs/site/troubleshooting.md
+  - Architecture:
+      - Component diagrams: docs/architecture.md
+      - Mock interfaces and responsibilities: docs/how-it-works.md
+      - GPU profiles: docs/profiles.md
+  - Guides:
+      - DRA: docs/guides/dra.md
+      - Same-GPU partition allocation: docs/guides/partition-allocation.md
+      - Device plugin: docs/guides/device-plugin.md
+      - AMD GPU Operator: docs/guides/gpu-operator.md
+      - GPU and network worker: docs/guides/gpu-network.md
+      - Telemetry and faults: docs/guides/telemetry.md
+  - Demos:
+      - Presenter guide: demo/README.md
+      - Tiny LLM: demo/llm/README.md
+      - ResourceClaims: demo/dra/README.md
+      - Allocation and release: demo/allocation/README.md
+      - Multiple GPUs: demo/multi-gpu/README.md
+      - Same-GPU partitions: demo/partition-allocation/README.md
+      - Virtual partition controls: demo/partitioning/README.md
+      - GPU profiles: demo/profiles/README.md
+      - Fault injection: demo/faults/README.md
+      - Prometheus and Grafana: demo/telemetry/README.md
+      - GPU and NIC on one worker: demo/gpu-network/single-node/README.md
+      - Two-worker RDMA (in development): demo/gpu-network/two-node/README.md
+  - Development:
+      - Testing: docs/guides/testing.md
+      - Prepared worker image: artifacts/ernic-worker/README.md
+      - Build this documentation: docs/site/maintaining.md
+validation:
+  nav:
+    omitted_files: ignore
+  links:
+    not_found: warn
+    anchors: warn

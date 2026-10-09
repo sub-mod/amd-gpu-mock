@@ -1,0 +1,41 @@
+name: docs-site
+on:
+  pull_request:
+    paths: ['docs/**', 'demo/**', 'artifacts/**', 'README.md', 'mkdocs.yml', 'scripts/docs/**', '.github/workflows/docs-site.yaml']
+  push:
+    branches: [main]
+    paths: ['docs/**', 'demo/**', 'artifacts/**', 'README.md', 'mkdocs.yml', 'scripts/docs/**', '.github/workflows/docs-site.yaml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: scripts/docs/requirements.txt
+      - run: python -m pip install -r scripts/docs/requirements.txt
+      - run: python scripts/docs/build.py
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: tmp/docs-site
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
