@@ -1,9 +1,48 @@
 # Single node: Tiny LLM with a GPU and NIC
 
 One VM worker has mock MI300X GPUs and an emulated Pensando NIC. The same
-Tiny LLM container requests one GPU through AMD DRA and one `amd.com/nic`
-through AMD Network Operator. It returns a scripted HTTP response, prints
+Tiny LLM container requests one GPU through Kubernetes Dynamic Resource Allocation (DRA), using the AMD DRA driver,
+and one `amd.com/nic` through the NIC device plugin deployed by AMD Network Operator. It returns a scripted HTTP response, prints
 its allocated devices, and stays running for inspection.
+
+## Architecture
+
+The application runs on the VM worker, not on the Kind control plane. The NIC
+belongs to the worker, alongside its simulated GPUs. GPU allocation uses DRA;
+NIC allocation uses the Kubernetes device-plugin API.
+
+```text
+Default Podman Linux VM
+|
++-- Kind control plane
+|   +-- API + scheduler
+|   +-- AMD Network Operator controller
+|            | deploys/reconciles NIC device plugin on worker
+|            v
++-- ERNIC lab container
+    +-- rocm-ernic <-- VFIO-user socket --> QEMU VM worker
+        emulated NIC                       |
+                                           +-- ionic + ionic_rdma kernel drivers
+                                           |   +-- NFD discovers PCI NIC
+                                           |   +-- NIC plugin -> amd.com/nic: 1
+                                           |
+                                           +-- GPU mock agent -> mock MI300X sysfs
+                                           |   +-- AMD DRA -> GPU ResourceSlices
+                                           |
+                                           +-- kubelet + containerd
+                                               +-- Tiny LLM application Pod
+                                                   GPU ResourceClaim -> CDI devices
+                                                   amd.com/nic: 1 -> RDMA devices
+                                                   HTTP -> scripted text + evidence
+```
+
+The scheduler places the Pod on the selected worker when both resources are
+available. The container sees `/dev/kfd`, one `/dev/dri/renderD*`, RDMA device
+nodes and NIC allocation metadata. It uses `hostNetwork: true`, sharing the
+worker network; allocation does not create an isolated or secondary network.
+The HTTP response demonstrates application availability and allocation evidence,
+not GPU computation or RDMA data transfer. See the
+[integration guide](../../../docs/guides/gpu-network.md) for the detailed flows.
 
 ## Set up and run
 
@@ -35,6 +74,30 @@ The allocation check Pod from earlier ERNIC experiments must release the NIC
 before this demo can run. If you created that specific check Pod, delete it
 with `kubectl delete pod ernic-allocated`. The demo never deletes unrelated
 NIC consumers; a busy NIC correctly leaves it Pending.
+
+## How setup applies Helm updates
+
+Setup uses published, pinned inputs, rather than automatically selecting the
+newest registry version or installing local chart edits.
+
+| Entry point | Helm behavior |
+| --- | --- |
+| `./demo/setup.sh --ernic` | Installs/upgrades `amd-gpu-mock` from the published OCI chart, using `CHART_VERSION` in `scripts/release.env` (currently `0.2.12`). Resets values to chart defaults plus `demo/config.yaml`, then runs ERNIC setup. |
+| `./scripts/ernic/setup.sh` | Requires an existing cluster and GPU Helm release. Installs/upgrades `amd-network`, then upgrades `amd-gpu-mock` to the pinned published chart with the ERNIC worker selectors, DRA enabled and GPU device plugin disabled. |
+| Re-running ERNIC setup with an already joined worker | Repeats both Helm reconciliation steps without replacing the worker disk. |
+
+For an existing demo cluster, use `./demo/setup.sh --skip-cluster --ernic` if
+you want to reapply `demo/config.yaml` as well. That full setup resets prior
+Helm values. The narrower ERNIC GPU upgrade uses `--reuse-values`, preserving
+existing settings except the selectors and allocator settings it explicitly
+changes. Its chart version includes the exporter readiness timeout fix.
+
+The network release uses a chart copied from the pinned upstream source revision
+in `scripts/ernic/versions.env`, with one device-plugin ConfigMap template override.
+The operator and NIC plugin images are pinned there too. Updating only the local
+GPU chart source does not change what setup installs: maintainers must publish
+that chart version and update the release pin. Re-running setup reconciles
+Kubernetes components; it does not rebuild or replace an existing VM image.
 
 ## What the audience sees
 
