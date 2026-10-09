@@ -216,3 +216,10 @@ Do not change a live cluster's partition mode while claims exist.
 ## GPU and network worker
 
 The [single-node GPU/network demo](gpu-network/single-node/README.md) adds a dedicated ERNIC VM worker and allocates a DRA GPU and NIC to one application. This optional demo needs the VM setup described there. A [two-node transfer demo](gpu-network/two-node/README.md) is planned separately.
+
+## Spur batch scheduling
+
+[Spur demo](spur/README.md) creates a separate device-plugin cluster and uses
+unchanged upstream Spur to show submission, queueing, device injection, completion
+and GPU reuse. It includes setup, inspection, cleanup and actual captured output.
+No computation backend or RocJITsu installation is needed.

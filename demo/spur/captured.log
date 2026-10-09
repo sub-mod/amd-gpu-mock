@@ -1,0 +1,65 @@
+spur 0.14.0 (bd28e639)
+
+PASS: Spur creates a running job consuming the whole mock GPU pool
+EVIDENCE SpurJob=hold-pool id=3 Pod=spur-job-3-amd-spur-control-plane node=amd-spur-control-plane amd.com/gpu=8
+BEGIN job=hold-pool requested_gpus=8 host=spur-job-3-amd-spur-control-plane
+/dev/kfd ea:0
+/dev/dri/renderD128 e2:80
+/dev/dri/renderD129 e2:81
+/dev/dri/renderD130 e2:82
+/dev/dri/renderD131 e2:83
+/dev/dri/renderD132 e2:84
+/dev/dri/renderD133 e2:85
+/dev/dri/renderD134 e2:86
+/dev/dri/renderD135 e2:87
+DEVICE_INJECTION_PASS
+Waiting for presenter release; no GPU computation is performed.
+
+PASS: second SpurJob is Pending while the pool is occupied
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+                 4   default queued-g      k8s PD       0:00      1 (Resources)
+                 3   default hold-poo      k8s  R       0:13      1 amd-spur-control-plane
+
+PASS: Spur keeps the second job queued without creating a competing GPU Pod
+PASS: hold-pool reaches Completed through Spur
+BEGIN job=hold-pool requested_gpus=8 host=spur-job-3-amd-spur-control-plane
+/dev/kfd ea:0
+/dev/dri/renderD128 e2:80
+/dev/dri/renderD129 e2:81
+/dev/dri/renderD130 e2:82
+/dev/dri/renderD131 e2:83
+/dev/dri/renderD132 e2:84
+/dev/dri/renderD133 e2:85
+/dev/dri/renderD134 e2:86
+/dev/dri/renderD135 e2:87
+DEVICE_INJECTION_PASS
+Waiting for presenter release; no GPU computation is performed.
+JOB_COMPLETED
+
+PASS: queued job starts after the first job releases the GPU pool
+EVIDENCE SpurJob=queued-gpu id=4 Pod=spur-job-4-amd-spur-control-plane node=amd-spur-control-plane amd.com/gpu=1
+BEGIN job=queued-gpu requested_gpus=1 host=spur-job-4-amd-spur-control-plane
+/dev/kfd ea:0
+/dev/dri/renderD128 e2:80
+DEVICE_INJECTION_PASS
+Waiting for presenter release; no GPU computation is performed.
+
+PASS: queued-gpu reaches Completed through Spur
+BEGIN job=queued-gpu requested_gpus=1 host=spur-job-4-amd-spur-control-plane
+/dev/kfd ea:0
+/dev/dri/renderD128 e2:80
+DEVICE_INJECTION_PASS
+Waiting for presenter release; no GPU computation is performed.
+JOB_COMPLETED
+
+NAME                              STATE       JOB ID
+spurjob.spur.amd.com/hold-pool    Completed   3
+spurjob.spur.amd.com/queued-gpu   Completed   4
+
+NAME                                     READY   STATUS      RESTARTS   AGE    IP            NODE                     NOMINATED NODE   READINESS GATES
+pod/spur-job-3-amd-spur-control-plane    0/1     Completed   0          28s    10.244.0.20   amd-spur-control-plane   <none>           <none>
+pod/spur-job-4-amd-spur-control-plane    0/1     Completed   0          13s    10.244.0.21   amd-spur-control-plane   <none>           <none>
+pod/spur-k8s-operator-86669fbc98-c4srx   1/1     Running     0          5m5s   10.244.0.12   amd-spur-control-plane   <none>           <none>
+pod/spurctld-55848b696-97tb6             1/1     Running     0          5m5s   10.244.0.11   amd-spur-control-plane   <none>           <none>
+
+PASS: unchanged Spur submission, GPU allocation, queueing, completion and reuse

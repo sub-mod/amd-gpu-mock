@@ -201,3 +201,19 @@ Rendering and comparison therefore use the same partition configuration.
 This suite proves allocation/injection through real layers, not hardware
 compute or memory isolation. Per-partition exporter attribution and physical
 fault propagation remain outside this allocation test.
+
+## Spur batch scheduling
+
+The optional `spur-demo` workflow runs unchanged Spur 0.14.0 with the published
+mock node and device-plugin chart on a dedicated cluster. Run locally with:
+
+```bash
+demo/spur/setup.sh
+python3 -u demo/spur/run.py
+```
+
+It verifies whole-pool allocation, queueing without a competing Pod, character
+device injection, completion and subsequent GPU reuse. The operator launch
+endpoint requires controller-signed credentials. No HIP computation, DRA
+allocation, distributed workload or RocJITsu backend is asserted. See the
+[Spur demo and captured logs](../../demo/spur/README.md).

@@ -22,6 +22,7 @@ behavior, validation and limits.
 | [AMD GPU Operator](guides/gpu-operator.md) | Tested Operator components and remaining integration work |
 | [GPU/network worker](guides/gpu-network.md) | Prepared ERNIC VM worker, real operator NIC discovery and DRA GPU allocation |
 | [Prepared worker artifact](../artifacts/ernic-worker/README.md) | Image contents, pinned inputs, rebuilding and validation |
+| [Spur scheduling](../demo/spur/README.md) | Unchanged upstream batch scheduler, queueing, GPU injection, completion and release |
 | [Testing](guides/testing.md) | Local contracts and complete CI suites |
 | [Demo room](../demo/README.md) | Presentations, commands, actual captured logs and cleanup |
 

@@ -1,0 +1,43 @@
+name: spur-demo
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  demo:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - uses: helm/kind-action@v1
+        with:
+          version: v0.33.0
+          kubectl_version: v1.37.0
+          cluster_name: amd-spur
+          node_image: docker.io/submod/amd-mock-kind-node:0.2.2
+          config: demo/spur/kind.yaml
+          wait: 120s
+      - name: Install unchanged Spur and mock GPU device plugin
+        run: |
+          set -o pipefail
+          mkdir -p artifacts
+          demo/spur/setup.sh | tee artifacts/setup.log
+      - name: Submission, queueing, device injection and release
+        run: |
+          set -o pipefail
+          python3 -u demo/spur/run.py | tee artifacts/run.log
+      - name: Diagnostics
+        if: always()
+        env:
+          KUBECONFIG: tmp/spur/kubeconfig
+        run: |
+          mkdir -p artifacts
+          kubectl -n amd-demo-spur get spurjobs,pods -o wide > artifacts/workloads.txt 2>&1 || true
+          kubectl -n amd-demo-spur logs deployment/spur-k8s-operator > artifacts/operator.log 2>&1 || true
+          kubectl -n amd-demo-spur logs deployment/spurctld > artifacts/controller.log 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: spur-demo
+          path: artifacts/
