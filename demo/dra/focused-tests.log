@@ -1,0 +1,12 @@
+PREFLIGHT node=amd-mock-control-plane root=pci0000:00 free_siblings=4
+PASS: memory request 192Gi allocates a matching device with CDI injection
+PASS: oversized memory request is accepted but remains Pending and unallocated
+EVIDENCE init/main device identity:
+/dev/kfd ea:0
+/dev/dri/card0 e2:0
+/dev/dri/renderD128 e2:80
+PASS: init and main containers use one allocation and identical card/render/KFD identities
+EVIDENCE same-root allocation: [{"device": "gpu-0-128", "driver": "gpu.amd.com", "pool": "amd-mock-control-plane", "request": "left"}, {"device": "gpu-1-129", "driver": "gpu.amd.com", "pool": "amd-mock-control-plane", "request": "right"}]
+PASS: two distinct devices satisfy the same-PCIe-root matchAttribute constraint
+PASS: individually matching requests with contradictory PCIe-root constraint remain unallocated
+Results: 5 passed, 0 failed

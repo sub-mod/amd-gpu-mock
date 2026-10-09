@@ -461,7 +461,7 @@ func (r *Renderer) renderDeviceNodes() error {
 	}
 	// Create a regular file as placeholder; real mknod requires privileges
 	// and is done by the entrypoint script.
-	if err := writeFile(kfdPath, ""); err != nil {
+	if err := ensureDevicePlaceholder(kfdPath); err != nil {
 		return err
 	}
 
@@ -469,7 +469,7 @@ func (r *Renderer) renderDeviceNodes() error {
 	driDir := filepath.Join(devDir, "dri")
 	for _, dev := range r.profile.Devices {
 		renderPath := filepath.Join(driDir, fmt.Sprintf("renderD%d", dev.DRMRenderMinor))
-		if err := writeFile(renderPath, ""); err != nil {
+		if err := ensureDevicePlaceholder(renderPath); err != nil {
 			return err
 		}
 	}
@@ -693,4 +693,20 @@ func writeFile(path, content string) error {
 		return err
 	}
 	return os.WriteFile(path, []byte(content), 0o644)
+}
+
+// Existing mock character devices survive an unclean agent shutdown. Never open
+// them for writing: without a backing GPU driver, open returns ENXIO.
+func ensureDevicePlaceholder(path string) error {
+	if info, err := os.Lstat(path); err == nil {
+		if info.Mode()&os.ModeCharDevice != 0 {
+			return nil
+		}
+		if !info.Mode().IsRegular() {
+			return fmt.Errorf("unexpected device placeholder type at %s: %s", path, info.Mode())
+		}
+	} else if !os.IsNotExist(err) {
+		return err
+	}
+	return writeFile(path, "")
 }

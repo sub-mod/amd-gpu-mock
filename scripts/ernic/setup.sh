@@ -10,12 +10,15 @@ LAB="${ERNIC_CONTAINER:-amd-ernic-lab}"
 CP="${ERNIC_CONTROL_PLANE:-amd-mock-control-plane}"
 SSH_PORT="${ERNIC_SSH_PORT:-2228}"
 STATE="${ERNIC_STATE_DIR:-$ROOT/tmp/ernic}"
+BACKEND="${ERNIC_BACKEND:-loopback}"
 export KUBE_CONTEXT="$CONTEXT" ERNIC_NODE="$NODE" ERNIC_STATE_DIR="$STATE"
 k=(kubectl --context "$CONTEXT")
 for bin in podman kubectl helm python3 curl ssh scp ssh-keygen; do command -v "$bin" >/dev/null; done
 "${k[@]}" cluster-info >/dev/null
 # Reusing an already joined worker is non-destructive.
 if "${k[@]}" get node "$NODE" >/dev/null 2>&1; then
+ existing_backend="$(cat "$STATE/backend" 2>/dev/null || printf loopback)"
+ [ "$BACKEND" = "$existing_backend" ] || { echo "Worker backend is $existing_backend, requested $BACKEND. Remove the worker before changing its backend." >&2; exit 1; }
  "$HERE/install-network.sh"
  "$HERE/install-gpu.sh"
  exit
@@ -24,6 +27,8 @@ fi
 RESUME=false
 if podman container exists "$LAB"; then
  if [ "${ERNIC_RESUME_UNJOINED:-false}" = true ]; then
+  existing_backend="$(cat "$STATE/backend" 2>/dev/null || printf loopback)"
+  [ "$BACKEND" = "$existing_backend" ] || { echo "Cannot resume worker with a different ERNIC backend ($existing_backend)." >&2; exit 1; }
   [ -f "$STATE/id_ed25519" ] && [ -f "$STATE/worker.qcow2" ]
   RESUME=true
  else
@@ -34,6 +39,7 @@ fi
 if ! $RESUME; then
 mkdir -p "$STATE"
 chmod 700 "$STATE"
+printf '%s\n' "$BACKEND" > "$STATE/backend"
 [ -f "$STATE/id_ed25519" ] || ssh-keygen -q -t ed25519 -N '' -f "$STATE/id_ed25519"
 download() {
  local url="$1" file="$2" expected="$3"
@@ -160,4 +166,7 @@ $registered || { echo "Worker did not register within 5 minutes" >&2; exit 1; }
 "$HERE/install-network.sh"
 "${k[@]}" -n kube-amd-network rollout status ds/ernic-device-plugin --timeout=300s
 "$HERE/install-gpu.sh"
-printf '\nWorker ready. Run ./demo/gpu-network/single-node/run.sh\n'
+printf '\nWorker %s ready.\n' "$NODE"
+if [ "$NODE" = amd-ernic-worker-1 ]; then
+ printf 'Run ./demo/gpu-network/single-node/run.sh\n'
+fi

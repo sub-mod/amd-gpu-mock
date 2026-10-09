@@ -1,0 +1,12 @@
+ROLE=receiver NODE=amd-ernic-rdma-a NIC=0000:00:04.0 RDMA_DEVICE=rocep0s4 bytes=65536
+CONTROL_LISTEN port=18515
+QP_METADATA local_qpn=2 remote_qpn=2 peer_gid=fe80::ad:aff:fe59:8
+CQ_SUCCESS opcode=128 wr_id=1
+EXPECTED_SHA256=8d3e8a6ecf83558e0b41b29232ce649b3d177f9c842a9ccc4cc60e77b2a29494
+RECEIVED_SHA256=8d3e8a6ecf83558e0b41b29232ce649b3d177f9c842a9ccc4cc60e77b2a29494
+PAYLOAD_PASS operation=SEND_RECV bytes=65536
+CQ_SUCCESS opcode=129 wr_id=1
+EXPECTED_SHA256=dcabc11cc936a58449fbf074616801e872ffb01c92fd5a3c5f59905e2bf8eb80
+RECEIVED_SHA256=dcabc11cc936a58449fbf074616801e872ffb01c92fd5a3c5f59905e2bf8eb80
+PAYLOAD_PASS operation=RDMA_WRITE_WITH_IMM bytes=65536
+TRANSFER_PASS role=receiver node=amd-ernic-rdma-a payload_path=libibverbs/ionic/ERNIC_TCP_mesh

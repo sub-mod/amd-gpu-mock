@@ -7,7 +7,7 @@ import subprocess
 CONTEXT = os.environ.get("KUBE_CONTEXT", "kind-amd-mock")
 NODE = os.environ.get("ERNIC_NODE", "amd-ernic-worker-1")
 NS = os.environ.get("DEMO_NAMESPACE", "amd-demo-gpu-network")
-POD = "tiny-llm-gpu-network"
+POD = os.environ.get("DEMO_POD", "tiny-llm-gpu-network")
 BASE = ["kubectl", "--context", CONTEXT]
 
 

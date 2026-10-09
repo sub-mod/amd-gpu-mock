@@ -204,7 +204,7 @@ retain existing GPU device-plugin workloads.
 Re-running `./scripts/ernic/setup.sh` detects the joined worker and still runs
 both Helm steps. The network release is reconciled from the pinned upstream
 chart plus the ERNIC ConfigMap override. The GPU release is upgraded to the
-published `CHART_VERSION` in `scripts/release.env` (currently `0.2.12`), preserving
+published `CHART_VERSION` in `scripts/release.env` (currently `0.2.13`), preserving
 existing values with `--reuse-values` except for explicit worker selectors and
 DRA/device-plugin settings. It requires an existing GPU Helm release.
 
@@ -234,8 +234,55 @@ The earlier captures validate a fresh worker in a retained control plane. A late
 validates deletion and recreation of both the Kind control plane and worker,
 using the published commands and images. It includes setup/application output
 and explains the startup waits and diagnostic checks. The [two-node demo](../../demo/gpu-network/two-node/README.md)
-is reserved for a future transfer/checksum milestone. No GPU compute, RDMA data
-transfer or GPU-direct DMA is claimed by the current logs.
+uses one `amd-demo-rdma` namespace for both worker Pods and validates
+cross-worker CPU-buffer SEND/RECV and RDMA WRITE with matching
+SHA-256 checksums and corruption rejection. Its [fresh-install log](../../demo/gpu-network/two-node/fresh-install.log)
+covers a recreated control plane and two new prepared workers. The single-node
+logs above prove allocation only; neither demo claims GPU compute or GPU-direct DMA.
+
+## Two-worker allocation and transfer
+
+The [two-node demo](../../demo/gpu-network/two-node/README.md) extends the same
+worker architecture. Run the README quick start, then
+`./demo/gpu-network/two-node/setup.sh` and
+`./demo/gpu-network/two-node/run.sh`. It needs a 16 GiB ARM64 Podman machine;
+remove the single-node ERNIC worker first as described in the demo.
+
+```text
+[1] Kind control plane + published GPU chart
+                         |
+[2] Start ERNIC labs A/B and join two QEMU VM workers
+    ERNIC manager A <--------- TCP mesh ---------> ERNIC worker B
+           | VFIO-user                                  | VFIO-user
+           v                                            v
+    amd-ernic-rdma-a                              amd-ernic-rdma-b
+                         |
+[3] EACH worker discovers GPUs and its one NIC
+    GPU mock -> AMD DRA -> ResourceSlices
+    PCI NIC -> ionic/ionic_rdma -> NFD -> Network Operator -> NIC plugin
+                         |
+[4] Wait for readiness and amd.com/nic advertisement; create amd-demo-rdma
+    Pod tiny-llm-rdma-a                           Pod tiny-llm-rdma-b
+    GPU claim + NIC request                      GPU claim + NIC request
+                         |
+[5] Scheduler places Pods; kubelet calls DRA NodePrepare and NIC Allocate
+    containerd exposes GPU/RDMA devices; both allocation/HTTP checks pass
+                         |
+[6] B <---------- TCP QP metadata / hashes / synchronization ----------> A
+[7] B CPU buffer -> verbs/ionic -> ERNIC B -> mesh -> ERNIC A -> A CPU buffer
+    SEND/RECV + WRITE WITH IMMEDIATE; successful completions + matching SHA-256
+[8] Deliberate corruption -> checksum rejection; save logs, leave Pods running
+```
+
+Both Pods share **one namespace**, `amd-demo-rdma`; their distinct names and
+node selectors separate worker allocations. Each gets one GPU and one NIC.
+Guest discovery (2), scheduler-visible capacity (3), and container device
+allocation (5) are separate events. The TCP control connection at step 6
+exchanges metadata; the verbs operations at step 7 carry the tested payload.
+The emulator transports those operations over its TCP mesh. Neither this flow
+nor the Tiny LLM HTTP simulation executes real GPU inference or GPU-memory DMA.
+See the demo for captured logs, numbered architecture, reboot validation,
+inspection commands and orderly cleanup of both peers.
 
 ## Upstream components and project configuration
 

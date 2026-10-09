@@ -12,7 +12,7 @@ that containerd uses to inject the allocated devices.
 ## Use the default quick start: published images only
 
 Install kind v0.33.0 or newer, kubectl v1.37, Helm, and a running Docker or
-Podman runtime. Chart 0.2.12 / mock release 0.2.6 uses the 0.2.2 node image and supports Kubernetes 1.37 only. Linux
+Podman runtime. Chart 0.2.13 / mock release 0.2.7 uses the 0.2.2 node image and supports Kubernetes 1.37 only. Linux
 AMD64 and Linux ARM64 nodes are supported; Apple-silicon Macs run ARM64
 nodes inside the container runtime's Linux VM. Internet access is needed
 to pull images and the chart. No Go compiler or local image build is required.
@@ -183,6 +183,10 @@ tests/dra/chart-validation.sh
 # Validate the driver installed by the published chart.
 INSTALL_DRIVER=0 DRA_NS=amd-mock tests/dra/validate_dra.sh
 
+# Focused blog scenarios: capacity, init/main sharing, PCIe-root constraints.
+# Requires two free devices sharing a PCIe root on one healthy mock node.
+python3 tests/dra/focused.py
+
 # Run after other GPU-consuming test pods have been deleted.
 # Requires a dedicated single-node cluster with at least two mock GPUs.
 DRA_NS=amd-mock python3 tests/dra/lifecycle.py
@@ -201,6 +205,9 @@ Set `KUBECONFIG` to the intended cluster before running any test.
 | One-GPU claim | Pod gets `/dev/kfd` and exactly one card/render character-device pair |
 | Matching / nonmatching selectors | Match allocates; nonmatch remains unallocated |
 | Generated claim deletion | Claim disappears after its pod is deleted |
+| Memory capacity request | Exact advertised memory allocates; a 1-EiB request remains Pending and unallocated |
+| Init/main sharing | One allocation; identical KFD/card/render paths and major/minor identities in both containers |
+| PCIe-root constraints | Two distinct devices share the advertised root; contradictory distinct-root constraint stays unallocated |
 | Same-GPU reallocation | A PCI bus ID selector reallocates the released GPU |
 | Multi-GPU request | Two distinct GPUs and exactly two card/render pairs |
 | Full-pool exhaustion | All GPUs allocate once; an additional claim cannot allocate |
@@ -274,7 +281,68 @@ release tag with different source; update the version and chart defaults togethe
 
 ## Telemetry for DRA consumers
 
-Chart 0.2.12 starts the [AMD telemetry pipeline](telemetry.md) by default.
+Chart 0.2.13 starts the [AMD telemetry pipeline](telemetry.md) by default.
 The real exporter reads kubelet pod-resources to attach consumer pod, namespace
 and container labels to allocated GPUs. Dashboard fault controls update the
 same state read by AMD SMI; they do not promise DRA deallocation or remediation.
+
+## Focused DRA blog scenarios
+
+`tests/dra/focused.py` creates an unused `amd-dra-focused` namespace and
+selects two available devices sharing a PCIe root on a healthy mock node.
+It reads existing allocations across all namespaces and leaves other workloads
+untouched. Set `FOCUSED_NS` to override the namespace or `KEEP=1` to retain
+failed resources for inspection. The suite cleans up its namespace by default.
+
+The five assertions cover three groups:
+
+- **Capacity:** a request equal to the selected device's advertised memory
+  must allocate and receive CDI devices; a 1-EiB request for that same device
+  must receive a scheduling rejection and remain Pending without an allocation.
+- **Sharing:** an init container and main container reference one claim,
+  which must have exactly one allocation. Their logs must show identical
+  KFD/card/render character-device identities, matching the allocated render ID.
+- **Topology:** two requests selecting one advertised PCIe root must allocate
+  distinct devices with that root using `matchAttribute`. Replacing it with
+  `distinctAttribute` makes the requests contradictory; they must remain
+  unallocated even though each selector independently matches available devices.
+
+The pinned Kubernetes 1.37 capacity allocator compares capacity map keys
+verbatim. AMD v1.0.0 publishes `memory`, so this suite requests `memory`,
+rather than the blog's `gpu.amd.com/memory`. Capacity requests do not
+create fractional devices or prove VRAM isolation. These tests exercise
+scheduling and injection, not computation. CI runs this suite in both DRA
+image configurations; adding it to CI does not establish a passing CI run.
+
+### Capacity names: upstream mapping
+
+For this project's pinned stack, use `capacity.requests.memory`. This is
+version-specific, not a general rule that DRA names never have a driver prefix.
+
+| Interface | Name in this stack | Why |
+| --- | --- | --- |
+| AMD ResourceSlice capacity map | `memory` | AMD v1.0.0's `GetDevice()` emits the unqualified key for whole GPUs and partitions |
+| CEL selector | `device.capacity["gpu.amd.com"].memory` | Kubernetes' CEL adapter assigns unqualified keys to the publishing driver's domain |
+| ResourceClaim capacity request | `memory` | Kubernetes v0.37.0's consumable-capacity allocator compares the request key directly with the capacity map |
+
+Source references:
+
+- [AMD v1.0.0 device publication](https://github.com/ROCm/k8s-gpu-dra-driver/blob/7bf0efa6704371a928b533fce8b33993631bdb8a/cmd/gpu-kubeletplugin/deviceinfo.go#L88)
+- [Kubernetes v0.37.0 CEL namespace mapping](https://github.com/kubernetes/dynamic-resource-allocation/blob/v0.37.0/cel/compile.go#L345)
+- [Kubernetes v0.37.0 literal capacity lookup](https://github.com/kubernetes/dynamic-resource-allocation/blob/v0.37.0/structured/internal/experimental/consumable_capacity.go#L109)
+
+A local scheduler-only comparison on Kubernetes v1.37.0 confirmed that
+`memory: 192Gi` allocated a GPU while `gpu.amd.com/memory: 192Gi` remained
+unallocated with `FailedScheduling`. See the [captured mapping comparison](../../demo/dra/capacity-mapping.log).
+This comparison does not assert successful container preparation; the original
+cluster's mock agents were unhealthy. The focused suite additionally requires
+CDI device visibility for its positive capacity case. Future Kubernetes
+versions may normalize both spellings; recheck their allocator before changing
+this example. No ResourceSlice or claim status was patched for the comparison.
+
+The focused suite passed **5/5 checks** on the rebuilt ARM64 Kind cluster
+using published chart 0.2.13, mock image v0.2.7 and the unchanged AMD v1.0.0
+driver. See [actual output](../../demo/dra/focused-tests.log). This includes
+container preparation and device injection, beyond the scheduler-only
+name-mapping comparison. The earlier mock-agent restart failure was corrected
+and covered by a character-device restart regression test.

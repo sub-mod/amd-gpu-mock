@@ -1,0 +1,8 @@
+{
+  "image": "docker.io/submod/amd-rdma-demo:0.1.0",
+  "digest": "sha256:9f1c5dcb866fa5d81b99ac837aca0eff627fccae4de728374748b802af370f64",
+  "platform": "linux/arm64",
+  "anonymous_pull_manifest_verified": true,
+  "transfer_source_sha256": "69e828904ec6774405df97da754e0bb7b3ad7049edd9ac06e0dbb9654b71dbf4",
+  "containerfile_sha256": "78a3cdb7bada7b59133c37e0a44cc7e9d3b9dff71f432b405690fe61877a6842"
+}

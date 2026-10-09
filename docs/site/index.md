@@ -35,7 +35,8 @@ and links to recorded output. Historical captures retain their original versions
 The default setup uses Kubernetes 1.37 and DRA. Device-plugin allocation is an
 alternative installation mode; the two allocators must not hand out the same
 GPU pool simultaneously. Schedulable partitioning uses a fixed startup topology.
-The optional two-worker RDMA demo remains in development.
+The optional two-worker RDMA demo validates CPU-buffer payload transfer alongside
+GPU/NIC allocation. It does not provide GPU-memory DMA.
 
 See [testing](../guides/testing.md) for executable checks and validation limits.
 This project was inspired by [NVIDIA Mokka](https://github.com/NVIDIA/k8s-test-infra).

@@ -1,0 +1,7 @@
+raw {"request": [{"exactly": {"allocationMode": "ExactCount", "capacity": {"requests": {"memory": "192Gi"}}, "count": 1, "deviceClassName": "gpu.amd.com"}, "name": "gpu"}], "allocation": {"allocationTimestamp": "2026-10-09T01:46:37Z", "devices": {"results": [{"device": "gpu-0-128", "driver": "gpu.amd.com", "pool": "amd-ernic-rdma-b", "request": "gpu"}]}, "nodeSelector": {"nodeSelectorTerms": [{"matchFields": [{"key": "metadata.name", "operator": "In", "values": ["amd-ernic-rdma-b"]}]}]}}}
+qualified {"request": [{"exactly": {"allocationMode": "ExactCount", "capacity": {"requests": {"gpu.amd.com/memory": "192Gi"}}, "count": 1, "deviceClassName": "gpu.amd.com"}, "name": "gpu"}], "allocation": null}
+LAST SEEN   TYPE      REASON             OBJECT          MESSAGE
+0s          Warning   FailedScheduling   pod/qualified   0/3 nodes are available: 1 cannot allocate all claims, 2 node(s) didn't match Pod's node affinity/selector. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.
+0s          Normal    Scheduled          pod/raw         Successfully assigned amd-dra-capacity-mapping/raw to amd-ernic-rdma-b
+
+PASS scheduler mapping only; container preparation is not asserted

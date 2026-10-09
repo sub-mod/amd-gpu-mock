@@ -16,7 +16,7 @@ else
   kind export kubeconfig --name "$CLUSTER" --kubeconfig "$KUBECONFIG"
 fi
 helm upgrade --install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-  --version 0.2.12 --namespace amd-mock --create-namespace \
+  --version 0.2.13 --namespace amd-mock --create-namespace \
   --set dra.enabled=false --set devicePlugin.enabled=true \
   --set monitoring.enabled=false --set metricsExporter.enabled=false \
   --set dashboard.enabled=false --wait --timeout 5m

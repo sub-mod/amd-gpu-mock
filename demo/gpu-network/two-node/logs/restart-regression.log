@@ -1,0 +1,3 @@
+=== RUN   TestRenderDeviceNodesAfterUncleanShutdown
+--- PASS: TestRenderDeviceNodesAfterUncleanShutdown (0.00s)
+PASS

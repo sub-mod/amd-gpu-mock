@@ -1,0 +1,39 @@
+=== ROCm ERNIC Statistics ===
+Instance:
+  socket      : /opt/lab/ernic.sock
+  backend     : tcp:worker:10.88.0.15:6320
+  pci         : 0x1dd8:0x1002
+  mac         : 02:ad:0a:59:00:08
+  connection  : connected (device reset)
+
+Write count : 1204
+
+Device Statistics:
+  commands                : 56
+  bar0_reads              : 3034
+  bar0_writes             : 11763
+  uar_reads               : 0
+  uar_writes              : 8507
+  mmio_reads_total        : 3034
+  mmio_writes_total       : 20270
+  interrupts              : 7801
+  reset_count             : 2
+  total_bytes_sent        : 262144
+  total_bytes_received    : 0
+  total_bytes_rdma_read   : 0
+  total_bytes_rdma_write  : 131072
+  total_ip_bytes_tx       : 3680760
+  total_ip_bytes_rx       : 6398442
+
+Per-QP Statistics:
+  QP 1:
+    doorbell_send  : 0
+    doorbell_recv  : 1024
+    wqes_processed : 0
+    cqes_posted    : 0
+    bytes_sent     : 0
+    bytes_received : 0
+    bytes_rdma_read : 0
+    bytes_rdma_write : 0
+    WQEs by opcode:
+

@@ -166,9 +166,9 @@ cluster is deleted.
 
 | Component | Version |
 | --- | --- |
-| Chart (default dashboards) | 0.2.12 |
+| Chart (default dashboards) | 0.2.13 |
 | kind node / Kubernetes | 0.2.2 / v1.37.0 |
-| Mock node-agent image | v0.2.6 |
+| Mock node-agent image | v0.2.7 |
 | AMD exporter runtime | v1.5.2-mock.2 |
 
 These versions are independent: changing chart configuration does not require
@@ -215,7 +215,7 @@ Do not change a live cluster's partition mode while claims exist.
 
 ## GPU and network worker
 
-The [single-node GPU/network demo](gpu-network/single-node/README.md) adds a dedicated ERNIC VM worker and allocates a DRA GPU and NIC to one application. This optional demo needs the VM setup described there. A [two-node transfer demo](gpu-network/two-node/README.md) is planned separately.
+The [single-node GPU/network demo](gpu-network/single-node/README.md) adds a dedicated ERNIC VM worker and allocates a DRA GPU and NIC to one application. This optional demo needs the VM setup described there. The [two-node transfer demo](gpu-network/two-node/README.md) allocates a GPU and NIC on each worker in one `amd-demo-rdma` namespace, transfers randomized CPU buffers through ERNIC, and checks both correct payloads and corruption rejection. Its numbered architecture explains when discovery, allocation, container access and transfer occur; the runner dumps the evidence and leaves both Pods running.
 
 ## Spur batch scheduling
 

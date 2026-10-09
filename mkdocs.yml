@@ -66,7 +66,7 @@ nav:
           - Same-GPU partition allocation: demo/partition-allocation/README.md
           - GPU and NIC worker: demo/gpu-network/single-node/README.md
           - Spur batch scheduling: demo/spur/README.md
-          - Two-worker RDMA (in development): demo/gpu-network/two-node/README.md
+          - Two-worker RDMA: demo/gpu-network/two-node/README.md
       - Tasks:
           - Allocation and release: demo/allocation/README.md
           - Failure injection: demo/faults/README.md

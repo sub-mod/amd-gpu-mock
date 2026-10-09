@@ -1,0 +1,336 @@
+Rebooting amd-ernic-rdma-a through its separate management interface...
+Rebooting amd-ernic-rdma-b through its separate management interface...
+amd-ernic-rdma-a: new boot ID 3b3d15f3-c3e4-4efa-bd47-920b6bbc6830, Ready
+amd-ernic-rdma-b: new boot ID 11a63d11-4356-4e6a-bbba-779dda3e990f, Ready
+
+=== Worker and allocator readiness ===
+node/amd-ernic-rdma-a condition met
+node/amd-ernic-rdma-b condition met
+Waiting for daemon set "amd-gpu-mock" rollout to finish: 1 of 3 updated pods are available...
+Waiting for daemon set "amd-gpu-mock" rollout to finish: 2 of 3 updated pods are available...
+daemon set "amd-gpu-mock" successfully rolled out
+Waiting for daemon set "amd-gpu-mock-dra-kubeletplugin" rollout to finish: 2 of 3 updated pods are available...
+daemon set "amd-gpu-mock-dra-kubeletplugin" successfully rolled out
+Waiting for daemon set "ernic-device-plugin" rollout to finish: 0 of 2 updated pods are available...
+Waiting for daemon set "ernic-device-plugin" rollout to finish: 1 of 2 updated pods are available...
+daemon set "ernic-device-plugin" successfully rolled out
+amd-ernic-rdma-a: Ready, one NIC advertised
+amd-ernic-rdma-b: Ready, one NIC advertised
+namespace/amd-demo-rdma configured
+pod "tiny-llm-rdma-a" deleted from amd-demo-rdma namespace
+configmap/tiny-llm-app unchanged
+namespace/amd-demo-rdma configured
+resourceclaimtemplate.resource.k8s.io/tiny-llm-gpu configured
+pod/tiny-llm-rdma-a created
+service/tiny-llm-rdma-a unchanged
+pod/tiny-llm-rdma-a condition met
+
+=== Allocation/HTTP preflight for amd-ernic-rdma-a (transfer follows after both Pods are Ready) ===
+{
+  "pod": "tiny-llm-rdma-a",
+  "node": "amd-ernic-rdma-a",
+  "claim": "tiny-llm-rdma-a-gpu-tvzdc",
+  "gpu_allocation": {
+    "device": "gpu-0-128",
+    "driver": "gpu.amd.com",
+    "pool": "amd-ernic-rdma-a",
+    "request": "gpu"
+  },
+  "advertised_gpu": {
+    "attributes": {
+      "deviceID": {
+        "string": "0x74a1"
+      },
+      "driverVersion": {
+        "version": "6.19.4"
+      },
+      "numaNode": {
+        "int": 0
+      },
+      "partitionProfile": {
+        "string": "spx_nps1"
+      },
+      "productName": {
+        "string": "AMD_Instinct_MI300X_OAM"
+      },
+      "resource.kubernetes.io/pciBusID": {
+        "string": "0000:05:00.0"
+      },
+      "resource.kubernetes.io/pcieRoot": {
+        "string": "pci0000:00"
+      },
+      "type": {
+        "string": "amdgpu"
+      }
+    },
+    "capacity": {
+      "computeUnits": {
+        "value": "304"
+      },
+      "memory": {
+        "value": "192Gi"
+      },
+      "simdUnits": {
+        "value": "1216"
+      }
+    },
+    "name": "gpu-0-128"
+  },
+  "response": {
+    "prompt": "The future of AI is",
+    "text": "The future of AI is bright and full of possibilities",
+    "simulation": true,
+    "allocation": {
+      "node": "amd-ernic-rdma-a",
+      "devices": {
+        "/dev/kfd": {
+          "major": 234,
+          "minor": 0
+        },
+        "/dev/infiniband/uverbs0": {
+          "major": 231,
+          "minor": 192
+        },
+        "/dev/infiniband/rdma_cm": {
+          "major": 10,
+          "minor": 264
+        },
+        "/dev/dri/renderD128": {
+          "major": 226,
+          "minor": 128
+        }
+      },
+      "nic_pci": "0000:00:04.0",
+      "nic_info": {
+        "0000:00:04.0": {
+          "generic": {
+            "deviceID": "0000:00:04.0"
+          },
+          "rdma": {
+            "rdma_cm": "/dev/infiniband/rdma_cm",
+            "rdma_dev": "rocep0s4",
+            "uverbs": "/dev/infiniband/uverbs0"
+          }
+        }
+      },
+      "rdma_devices": [
+        "rocep0s4"
+      ],
+      "compute": "scripted simulation"
+    }
+  }
+}
+PASS: same worker, AMD DRA claim -> matching injected GPU, Network Operator NIC -> discovered RDMA device, HTTP simulated response
+No RDMA transfer, real GPU compute, or GPU-direct DMA was tested.
+namespace/amd-demo-rdma configured
+pod "tiny-llm-rdma-b" deleted from amd-demo-rdma namespace
+configmap/tiny-llm-app unchanged
+namespace/amd-demo-rdma configured
+resourceclaimtemplate.resource.k8s.io/tiny-llm-gpu configured
+pod/tiny-llm-rdma-b created
+service/tiny-llm-rdma-b unchanged
+pod/tiny-llm-rdma-b condition met
+
+=== Allocation/HTTP preflight for amd-ernic-rdma-b (transfer follows after both Pods are Ready) ===
+{
+  "pod": "tiny-llm-rdma-b",
+  "node": "amd-ernic-rdma-b",
+  "claim": "tiny-llm-rdma-b-gpu-vtfkn",
+  "gpu_allocation": {
+    "device": "gpu-2-130",
+    "driver": "gpu.amd.com",
+    "pool": "amd-ernic-rdma-b",
+    "request": "gpu"
+  },
+  "advertised_gpu": {
+    "attributes": {
+      "deviceID": {
+        "string": "0x74a1"
+      },
+      "driverVersion": {
+        "version": "6.19.4"
+      },
+      "numaNode": {
+        "int": 0
+      },
+      "partitionProfile": {
+        "string": "spx_nps1"
+      },
+      "productName": {
+        "string": "AMD_Instinct_MI300X_OAM"
+      },
+      "resource.kubernetes.io/pciBusID": {
+        "string": "0000:46:00.0"
+      },
+      "resource.kubernetes.io/pcieRoot": {
+        "string": "pci0000:00"
+      },
+      "type": {
+        "string": "amdgpu"
+      }
+    },
+    "capacity": {
+      "computeUnits": {
+        "value": "304"
+      },
+      "memory": {
+        "value": "192Gi"
+      },
+      "simdUnits": {
+        "value": "1216"
+      }
+    },
+    "name": "gpu-2-130"
+  },
+  "response": {
+    "prompt": "The future of AI is",
+    "text": "The future of AI is bright and full of possibilities",
+    "simulation": true,
+    "allocation": {
+      "node": "amd-ernic-rdma-b",
+      "devices": {
+        "/dev/kfd": {
+          "major": 234,
+          "minor": 0
+        },
+        "/dev/infiniband/uverbs0": {
+          "major": 231,
+          "minor": 192
+        },
+        "/dev/infiniband/rdma_cm": {
+          "major": 10,
+          "minor": 264
+        },
+        "/dev/dri/renderD130": {
+          "major": 226,
+          "minor": 130
+        }
+      },
+      "nic_pci": "0000:00:04.0",
+      "nic_info": {
+        "0000:00:04.0": {
+          "generic": {
+            "deviceID": "0000:00:04.0"
+          },
+          "rdma": {
+            "rdma_cm": "/dev/infiniband/rdma_cm",
+            "rdma_dev": "rocep0s4",
+            "uverbs": "/dev/infiniband/uverbs0"
+          }
+        }
+      },
+      "rdma_devices": [
+        "rocep0s4"
+      ],
+      "compute": "scripted simulation"
+    }
+  }
+}
+PASS: same worker, AMD DRA claim -> matching injected GPU, Network Operator NIC -> discovered RDMA device, HTTP simulated response
+No RDMA transfer, real GPU compute, or GPU-direct DMA was tested.
+
+=== positive: CPU-buffer transfer via verbs ===
+ROLE=sender NODE=amd-ernic-rdma-b NIC=0000:00:04.0 RDMA_DEVICE=rocep0s4 bytes=65536
+QP_METADATA local_qpn=2 remote_qpn=2 peer_gid=fe80::ad:aff:fe59:7
+SENT_SHA256=af11dd253bb32634a9a6608b558b19f9fb82fef55322bf33040d8cdf4fb74027
+CQ_SUCCESS opcode=0 wr_id=2
+PAYLOAD_PASS operation=SEND_RECV bytes=65536
+SENT_SHA256=fae513c1ba34534a08822027a5949fb260c675fb61a384ac0e84ede054461284
+CQ_SUCCESS opcode=1 wr_id=2
+PAYLOAD_PASS operation=RDMA_WRITE_WITH_IMM bytes=65536
+TRANSFER_PASS role=sender node=amd-ernic-rdma-b payload_path=libibverbs/ionic/ERNIC_TCP_mesh
+ROLE=receiver NODE=amd-ernic-rdma-a NIC=0000:00:04.0 RDMA_DEVICE=rocep0s4 bytes=65536
+CONTROL_LISTEN port=18515
+QP_METADATA local_qpn=2 remote_qpn=2 peer_gid=fe80::ad:aff:fe59:8
+CQ_SUCCESS opcode=128 wr_id=1
+EXPECTED_SHA256=af11dd253bb32634a9a6608b558b19f9fb82fef55322bf33040d8cdf4fb74027
+RECEIVED_SHA256=af11dd253bb32634a9a6608b558b19f9fb82fef55322bf33040d8cdf4fb74027
+PAYLOAD_PASS operation=SEND_RECV bytes=65536
+CQ_SUCCESS opcode=129 wr_id=1
+EXPECTED_SHA256=fae513c1ba34534a08822027a5949fb260c675fb61a384ac0e84ede054461284
+RECEIVED_SHA256=fae513c1ba34534a08822027a5949fb260c675fb61a384ac0e84ede054461284
+PAYLOAD_PASS operation=RDMA_WRITE_WITH_IMM bytes=65536
+TRANSFER_PASS role=receiver node=amd-ernic-rdma-a payload_path=libibverbs/ionic/ERNIC_TCP_mesh
+PASS: randomized SEND/RECV and RDMA WRITE payloads match SHA-256 across workers
+
+=== corruption: CPU-buffer transfer via verbs ===
+ROLE=sender NODE=amd-ernic-rdma-b NIC=0000:00:04.0 RDMA_DEVICE=rocep0s4 bytes=65536
+QP_METADATA local_qpn=8 remote_qpn=8 peer_gid=fe80::ad:aff:fe59:7
+SENT_SHA256=2bf669f981596d19b8d1abd930420b97b281c069a3ace476c2978374cbfad311
+CQ_SUCCESS opcode=0 wr_id=2
+FAIL line=120 operation=match errno=2 (No such file or directory)
+command terminated with exit code 1
+ROLE=receiver NODE=amd-ernic-rdma-a NIC=0000:00:04.0 RDMA_DEVICE=rocep0s4 bytes=65536
+CONTROL_LISTEN port=18515
+QP_METADATA local_qpn=8 remote_qpn=8 peer_gid=fe80::ad:aff:fe59:8
+CQ_SUCCESS opcode=128 wr_id=1
+EXPECTED_SHA256=2bf669f981596d19b8d1abd930420b97b281c069a3ace476c2978374cbfad311
+RECEIVED_SHA256=0ff15c8da610174186f550d454b4a420d378d939ff29c52bc80ee00bc6a27661
+FAIL line=113 operation=match errno=2 (No such file or directory)
+command terminated with exit code 1
+PASS: intentional receiver corruption rejected by checksum
+
+=== ERNIC a statistics after transfer ===
+=== ROCm ERNIC Statistics ===
+Instance:
+  socket      : /opt/lab/ernic.sock
+  backend     : tcp:manager:10.88.0.15:6320
+  pci         : 0x1dd8:0x1002
+  mac         : 02:ad:0a:59:00:07
+  connection  : connected (device reset)
+
+Write count : 2133
+
+Device Statistics:
+  commands                : 100
+  bar0_reads              : 4643
+  bar0_writes             : 21035
+  uar_reads               : 0
+  uar_writes              : 15127
+  mmio_reads_total        : 4643
+  mmio_writes_total       : 36162
+  interrupts              : 14212
+  reset_count             : 3
+  total_bytes_sent        : 0
+  total_bytes_received    : 720896
+  total_bytes_rdma_read   : 0
+  total_bytes_rdma_write  : 262144
+  total_ip_bytes_tx       : 4414043
+  total_ip_bytes_rx       : 12204261
+
+Per-QP Statistics:
+  QP 1:
+
+=== ERNIC b statistics after transfer ===
+=== ROCm ERNIC Statistics ===
+Instance:
+  socket      : /opt/lab/ernic.sock
+  backend     : tcp:worker:10.88.0.15:6320
+  pci         : 0x1dd8:0x1002
+  mac         : 02:ad:0a:59:00:08
+  connection  : connected (device reset)
+
+Write count : 1652
+
+Device Statistics:
+  commands                : 100
+  bar0_reads              : 4510
+  bar0_writes             : 16451
+  uar_reads               : 0
+  uar_writes              : 11915
+  mmio_reads_total        : 4510
+  mmio_writes_total       : 28366
+  interrupts              : 10911
+  reset_count             : 3
+  total_bytes_sent        : 458752
+  total_bytes_received    : 0
+  total_bytes_rdma_read   : 0
+  total_bytes_rdma_write  : 262144
+  total_ip_bytes_tx       : 4652198
+  total_ip_bytes_rx       : 8692899
+
+Per-QP Statistics:
+  QP 1:
+
+Demo Pods remain running. Logs: /Users/subinm/development/AI/GPU/k8s-infra-amd/tmp/rdma-demo/reboot-run
+No GPU computation or GPU-direct DMA is performed.

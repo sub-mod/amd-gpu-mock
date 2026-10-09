@@ -1,0 +1,6 @@
+ROLE=sender NODE=amd-ernic-rdma-b NIC=0000:00:04.0 RDMA_DEVICE=rocep0s4 bytes=65536
+QP_METADATA local_qpn=8 remote_qpn=8 peer_gid=fe80::ad:aff:fe59:7
+SENT_SHA256=a94421acfd58d1e4ac8ca73ba347a6fc9f41b0bbcb033e8672c96334656a29ad
+CQ_SUCCESS opcode=0 wr_id=2
+FAIL line=120 operation=match errno=2 (No such file or directory)
+command terminated with exit code 1

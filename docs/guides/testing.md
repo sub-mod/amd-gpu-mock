@@ -60,7 +60,7 @@ allocatable resources, agent/device-plugin logs, and kind logs.
 ## DRA tests
 
 See the [DRA guide](dra.md#tests-and-evidence). CI runs the basic and
-lifecycle suites against both the source mock with AMD's official driver
+lifecycle suites, plus `python3 tests/dra/focused.py`, against both the source mock with AMD's official driver
 and the published chart/images. These allocators run in separate clusters.
 
 ## Scope
@@ -122,7 +122,7 @@ the host URL. Use `DASHBOARD_URL=http://127.0.0.1:9090` when testing a custom
 kind host port. Change that mapping before creating the cluster; container
 port mappings cannot be added to an existing kind node by a Helm upgrade.
 The DRA and Operator CI jobs run this check with the same kind configuration.
-Chart 0.2.12 uses mock image v0.2.6 and node image 0.2.2; the node image
+Chart 0.2.13 uses mock image v0.2.7 and node image 0.2.2; the node image
 still runs Kubernetes 1.37.
 
 ## Real AMD exporter telemetry
@@ -158,7 +158,7 @@ native AMD64 path. The tests invoke dashboard endpoints, not browser clicks.
 `demo/` contains runnable LLM, DRA, virtual partitioning, fault injection,
 multi-GPU, allocation/release, telemetry, profile and fixed same-GPU partition
 presentations. See its
-[presenter guide](../../demo/README.md). Chart 0.2.12 installs built-in
+[presenter guide](../../demo/README.md). Chart 0.2.13 installs built-in
 Prometheus/Grafana and the real exporter by default; the shared kind config
 exposes Grafana at localhost:3000 and the mock dashboard at localhost:8080.
 
@@ -217,3 +217,27 @@ device injection, completion and subsequent GPU reuse. The operator launch
 endpoint requires controller-signed credentials. No HIP computation, DRA
 allocation, distributed workload or RocJITsu backend is asserted. See the
 [Spur demo and captured logs](../../demo/spur/README.md).
+
+## Two-worker GPU/NIC and RDMA validation
+
+After the [two-worker setup](../../demo/gpu-network/two-node/README.md), run:
+
+```bash
+./demo/gpu-network/two-node/run.sh
+./demo/gpu-network/two-node/reboot-check.sh  # interrupts both dedicated guests
+```
+
+The runner waits for node and allocator readiness, then creates two distinctly
+named Pods in `amd-demo-rdma`. Each requests one DRA GPU and one device-plugin
+NIC. Allocation checks match claim/device identities and NIC PCI metadata to
+the container, and query the scripted Tiny LLM HTTP endpoint. Next, randomized
+64 KiB CPU buffers traverse SEND/RECV and RDMA WRITE WITH IMMEDIATE. Both peers
+must report successful completions and matching SHA-256 digests. A deliberate
+receiver corruption must produce a checksum mismatch; an unrelated process
+failure cannot satisfy that negative check. The reboot check requires new guest
+boot IDs before repeating the same suite.
+
+See the [numbered execution diagram](../../demo/gpu-network/two-node/README.md#architecture-and-sequence)
+and captured logs for evidence. This optional ARM64/Podman integration is run
+locally; it is not part of the hosted Kind-only CI matrix. It does not validate
+GPU-memory DMA, real inference or physical RDMA bandwidth.

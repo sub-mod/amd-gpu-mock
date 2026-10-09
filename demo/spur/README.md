@@ -62,7 +62,7 @@ demo/spur/setup.sh
 python3 -u demo/spur/run.py
 ```
 
-The script uses the published mock node `0.2.2` and chart `0.2.12`, then installs
+The script uses the published mock node `0.2.2` and chart `0.2.13`, then installs
 Spur's upstream CRD and this demo's controller/operator configuration. It
 uses a private kubeconfig at `tmp/spur/kubeconfig`. Set `SPUR_CLUSTER` and
 `SPUR_KUBECONFIG` to override the cluster name and kubeconfig location.

@@ -22,6 +22,10 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: "1.26"
+      - name: Character-device restart regression
+        run: |
+          CGO_ENABLED=0 go test -c -o /tmp/kfd-restart.test ./pkg/gpu/kfd
+          sudo /tmp/kfd-restart.test -test.run TestRenderDeviceNodesAfterUncleanShutdown -test.v
       - uses: azure/setup-helm@v4
       - uses: helm/kind-action@v1
         with:
@@ -53,7 +57,7 @@ jobs:
         if: matrix.stack == 'published'
         run: |
           helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-            --version 0.2.11 -n amd-mock --create-namespace
+            --version 0.2.13 -n amd-mock --create-namespace
           kubectl -n amd-mock rollout status ds/amd-gpu-mock --timeout=120s
       - name: Dashboard available automatically on host
         run: python3 tests/dashboard-e2e.py
@@ -69,6 +73,11 @@ jobs:
           tests/dra/validate_dra.sh
           kubectl delete namespace amd-dra-test --wait=true --timeout=120s
           python3 tests/dra/lifecycle.py
+      - name: DRA capacity, shared containers and PCIe constraints
+        run: |
+          set -o pipefail
+          mkdir -p artifacts
+          python3 -u tests/dra/focused.py | tee artifacts/dra-focused.log
       - name: Default DRA Tiny LLM and virtual partition demo
         run: MODE=dra python3 tests/demo-e2e.py
       - name: Collect diagnostics

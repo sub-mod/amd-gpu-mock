@@ -110,7 +110,7 @@ newest registry version or installing local chart edits.
 
 | Entry point | Helm behavior |
 | --- | --- |
-| `./demo/setup.sh --ernic` | Installs/upgrades `amd-gpu-mock` from the published OCI chart, using `CHART_VERSION` in `scripts/release.env` (currently `0.2.12`). Resets values to chart defaults plus `demo/config.yaml`, then runs ERNIC setup. |
+| `./demo/setup.sh --ernic` | Installs/upgrades `amd-gpu-mock` from the published OCI chart, using `CHART_VERSION` in `scripts/release.env` (currently `0.2.13`). Resets values to chart defaults plus `demo/config.yaml`, then runs ERNIC setup. |
 | `./scripts/ernic/setup.sh` | Requires an existing cluster and GPU Helm release. Installs/upgrades `amd-network`, then upgrades `amd-gpu-mock` to the pinned published chart with the ERNIC worker selectors, DRA enabled and GPU device plugin disabled. |
 | Re-running ERNIC setup with an already joined worker | Repeats both Helm reconciliation steps without replacing the worker disk. |
 

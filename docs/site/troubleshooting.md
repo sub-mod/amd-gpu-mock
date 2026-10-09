@@ -20,6 +20,7 @@ a container creation error points to driver preparation or CDI injection.
 | `amd.com/gpu` unavailable | [Device-plugin installation](../guides/device-plugin.md) |
 | Dashboard or Grafana inaccessible | [Quick start](getting-started.md) and [telemetry](../guides/telemetry.md) |
 | Partition workload cannot allocate | [Fixed partition topology](../guides/partition-allocation.md) |
+| GPU agent fails opening `dev/kfd` after restart | Upgrade to chart **0.2.13** / mock image **v0.2.7**, which preserves existing mock character devices during rendering. |
 | ERNIC VM or NIC discovery fails | [GPU/network guide](../guides/gpu-network.md) |
 
 Fault controls change simulated management state. They do not promise automatic

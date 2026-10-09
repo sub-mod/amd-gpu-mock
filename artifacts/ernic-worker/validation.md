@@ -40,8 +40,10 @@ QEMU, ERNIC, libvfio-user, controller or device-plugin source patches were used.
 
 This validates discovery, allocation, injection and runtime setup. No RDMA
 transfer, real GPU compute, GPU-direct DMA, SR-IOV or NIC fault injection was
-performed. Dashboard changes remain paused. The two-node transfer demo remains
-planned separately.
+performed in that single-node validation. Dashboard changes remain paused.
+The separate [two-worker demo](../../demo/gpu-network/two-node/README.md) now
+validates CPU-buffer payload transfer; it does not expand these earlier captures
+to claim GPU-memory DMA.
 
 ## Later full-cluster validation
 
@@ -51,3 +53,17 @@ published quick start, chart 0.2.12 and prepared artifact 0.1.0. Setup and the
 combined GPU/NIC application verifier passed without local builds or manual
 guest edits. The record links actual setup/application captures and explains
 the observed startup waits. Earlier evidence above retains its original scope.
+
+## Two-worker validation
+
+The same prepared worker artifact 0.1.0 was used for two fresh workers with
+published GPU chart 0.2.13 and mock image v0.2.7. The
+[fresh-install capture](../../demo/gpu-network/two-node/fresh-install.log)
+records successful GPU/NIC allocation, CPU-buffer SEND/RECV, RDMA WRITE WITH
+IMMEDIATE, matching SHA-256 digests and deliberate corruption rejection.
+That capture used the earlier two-namespace layout. The current
+[captured demo run](../../demo/gpu-network/two-node/captured.log) verifies the
+simplified one-namespace layout. See the demo's numbered architecture for the
+execution order and precise proof boundaries.
+
+The current layout also passed an uninterrupted [guest reboot check](../../demo/gpu-network/two-node/reboot-validation.log): both boot IDs changed, allocators recovered, and the complete allocation/payload/checksum suite passed again.

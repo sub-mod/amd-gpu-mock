@@ -1,6 +1,6 @@
 # Two containers with slices of one GPU
 
-Install chart 0.2.12 with `--set gpu.partition=DPX` on a fresh quick-start
+Install chart 0.2.13 with `--set gpu.partition=DPX` on a fresh quick-start
 cluster. The same published node image, AMD DRA driver and normal dashboard
 port mappings are used. See [installation and architecture](../../docs/guides/partition-allocation.md).
 

@@ -34,7 +34,7 @@ Use a fresh cluster rather than overwriting an existing DRA installation.
 
 ```bash
 helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-  --version 0.2.12 --namespace amd-mock --create-namespace \
+  --version 0.2.13 --namespace amd-mock --create-namespace \
   --set dra.enabled=false --set devicePlugin.enabled=true
 kubectl -n amd-mock rollout status ds/amd-gpu-mock --timeout=180s
 kubectl -n kube-system rollout status ds/amd-gpu-mock-device-plugin --timeout=180s

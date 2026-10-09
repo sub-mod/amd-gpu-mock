@@ -13,7 +13,21 @@ ip link set eth1 master ernicbr0
 ip link set ernic0 master ernicbr0
 ip link set eth1 up
 ip link set ernic0 up
-/usr/local/bin/rocm-ernic --socket /opt/lab/ernic.sock --backend loopback --mac "$MAC" --tap ernic0 --log-level info --stats-file /opt/lab/ernic.stats > ernic.log 2>&1 &
+BACKEND="$(cat backend 2>/dev/null || printf loopback)"
+if [[ "$BACKEND" == tcp:manager:self:* ]]; then
+ BACKEND="tcp:manager:$(ip -4 -o addr show dev eth0 | awk '{print $4}' | cut -d/ -f1):${BACKEND##*:}"
+fi
+# Upstream TCP mesh requires each emulator to advertise its guest's own GIDs.
+# The guest's link-local GID is derived from the same MAC used for the PCI NIC.
+export ERNIC_TCP_GUEST_GIDS="$(python3 - "$MAC" "$NODE_IP" <<'PYGID'
+import ipaddress,sys
+mac=bytearray.fromhex(sys.argv[1].replace(':',''));mac[0]^=2
+raw=bytes.fromhex('fe80000000000000')+mac[:3]+b'\xff\xfe'+mac[3:]
+print(str(ipaddress.IPv6Address(raw))+','+sys.argv[2])
+PYGID
+)"
+printf '%s\n' "$BACKEND" > backend-active
+/usr/local/bin/rocm-ernic --socket /opt/lab/ernic.sock --backend "$BACKEND" --mac "$MAC" --tap ernic0 --log-level info --stats-file /opt/lab/ernic.stats > ernic.log 2>&1 &
 SERVER_PID=$!
 trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
 for attempt in $(seq 1 30); do [ ! -S ernic.sock ] || break; sleep 1; done

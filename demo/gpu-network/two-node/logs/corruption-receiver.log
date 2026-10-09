@@ -1,0 +1,8 @@
+ROLE=receiver NODE=amd-ernic-rdma-a NIC=0000:00:04.0 RDMA_DEVICE=rocep0s4 bytes=65536
+CONTROL_LISTEN port=18515
+QP_METADATA local_qpn=8 remote_qpn=8 peer_gid=fe80::ad:aff:fe59:8
+CQ_SUCCESS opcode=128 wr_id=1
+FAIL line=113 operation=match errno=2 (No such file or directory)
+EXPECTED_SHA256=a94421acfd58d1e4ac8ca73ba347a6fc9f41b0bbcb033e8672c96334656a29ad
+RECEIVED_SHA256=adf2917b81539b2ef76828ad06fba8e0a5b5c265a3c1a536f6df4862907ba996
+command terminated with exit code 1

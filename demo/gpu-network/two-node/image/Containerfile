@@ -1,0 +1,9 @@
+FROM docker.io/library/ubuntu:26.04 AS build
+RUN apt-get update && apt-get install -y --no-install-recommends gcc libc6-dev libibverbs-dev libssl-dev
+COPY transfer.c /src/transfer.c
+RUN gcc -std=c11 -Wall -Wextra -Werror -O2 /src/transfer.c -libverbs -lcrypto -o /rdma-transfer
+FROM docker.io/library/ubuntu:26.04
+LABEL org.opencontainers.image.source="https://github.com/sub-mod/amd-gpu-mock"
+RUN apt-get update && apt-get install -y --no-install-recommends python3 libibverbs1 ibverbs-providers libssl3t64 && rm -rf /var/lib/apt/lists/*
+COPY --from=build /rdma-transfer /usr/local/bin/rdma-transfer
+CMD ["sleep", "infinity"]
