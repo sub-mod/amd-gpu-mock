@@ -1,0 +1,11 @@
+{
+  "kubernetes": "v1.37.0",
+  "architecture": "arm64",
+  "base_guest_sha256": "63a93bd5a8d76e33b15ceb5daa3657bd79be804748051ab178e643b0f5da22e7",
+  "sha256": {
+    "worker-base.img": "d572983eb80efa8b93224b35a3771970ef8733ff72c8170c9c0e117d6da156f9",
+    "Image.raw": "d3df97f638ee6828d320ed9a1ebec1c335a5fa4e16560635e750bd5262ebc308",
+    "initrd": "65fa960053965fbcbba70a36e060965f2f4eb46124e8f0d9c0984250edc61117",
+    "packages.txt": "60b91c150595db462f4ce4113cbef4558493f6685f2a553159a82acb4b617829"
+  }
+}

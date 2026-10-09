@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: amd-network-device-plugin-config
+  namespace: kube-amd-network
+data:
+  config.json: |
+    {"resourceList":[{"resourceName":"nic","resourcePrefix":"amd.com","enableExporterHealthCheck":false,"disableDeviceConfig":true,"selectors":{"vendors":["1dd8"],"devices":["1002"],"drivers":["ionic"],"isRdma":true},"excludeTopology":false}]}

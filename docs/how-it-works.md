@@ -7,7 +7,7 @@ A scheduled GPU pod proves allocation and device injection, not GPU execution.
 ## From quick start to a GPU pod
 
 1. The published kind image starts Kubernetes v1.37.0 with CDI enabled.
-2. Chart 0.2.11 starts the mock node agent and AMD DRA driver by default.
+2. Chart 0.2.12 starts the mock node agent and AMD DRA driver by default.
 3. The agent reads a profile, writes mock KFD/PCI/DRM/driver sysfs, creates
    character devices and initializes runtime state.
 4. AMD's unchanged driver discovers the mounted sysfs and publishes ResourceSlices.

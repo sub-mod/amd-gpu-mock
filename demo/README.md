@@ -1,8 +1,9 @@
 # AMD GPU mock demo room
 
-Open this folder when presenting. Every demo uses published images and a
-CPU-only kind cluster; no AMD source checkout, compiler or custom image build
-is needed. The workload demos prove scheduling and device injection, not
+Open this folder when presenting. Demos use published images and CPU-only
+Kubernetes workers; no AMD source checkout, compiler or custom image build
+is needed. Most run entirely in Kind. The optional GPU/network demo adds
+a prepared ARM64 VM worker to the Kind control plane. The workload demos prove scheduling and device injection, not
 GPU inference or hardware isolation.
 
 ## Start once
@@ -165,7 +166,7 @@ cluster is deleted.
 
 | Component | Version |
 | --- | --- |
-| Chart (default dashboards) | 0.2.11 |
+| Chart (default dashboards) | 0.2.12 |
 | kind node / Kubernetes | 0.2.2 / v1.37.0 |
 | Mock node-agent image | v0.2.6 |
 | AMD exporter runtime | v1.5.2-mock.2 |
@@ -211,3 +212,7 @@ for the normal SPX presentation. A fixed DPX cluster rejects that API request;
 after releasing its demo claims, remove the dedicated cluster directly with
 `KUBECONFIG=/tmp/partition-demo.kubeconfig kind delete cluster --name amd-partition-demo`.
 Do not change a live cluster's partition mode while claims exist.
+
+## GPU and network worker
+
+The [single-node GPU/network demo](gpu-network/single-node/README.md) adds a dedicated ERNIC VM worker and allocates a DRA GPU and NIC to one application. This optional demo needs the VM setup described there. A [two-node transfer demo](gpu-network/two-node/README.md) is planned separately.

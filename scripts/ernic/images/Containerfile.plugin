@@ -1,0 +1,8 @@
+FROM docker.io/library/alpine:3.23
+ARG UPSTREAM_COMMIT
+LABEL org.opencontainers.image.source="https://github.com/ROCm/k8s-network-device-plugin" \
+ org.opencontainers.image.revision=$UPSTREAM_COMMIT
+RUN apk add --no-cache ca-certificates hwdata-pci
+COPY sriovdp /usr/bin/sriovdp
+COPY LICENSE /licenses/NETWORK-DEVICE-PLUGIN-LICENSE
+ENTRYPOINT ["/usr/bin/sriovdp"]

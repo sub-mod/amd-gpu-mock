@@ -1,0 +1,4 @@
+FROM scratch
+LABEL org.opencontainers.image.source="https://github.com/sub-mod/amd-gpu-mock" \
+ org.opencontainers.image.description="Unjoined ARM64 Ubuntu ERNIC worker disk; extract files, not a runnable container"
+COPY worker-base.img Image.raw initrd manifest.json packages.txt /worker/

@@ -1,6 +1,6 @@
 # Same-GPU partition allocation
 
-Chart 0.2.11 and mock image v0.2.6 add a fixed **MI300X DPX/NPS2** topology.
+Chart 0.2.12 and mock image v0.2.6 add a fixed **MI300X DPX/NPS2** topology.
 Eight physical 192-GiB GPUs become sixteen schedulable 96-GiB devices,
 with 152 compute units per partition. Siblings retain one PCI bus address
 and KFD physical unique ID; each has its own card, render minor, KFD node,
@@ -28,7 +28,7 @@ add one setting to the same chart installation:
 
 ```bash
 helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-  --version 0.2.11 -n amd-mock --create-namespace \
+  --version 0.2.12 -n amd-mock --create-namespace \
   --set gpu.partition=DPX --wait --timeout 5m
 ```
 

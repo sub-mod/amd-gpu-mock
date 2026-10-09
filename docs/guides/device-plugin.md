@@ -8,7 +8,7 @@ kind create cluster --name amd-mock \
     --image docker.io/submod/amd-mock-kind-node:0.2.2 \
     --config deployments/kind-node/kind-config.yaml
 helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-    --version 0.2.11 --namespace amd-mock --create-namespace \
+    --version 0.2.12 --namespace amd-mock --create-namespace \
     --set dra.enabled=false --set devicePlugin.enabled=true
 kubectl -n kube-system rollout status ds/amd-gpu-mock-device-plugin --timeout=180s
 kubectl get node -o jsonpath='{.items[0].status.allocatable.amd\.com/gpu}'

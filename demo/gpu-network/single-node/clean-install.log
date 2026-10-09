@@ -1,0 +1,154 @@
+Pulling prepared worker artifact docker.io/submod/amd-ernic-worker:0.1.0...
+Trying to pull docker.io/submod/amd-ernic-worker:0.1.0...
+Getting image source signatures
+Copying blob sha256:51ad3299883d5c4aa68e10227a1ff6f1db4c964edfbc68f723048a091b60a9b7
+Copying config sha256:c8517c189dc4c15be47b43df32f6e6586c4444a21277c8e63c9eef869be08380
+Writing manifest to image destination
+c8517c189dc4c15be47b43df32f6e6586c4444a21277c8e63c9eef869be08380
+becaf8fcf29a9dc4808d5e31d44049c9f92a60838bfa10c2dca8bf4e20a798cd
+Formatting '/opt/lab/worker.qcow2', fmt=qcow2 cluster_size=65536 extended_l2=off compression_type=zlib size=32212254720 backing_file=/opt/lab/worker-base.img backing_fmt=qcow2 lazy_refcounts=off refcount_bits=16
+4a5493916977369a16885abdd7c37ac8858827a04aef3c01c272f081c85c6514
+Booting guest; waiting for SSH (up to 10 minutes). Logs: /Users/subinm/development/AI/GPU/k8s-infra-amd/tmp/ernic-clean/worker-console.log
+Guest SSH ready; configuring Kubernetes runtime...
+Using preinstalled guest runtime and RDMA tools.
+* Applying /usr/lib/sysctl.d/10-apparmor.conf ...
+* Applying /usr/lib/sysctl.d/10-coredump-debian.conf ...
+* Applying /usr/lib/sysctl.d/50-default.conf ...
+* Applying /usr/lib/sysctl.d/50-pid-max.conf ...
+* Applying /usr/lib/sysctl.d/55-bufferbloat.conf ...
+* Applying /usr/lib/sysctl.d/55-console-messages.conf ...
+* Applying /usr/lib/sysctl.d/55-ipv6-privacy.conf ...
+* Applying /usr/lib/sysctl.d/55-kernel-hardening.conf ...
+* Applying /usr/lib/sysctl.d/55-magic-sysrq.conf ...
+* Applying /usr/lib/sysctl.d/55-map-count.conf ...
+* Applying /usr/lib/sysctl.d/55-network-security.conf ...
+* Applying /usr/lib/sysctl.d/55-ptrace.conf ...
+* Applying /usr/lib/sysctl.d/55-zeropage.conf ...
+* Applying /etc/sysctl.d/90-kubernetes.conf ...
+* Applying /etc/sysctl.d/99-cloudimg-ipv6.conf ...
+kernel.apparmor_restrict_unprivileged_userns = 1
+kernel.apparmor_restrict_unprivileged_unconfined = 1
+kernel.core_pattern = core
+kernel.sysrq = 0x01b6
+kernel.core_uses_pid = 1
+net.ipv4.conf.default.rp_filter = 2
+net.ipv4.conf.enp0s1.rp_filter = 2
+net.ipv4.conf.enp0s4np0.rp_filter = 2
+net.ipv4.conf.lo.rp_filter = 2
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv4.conf.enp0s1.accept_source_route = 0
+net.ipv4.conf.enp0s4np0.accept_source_route = 0
+net.ipv4.conf.lo.accept_source_route = 0
+net.ipv4.conf.default.promote_secondaries = 1
+net.ipv4.conf.enp0s1.promote_secondaries = 1
+net.ipv4.conf.enp0s4np0.promote_secondaries = 1
+net.ipv4.conf.lo.promote_secondaries = 1
+net.ipv4.ping_group_range = 0 2147483647
+net.core.default_qdisc = fq_codel
+fs.protected_hardlinks = 1
+fs.protected_symlinks = 1
+fs.protected_regular = 2
+fs.protected_fifos = 1
+vm.max_map_count = 1048576
+kernel.pid_max = 4194304
+net.core.default_qdisc = fq_codel
+kernel.printk = 4 4 1 7
+net.ipv6.conf.all.use_tempaddr = 2
+net.ipv6.conf.default.use_tempaddr = 2
+kernel.kptr_restrict = 1
+kernel.sysrq = 176
+vm.max_map_count = 1048576
+net.ipv4.conf.default.rp_filter = 2
+net.ipv4.conf.all.rp_filter = 2
+kernel.yama.ptrace_scope = 1
+vm.mmap_min_addr = 32768
+net.ipv4.ip_forward = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv6.conf.all.use_tempaddr = 0
+net.ipv6.conf.default.use_tempaddr = 0
+hca_id:	rocep0s4
+	transport:			InfiniBand (0)
+	fw_ver:				rocm-ernic-1.0
+	node_guid:			00ad:0aff:fe59:0008
+	sys_image_guid:			00ad:0aff:fe59:0008
+	vendor_id:			0x1dd8
+	vendor_part_id:			4098
+	hw_ver:				0x0
+	phys_port_cnt:			1
+		port:	1
+			state:			PORT_ACTIVE (4)
+			max_mtu:		4096 (5)
+			active_mtu:		1024 (3)
+			sm_lid:			0
+			port_lid:		0
+			port_lmc:		0x00
+			link_layer:		Ethernet
+
+[preflight] Running pre-flight checks
+[preflight] Reading configuration from the "kubeadm-config" ConfigMap in namespace "kube-system"...
+[preflight] Use 'kubeadm init phase upload-config kubeadm --config your-config-file' to re-upload it.
+[kubelet-start] Writing kubelet configuration to file "/var/lib/kubelet/instance-config.yaml"
+[patches] Reading patches from path "/home/demo/kubeadm-patches"
+[patches] Found the following patch files: [kubeletconfiguration0+merge.yaml]
+[patches] Applied patch of type "application/merge-patch+json" to target "kubeletconfiguration"
+[patches] Applied patch of type "application/strategic-merge-patch+json" to target "kubeletconfiguration"
+[kubelet-start] Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
+[kubelet-start] Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
+[kubelet-start] Starting the kubelet
+[patches] Applied patch of type "application/merge-patch+json" to target "kubeletconfiguration"
+[kubelet-check] Waiting for a healthy kubelet at http://127.0.0.1:10248/healthz. This can take up to 4m0s
+[kubelet-check] The kubelet is healthy after 3.607423574s
+[kubelet-start] Waiting for the kubelet to perform the TLS Bootstrap
+
+This node has joined the cluster:
+* Certificate signing request was sent to apiserver and a response was received.
+* The Kubelet was informed of the new secure connection details.
+
+Run 'kubectl get nodes' on the control-plane to see this node join the cluster.
+
+node/amd-ernic-prepared-worker condition met
+customresourcedefinition.apiextensions.k8s.io/modules.kmm.sigs.x-k8s.io configured
+customresourcedefinition.apiextensions.k8s.io/nodemodulesconfigs.kmm.sigs.x-k8s.io configured
+Release "amd-network" has been upgraded. Happy Helming!
+NAME: amd-network
+LAST DEPLOYED: Thu Oct  8 20:05:35 2026
+NAMESPACE: kube-amd-network
+STATUS: deployed
+REVISION: 5
+DESCRIPTION: Upgrade complete
+TEST SUITE: None
+nodefeaturerule.nfd.k8s-sigs.io/amd-ernic-discovery unchanged
+networkconfig.amd.com/ernic unchanged
+Waiting for daemon set "ernic-device-plugin" rollout to finish: 1 of 2 updated pods are available...
+daemon set "ernic-device-plugin" successfully rolled out
+Waiting for NFD and Network Operator NIC allocation on amd-ernic-prepared-worker...
+node/amd-ernic-worker-1 not labeled
+node/amd-mock-control-plane not labeled
+node/amd-ernic-prepared-worker labeled
+Pulled: docker.io/submod/amd-gpu-mock:0.2.11
+Digest: sha256:50abd6531b1c35f8d872325e769c078fe665ce522be5d8818678e3b84d9c396c
+Release "amd-gpu-mock" has been upgraded. Happy Helming!
+NAME: amd-gpu-mock
+LAST DEPLOYED: Thu Oct  8 20:07:34 2026
+NAMESPACE: amd-mock
+STATUS: deployed
+REVISION: 6
+DESCRIPTION: Upgrade complete
+TEST SUITE: None
+NOTES:
+AMD DRA driver installed with the mock. Inspect published devices:
+  kubectl get resourceslices
+
+Use ResourceClaim / ResourceClaimTemplate requests for deviceClassName gpu.amd.com.
+The device plugin is disabled, so amd.com/gpu capacity is not advertised.
+See https://github.com/sub-mod/amd-gpu-mock/blob/main/docs/guides/dra.md
+Dashboard: http://localhost:8080 (when using the quick-start kind configuration).
+To change the host port, see the README Dashboard section.
+Grafana: http://localhost:3000 (quick-start kind mapping; admin / configured password).
+Dashboard and Grafana ports/toggles: demo/config.yaml with demo/setup.sh.
+daemon set "amd-gpu-mock" successfully rolled out
+daemon set "amd-gpu-mock-dra-kubeletplugin" successfully rolled out
+GPU mock and upstream AMD DRA enabled on amd-ernic-prepared-worker.
+
+Worker ready. Run ./demo/gpu-network/single-node/run.sh

@@ -1,0 +1,29 @@
+Waiting for NFD and Network Operator NIC allocation on amd-ernic-prepared-worker...
+node/amd-ernic-prepared-worker not labeled
+node/amd-ernic-worker-1 not labeled
+node/amd-mock-control-plane not labeled
+node/amd-ernic-prepared-worker not labeled
+Pulled: docker.io/submod/amd-gpu-mock:0.2.12
+Digest: sha256:eaa6c12b5efe5aa5dfcd293fe59c89b88974f96dd9e8beb6ada87001a143b8b5
+Release "amd-gpu-mock" has been upgraded. Happy Helming!
+NAME: amd-gpu-mock
+LAST DEPLOYED: Thu Oct  8 20:14:02 2026
+NAMESPACE: amd-mock
+STATUS: deployed
+REVISION: 7
+DESCRIPTION: Upgrade complete
+TEST SUITE: None
+NOTES:
+AMD DRA driver installed with the mock. Inspect published devices:
+  kubectl get resourceslices
+
+Use ResourceClaim / ResourceClaimTemplate requests for deviceClassName gpu.amd.com.
+The device plugin is disabled, so amd.com/gpu capacity is not advertised.
+See https://github.com/sub-mod/amd-gpu-mock/blob/main/docs/guides/dra.md
+Dashboard: http://localhost:8080 (when using the quick-start kind configuration).
+To change the host port, see the README Dashboard section.
+Grafana: http://localhost:3000 (quick-start kind mapping; admin / configured password).
+Dashboard and Grafana ports/toggles: demo/config.yaml with demo/setup.sh.
+daemon set "amd-gpu-mock" successfully rolled out
+daemon set "amd-gpu-mock-dra-kubeletplugin" successfully rolled out
+GPU mock and upstream AMD DRA enabled on amd-ernic-prepared-worker.

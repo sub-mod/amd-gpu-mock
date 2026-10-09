@@ -59,6 +59,8 @@ dra:
 # Real AMD exporter + GPU Agent, using the AMD SMI mock backend.
 metricsExporter:
   enabled: true
+  # Metrics collection can exceed one second on emulated workers.
+  readinessTimeoutSeconds: 5
   image: docker.io/submod/amd-device-metrics-exporter:v1.5.2-mock.2
   imagePullPolicy: IfNotPresent
   serviceMonitor:

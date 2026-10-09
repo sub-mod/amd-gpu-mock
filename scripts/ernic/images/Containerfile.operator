@@ -1,0 +1,10 @@
+FROM docker.io/library/alpine:3.23
+ARG UPSTREAM_COMMIT
+LABEL org.opencontainers.image.source="https://github.com/ROCm/network-operator" \
+ org.opencontainers.image.revision=$UPSTREAM_COMMIT
+RUN apk add --no-cache ca-certificates
+COPY manager kubectl /usr/local/bin/
+COPY LICENSE /licenses/NETWORK-OPERATOR-LICENSE
+COPY crds/ /opt/helm-charts-crds-k8s/
+USER 201:201
+ENTRYPOINT ["/usr/local/bin/manager"]

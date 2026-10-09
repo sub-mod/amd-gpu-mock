@@ -7,12 +7,14 @@ CONFIG="$ROOT/demo/config.yaml"
 CLUSTER="${CLUSTER_NAME:-amd-mock}"
 SKIP=false
 TEARDOWN=false
+ERNIC=false
 while [ "$#" -gt 0 ]; do
  case "$1" in
+  --ernic) ERNIC=true; shift ;;
   --config) CONFIG="$2"; shift 2 ;;
   --skip-cluster) SKIP=true; shift ;;
   --teardown) TEARDOWN=true; shift ;;
-  *) echo "usage: $0 [--config values.yaml] [--skip-cluster] [--teardown]" >&2; exit 1 ;;
+  *) echo "usage: $0 [--config values.yaml] [--skip-cluster] [--teardown] [--ernic]" >&2; exit 1 ;;
  esac
 done
 if [ -n "${CONTAINER_RUNTIME:-}" ]; then
@@ -20,8 +22,13 @@ if [ -n "${CONTAINER_RUNTIME:-}" ]; then
 elif [ -z "${KIND_EXPERIMENTAL_PROVIDER:-}" ] && command -v podman >/dev/null && podman info >/dev/null 2>&1; then
  export KIND_EXPERIMENTAL_PROVIDER=podman
 fi
+if $ERNIC && [ "${KIND_EXPERIMENTAL_PROVIDER:-}" != podman ]; then
+ echo "The ERNIC VM demo requires a running Podman machine and a Podman Kind cluster." >&2
+ exit 1
+fi
 if $TEARDOWN; then
  python3 "$ROOT/demo/run.py" cleanup --config "$CONFIG" --context "kind-$CLUSTER"
+ if $ERNIC; then KUBE_CONTEXT="kind-$CLUSTER" "$ROOT/scripts/ernic/cleanup.sh"; fi
  kind delete cluster --name "$CLUSTER"
  exit
 fi
@@ -44,3 +51,7 @@ printf 'Host ports and dashboard switches come from %s\n' "$CONFIG"
 printf 'Use KUBECONFIG/current context for kind-%s when running demos.\n' "$CLUSTER"
 helm template kind "$ROOT/deployments/kind-node/config-chart" -f "$CONFIG" --show-only templates/runtime.json | \
  python3 -c 'import sys,json; s=sys.stdin.read(); d=json.loads(s[s.index("{"):]); print("Mock dashboard: " + d["mockURL"] if d["mockDashboardEnabled"] else "Mock host dashboard disabled"); print("Grafana: " + d["grafanaURL"] + " (admin / configured password)" if d["grafanaEnabled"] else "Grafana disabled")'
+
+if $ERNIC; then
+ KUBE_CONTEXT="kind-$CLUSTER" ERNIC_CONTROL_PLANE="$CLUSTER-control-plane" "$ROOT/scripts/ernic/setup.sh"
+fi

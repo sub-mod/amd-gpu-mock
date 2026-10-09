@@ -1,0 +1,38 @@
+FROM docker.io/library/ubuntu:26.04 AS build
+ARG ERNIC_COMMIT
+ARG VFIO_COMMIT
+ARG QEMU_COMMIT
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+ ca-certificates git build-essential cmake meson ninja-build pkg-config python3-venv \
+ libibverbs-dev librdmacm-dev libglib2.0-dev libjson-c-dev libcmocka-dev \
+ libpixman-1-dev libslirp-dev libfdt-dev flex bison && rm -rf /var/lib/apt/lists/*
+WORKDIR /src
+RUN git init vfio && cd vfio && git remote add origin https://github.com/nutanix/libvfio-user.git && \
+ git fetch --depth=1 origin "$VFIO_COMMIT" && git checkout --detach FETCH_HEAD && \
+ meson setup build --prefix=/usr/local -Dbuildtype=release && ninja -C build -j4 && ninja -C build install && ldconfig
+RUN git init ernic && cd ernic && git remote add origin https://github.com/ROCm/rocm-ernic.git && \
+ git fetch --depth=1 origin "$ERNIC_COMMIT" && git checkout --detach FETCH_HEAD && \
+ cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build build -j4
+RUN git init qemu && cd qemu && git remote add origin https://github.com/qemu/qemu.git && \
+ git fetch --depth=1 origin "$QEMU_COMMIT" && git checkout --detach FETCH_HEAD && \
+ ./configure --target-list=aarch64-softmmu --disable-docs --disable-gtk --disable-sdl \
+ --disable-opengl --disable-vnc --disable-user --disable-werror --enable-slirp && ninja -C build -j4
+RUN mkdir -p /licenses && cp /src/ernic/LICENSE.md /licenses/ERNIC-LICENSE.md && \
+ cp /src/vfio/LICENSE /licenses/LIBVFIO-USER-COPYING && cp /src/qemu/COPYING /licenses/QEMU-COPYING
+FROM docker.io/library/ubuntu:26.04
+ARG ERNIC_COMMIT
+ARG VFIO_COMMIT
+ARG QEMU_COMMIT
+LABEL org.opencontainers.image.source="https://github.com/sub-mod/amd-gpu-mock" \
+ org.opencontainers.image.description="ARM64 ERNIC lab: unchanged upstream ERNIC, libvfio-user and QEMU"
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+ ca-certificates curl python3 zstd iproute2 openssh-client qemu-utils cloud-image-utils \
+ libibverbs1 librdmacm1 libglib2.0-0t64 libjson-c5 libpixman-1-0 libslirp0 libfdt1 \
+ && rm -rf /var/lib/apt/lists/*
+COPY --from=build /src/ernic/build/rocm-ernic /usr/local/bin/rocm-ernic
+COPY --from=build /src/qemu/build/qemu-system-aarch64 /usr/local/bin/qemu-system-aarch64
+COPY --from=build /usr/local/lib/ /usr/local/lib/
+COPY --from=build /licenses/ /licenses/
+RUN ldconfig && printf 'ERNIC=%s\nLIBVFIO_USER=%s\nQEMU=%s\n' "$ERNIC_COMMIT" "$VFIO_COMMIT" "$QEMU_COMMIT" > /licenses/SOURCE-REVISIONS
+WORKDIR /opt/lab
+CMD ["sleep", "infinity"]

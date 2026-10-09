@@ -48,3 +48,11 @@ for src,dst in [('deployments/dra/tiny-llm-demo.yaml','demo/llm/dra.yaml'),('dep
  assert (r/src).read_text().replace('  namespace: default\n','') == (r/dst).read_text(),dst
 print('PASS demo manifests and bundled dashboard match tested source assets')
 PY
+
+helm template mock "$CHART" -n amd-mock --show-only templates/metrics-exporter.yaml > "$WORK/probe-default"
+grep -Fq 'timeoutSeconds: 5' "$WORK/probe-default"
+helm template mock "$CHART" -n amd-mock --show-only templates/metrics-exporter.yaml --set metricsExporter.readinessTimeoutSeconds=10 > "$WORK/probe-custom"
+grep -Fq 'timeoutSeconds: 10' "$WORK/probe-custom"
+helm template mock "$CHART" -n amd-mock --show-only templates/metrics-exporter.yaml --set metricsExporter.readinessTimeoutSeconds=null > "$WORK/probe-old-values"
+grep -Fq 'timeoutSeconds: 5' "$WORK/probe-old-values"
+echo 'PASS exporter readiness supports emulated workers, overrides, and older release values'

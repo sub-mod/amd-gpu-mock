@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-08",
+  "upstream_source_patches": 0,
+  "inputs": {
+    "ERNIC_COMMIT": "21f40e79c7f208d6e6013fac3c57f61b840db9ac",
+    "VFIO_COMMIT": "803924493a7c787b2ba358751f55f07d5dba64b2",
+    "QEMU_COMMIT": "4fc49f46dc95d4a27de2509e7fceb2931e91faeb",
+    "NETWORK_OPERATOR_COMMIT": "df08b06e068ac8724660ae69320d6eaa52032131",
+    "NETWORK_PLUGIN_COMMIT": "27e206cb5c9c99716b38f5bfda038d089376ba34",
+    "ERNIC_LAB_IMAGE": "docker.io/submod/amd-ernic-lab:0.1.0",
+    "NETWORK_OPERATOR_IMAGE": "docker.io/submod/amd-network-operator:v1.2.0-ernic.1",
+    "NETWORK_PLUGIN_IMAGE": "docker.io/submod/amd-network-device-plugin:v1.2.0-ernic.1",
+    "GUEST_URL": "https://cloud-images.ubuntu.com/resolute/20260927/resolute-server-cloudimg-arm64.img",
+    "GUEST_SHA256": "63a93bd5a8d76e33b15ceb5daa3657bd79be804748051ab178e643b0f5da22e7",
+    "GUEST_KERNEL_URL": "https://cloud-images.ubuntu.com/resolute/20260927/unpacked/resolute-server-cloudimg-arm64-vmlinuz-generic",
+    "GUEST_INITRD_URL": "https://cloud-images.ubuntu.com/resolute/20260927/unpacked/resolute-server-cloudimg-arm64-initrd-generic",
+    "GUEST_KERNEL_SHA256": "0bad41327e67c7c79d79b7e5f0ee833d0202be2ddf0f7cbbb984b4cb9c94e108",
+    "GUEST_INITRD_SHA256": "65fa960053965fbcbba70a36e060965f2f4eb46124e8f0d9c0984250edc61117",
+    "ERNIC_WORKER_IMAGE": "docker.io/submod/amd-ernic-worker:0.1.0"
+  },
+  "validation": {
+    "existing_worker": "passed; captured.log",
+    "prepared_worker": "passed; prepared-worker.log",
+    "clean_setup_repeat": "passed without recovery flags; clean-install.log and clean-demo.log",
+    "published_chart_0.2.12": "passed upgrade, allocation, metrics and readiness; published-chart-*.log and runtime-checks.log",
+    "rdma_transfer": "not performed"
+  },
+  "published_images": {
+    "docker.io/submod/amd-ernic-worker:0.1.0": "sha256:8a68cdbcc01dbc05e89073ecc9a6f7691d3e53025e19b963379d08072da0a314",
+    "docker.io/submod/amd-ernic-lab:0.1.0": "sha256:e1ed5a320c577e9eb18631b7b2ffcda2234df1f50cfd65f5dc330d037fc6e279",
+    "docker.io/submod/amd-network-operator:v1.2.0-ernic.1": "sha256:7e9178e3366ab6b8ed284b1e5f66ea4a39d207167ae6ada731229cddc86f4eea",
+    "docker.io/submod/amd-network-device-plugin:v1.2.0-ernic.1": "sha256:da8d567fa97eb9fd78b8721aa314c4dbc8aff126cb541da34ed03afa87cc3d34",
+    "oci://docker.io/submod/amd-gpu-mock:0.2.12": "sha256:eaa6c12b5efe5aa5dfcd293fe59c89b88974f96dd9e8beb6ada87001a143b8b5"
+  },
+  "configuration_customizations": [
+    "one Helm NIC ConfigMap template override in a derived chart; upstream source archive preserved"
+  ]
+}

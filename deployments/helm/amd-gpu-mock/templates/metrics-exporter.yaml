@@ -39,6 +39,7 @@ spec:
             httpGet:
               path: /metrics
               port: metrics
+            timeoutSeconds: {{ .Values.metricsExporter.readinessTimeoutSeconds | default 5 }}
             initialDelaySeconds: 10
             periodSeconds: 5
           volumeMounts:
