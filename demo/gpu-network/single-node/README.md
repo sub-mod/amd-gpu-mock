@@ -1,9 +1,10 @@
 # Single node: Tiny LLM with a GPU and NIC
 
 One VM worker has mock MI300X GPUs and an emulated Pensando NIC. The same
-Tiny LLM container requests one GPU through Kubernetes Dynamic Resource Allocation (DRA), using the AMD DRA driver,
-and one `amd.com/nic` through the NIC device plugin deployed by AMD Network Operator. It returns a scripted HTTP response, prints
-its allocated devices, and stays running for inspection.
+Tiny LLM container requests one GPU through Kubernetes Dynamic Resource
+Allocation (DRA), using the AMD DRA driver, and one `amd.com/nic` through the NIC
+device plugin deployed by AMD Network Operator. It returns a scripted HTTP
+response, prints its allocated devices, and stays running for inspection.
 
 ## Architecture
 
@@ -43,6 +44,33 @@ worker network; allocation does not create an isolated or secondary network.
 The HTTP response demonstrates application availability and allocation evidence,
 not GPU computation or RDMA data transfer. See the
 [integration guide](../../../docs/guides/gpu-network.md) for the detailed flows.
+
+## Demo sequence
+
+```text
+1. Kind + GPU Helm release
+   -> 2. Boot VM: one emulated NIC becomes visible to guest drivers
+   -> 3. Join VM to Kubernetes; Node becomes Ready
+   -> 4. NFD discovery + Network Operator deploy NIC plugin
+   -> 5. Kubernetes sees NIC capacity 1 + worker GPU ResourceSlice
+   -> 6. run.sh creates Pod; scheduler assigns worker + GPU claim
+   -> 7. Kubelet allocates NIC through plugin and prepares GPU through DRA
+   -> 8. Container starts; logs and HTTP response prove device access
+```
+
+The numbers match the guide's [allocation lifecycle](../../../docs/guides/gpu-network.md#how-the-application-gets-its-devices).
+Guest NIC discovery happens before Pod allocation. `amd.com/nic: 1` in node
+Allocatable is total usable capacity, not the remaining free count. The extra
+virtio management NIC is separate; this demo emulates one Pensando NIC with one
+RDMA port. Multiple Pensando NICs per worker have not been validated.
+
+**Setup does not start the Tiny LLM application.** After setup finishes, run
+`./demo/gpu-network/single-node/run.sh`. That command creates the Pod and waits
+for readiness before printing evidence. There is no chat webpage: the app is an
+HTTP API and logs. During a first image pull, its Pod can be `ContainerCreating`.
+
+See the [fresh-deployment walkthrough](fresh-deployment.md) for commands, expected
+states, actual captured output and the diagnostic checks used in the latest run.
 
 ## Set up and run
 
@@ -146,7 +174,10 @@ host-network Pod shares the worker's network namespace.
 
 [captured.log](captured.log) contains actual output from the 2026-10-08 run,
 including the response, claim, ResourceSlice and injected GPU/NIC identities.
-The final clean-worker evidence is:
+The later **full cluster recreation** is documented in
+[fresh-deployment.md](fresh-deployment.md), with actual
+[fresh-cluster-setup.log](fresh-cluster-setup.log) and
+[fresh-cluster-demo.log](fresh-cluster-demo.log). The earlier clean-worker evidence is:
 
 | Check | Actual output |
 | --- | --- |

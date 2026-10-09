@@ -42,3 +42,12 @@ This validates discovery, allocation, injection and runtime setup. No RDMA
 transfer, real GPU compute, GPU-direct DMA, SR-IOV or NIC fault injection was
 performed. Dashboard changes remain paused. The two-node transfer demo remains
 planned separately.
+
+## Later full-cluster validation
+
+The subsequent [fresh deployment record](../../demo/gpu-network/single-node/fresh-deployment.md)
+recreated both the Kind control plane and the default VM worker using the
+published quick start, chart 0.2.12 and prepared artifact 0.1.0. Setup and the
+combined GPU/NIC application verifier passed without local builds or manual
+guest edits. The record links actual setup/application captures and explains
+the observed startup waits. Earlier evidence above retains its original scope.

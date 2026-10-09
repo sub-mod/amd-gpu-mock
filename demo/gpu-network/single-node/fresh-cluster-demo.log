@@ -1,0 +1,115 @@
+namespace/amd-demo-gpu-network created
+configmap/tiny-llm-app created
+namespace/amd-demo-gpu-network configured
+resourceclaimtemplate.resource.k8s.io/tiny-llm-gpu created
+pod/tiny-llm-gpu-network created
+service/tiny-llm created
+pod/tiny-llm-gpu-network condition met
+DEVICE_EVIDENCE {"node": "amd-ernic-worker-1", "devices": {"/dev/kfd": {"major": 234, "minor": 0}, "/dev/infiniband/uverbs0": {"major": 231, "minor": 192}, "/dev/infiniband/rdma_cm": {"major": 10, "minor": 264}, "/dev/dri/renderD128": {"major": 226, "minor": 128}}, "nic_pci": "0000:00:04.0", "nic_info": {"0000:00:04.0": {"generic": {"deviceID": "0000:00:04.0"}, "rdma": {"rdma_cm": "/dev/infiniband/rdma_cm", "rdma_dev": "rocep0s4", "uverbs": "/dev/infiniband/uverbs0"}}}, "rdma_devices": ["rocep0s4"], "compute": "scripted simulation"}
+Tiny LLM simulation: GPU allocated by AMD DRA; NIC allocated by AMD Network Operator.
+No model weights, GPU compute, or RDMA transfer is performed.
+10.89.0.10 - - [09/Oct/2026 00:38:27] "GET /healthz HTTP/1.1" 200 -
+{
+  "pod": "tiny-llm-gpu-network",
+  "node": "amd-ernic-worker-1",
+  "claim": "tiny-llm-gpu-network-gpu-mdvb2",
+  "gpu_allocation": {
+    "device": "gpu-0-128",
+    "driver": "gpu.amd.com",
+    "pool": "amd-ernic-worker-1",
+    "request": "gpu"
+  },
+  "advertised_gpu": {
+    "attributes": {
+      "deviceID": {
+        "string": "0x74a1"
+      },
+      "driverVersion": {
+        "version": "6.19.4"
+      },
+      "numaNode": {
+        "int": 0
+      },
+      "partitionProfile": {
+        "string": "spx_nps1"
+      },
+      "productName": {
+        "string": "AMD_Instinct_MI300X_OAM"
+      },
+      "resource.kubernetes.io/pciBusID": {
+        "string": "0000:05:00.0"
+      },
+      "resource.kubernetes.io/pcieRoot": {
+        "string": "pci0000:00"
+      },
+      "type": {
+        "string": "amdgpu"
+      }
+    },
+    "capacity": {
+      "computeUnits": {
+        "value": "304"
+      },
+      "memory": {
+        "value": "192Gi"
+      },
+      "simdUnits": {
+        "value": "1216"
+      }
+    },
+    "name": "gpu-0-128"
+  },
+  "response": {
+    "prompt": "The future of AI is",
+    "text": "The future of AI is bright and full of possibilities",
+    "simulation": true,
+    "allocation": {
+      "node": "amd-ernic-worker-1",
+      "devices": {
+        "/dev/kfd": {
+          "major": 234,
+          "minor": 0
+        },
+        "/dev/infiniband/uverbs0": {
+          "major": 231,
+          "minor": 192
+        },
+        "/dev/infiniband/rdma_cm": {
+          "major": 10,
+          "minor": 264
+        },
+        "/dev/dri/renderD128": {
+          "major": 226,
+          "minor": 128
+        }
+      },
+      "nic_pci": "0000:00:04.0",
+      "nic_info": {
+        "0000:00:04.0": {
+          "generic": {
+            "deviceID": "0000:00:04.0"
+          },
+          "rdma": {
+            "rdma_cm": "/dev/infiniband/rdma_cm",
+            "rdma_dev": "rocep0s4",
+            "uverbs": "/dev/infiniband/uverbs0"
+          }
+        }
+      },
+      "rdma_devices": [
+        "rocep0s4"
+      ],
+      "compute": "scripted simulation"
+    }
+  }
+}
+PASS: same worker, AMD DRA claim -> matching injected GPU, Network Operator NIC -> discovered RDMA device, HTTP simulated response
+No RDMA transfer, real GPU compute, or GPU-direct DMA was tested.
+DEVICE_EVIDENCE {"node": "amd-ernic-worker-1", "devices": {"/dev/kfd": {"major": 234, "minor": 0}, "/dev/infiniband/uverbs0": {"major": 231, "minor": 192}, "/dev/infiniband/rdma_cm": {"major": 10, "minor": 264}, "/dev/dri/renderD128": {"major": 226, "minor": 128}}, "nic_pci": "0000:00:04.0", "nic_info": {"0000:00:04.0": {"generic": {"deviceID": "0000:00:04.0"}, "rdma": {"rdma_cm": "/dev/infiniband/rdma_cm", "rdma_dev": "rocep0s4", "uverbs": "/dev/infiniband/uverbs0"}}}, "rdma_devices": ["rocep0s4"], "compute": "scripted simulation"}
+Tiny LLM simulation: GPU allocated by AMD DRA; NIC allocated by AMD Network Operator.
+No model weights, GPU compute, or RDMA transfer is performed.
+10.89.0.10 - - [09/Oct/2026 00:38:27] "GET /healthz HTTP/1.1" 200 -
+SIMULATED_RESPONSE {"prompt": "The future of AI is", "text": "The future of AI is bright and full of possibilities", "simulation": true, "allocation": {"node": "amd-ernic-worker-1", "devices": {"/dev/kfd": {"major": 234, "minor": 0}, "/dev/infiniband/uverbs0": {"major": 231, "minor": 192}, "/dev/infiniband/rdma_cm": {"major": 10, "minor": 264}, "/dev/dri/renderD128": {"major": 226, "minor": 128}}, "nic_pci": "0000:00:04.0", "nic_info": {"0000:00:04.0": {"generic": {"deviceID": "0000:00:04.0"}, "rdma": {"rdma_cm": "/dev/infiniband/rdma_cm", "rdma_dev": "rocep0s4", "uverbs": "/dev/infiniband/uverbs0"}}}, "rdma_devices": ["rocep0s4"], "compute": "scripted simulation"}}
+127.0.0.1 - - [09/Oct/2026 00:38:30] "POST /generate HTTP/1.1" 200 -
+
+Demo stays running. Clean up with: ./demo/gpu-network/single-node/run.sh --cleanup

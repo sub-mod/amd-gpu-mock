@@ -56,39 +56,76 @@ GPU using a `ResourceClaimTemplate` with device class `gpu.amd.com`. It requests
 a NIC using the container resource limit `amd.com/nic: 1`. Its node selector
 restricts placement to the demo worker (`amd-ernic-worker-1` by default).
 
+The numbered stages below describe dependencies. GPU Pods can start as soon
+as the worker joins, so GPU discovery can overlap network-operator installation.
+
 ```text
-GPU discovery and allocation                 NIC discovery and allocation
-----------------------------                 ----------------------------
-GPU mock agent on VM                         ERNIC emulates a PCI NIC
-  | simulated sysfs/device nodes               | ionic + ionic_rdma drivers
-  v                                            v
-Upstream AMD DRA driver                       NFD discovers PCI identity
-  | publishes ResourceSlices                   | applies amd-nic node label
-  v                                            v
-Kubernetes sees available GPUs               Network Operator reconciles config
-  |                                            | deploys NIC device plugin
-  |                                            v
-  |                                          Kubelet advertises amd.com/nic: 1
-  |                                            |
-  +---------------------+----------------------+
-                        v
-       Pod requests a GPU claim and amd.com/nic: 1
-                        |
-       Scheduler selects VM; GPU claim is allocated
-                        |
-                        v
-                 Kubelet starts Pod
-                  |               |
-                  v               v
-        AMD DRA prepares      NIC plugin Allocate
-        GPU CDI entries       returns devices/metadata
-                 |               |
-                 +-------+-------+
-                         v
-             containerd starts application
-             /dev/kfd + one renderD* device
-             /dev/infiniband/* + NIC metadata
+[1] Create Kind control plane + install published GPU Helm chart
+    |
+[2] Start ERNIC process + QEMU worker
+    |   Guest kernel binds ionic + ionic_rdma
+    |   NIC visible IN THE GUEST: PCI device, net interface, RDMA device
+    |
+[3] Join worker to Kubernetes; wait for Node Ready
+    |
+[4] Install Network Operator + NFD; apply discovery rule + NetworkConfig
+    |   NFD matches PCI identity -> amd-nic label
+    |   Operator deploys NIC device plugin on the worker
+    |
+[5] Advertise resources TO KUBERNETES
+    |   NIC plugin registers with kubelet -> amd.com/nic capacity = 1
+    |   GPU mock sysfs -> AMD DRA -> GPU ResourceSlice for the worker
+    |   No application NIC allocation has occurred yet
+    |
+[6] run.sh creates Pod + GPU claim template
+    |   Pod asks for GPU claim AND amd.com/nic: 1 on the selected worker
+    |   Scheduler checks resources, allocates GPU claim, binds Pod
+    |   NIC resource request is accounted for in scheduling
+    |
+[7] Kubelet prepares container devices
+    |   AMD DRA prepares GPU allocation -> CDI entries
+    |   Kubelet selects NIC -> calls NIC plugin Allocate
+    |   Plugin returns RDMA device mappings + PCI allocation metadata
+    |
+[8] containerd starts application; readiness succeeds
+        Devices/metadata accessible IN THE CONTAINER
+        run.sh prints logs + verifies claim/devices + sends HTTP request
 ```
+
+### When is the NIC visible, available and allocated?
+
+| Stage | Meaning | Evidence |
+| --- | --- | --- |
+| 2: guest discovery | The guest kernel can see the emulated hardware, before Kubernetes allocates anything. | Guest `ibv_devinfo` reports `rocep0s4` and one active port in setup output. |
+| 4: NFD discovery | Kubernetes has a node label identifying a matching PCI NIC. A label alone does not advertise an allocatable resource. | Node label `feature.node.kubernetes.io/amd-nic=true`. |
+| 5: resource advertisement | The plugin and kubelet expose one usable NIC resource to the scheduler. | Node Capacity and Allocatable show `amd.com/nic: 1`. |
+| 6: scheduling | The Pod's request counts against that worker's NIC capacity. | Pod assigned to the worker; container limit is `amd.com/nic: 1`. |
+| 7: device allocation | Kubelet calls the device plugin to prepare a selected NIC for the container. | Plugin supplies `PCIDEVICE_AMD_COM_NIC`, NIC metadata and device mappings. |
+| 8: container access | The running application can access the mapped RDMA devices. | App logs and verifier match PCI allocation metadata to RDMA sysfs and device nodes. |
+
+Node **Allocatable stays at 1 after this Pod starts**: it is usable node capacity,
+not a live free-NIC counter. The scheduler accounts for Pod requests separately.
+Another Pod requesting the same worker's only NIC must wait for capacity to be
+released. NIC device-plugin allocations do not create GPU-style ResourceClaims.
+
+Because this Pod uses host networking, seeing an interface or RDMA sysfs entry
+alone does not prove allocation or isolation. The demo also checks the NIC
+resource request, plugin-supplied allocation metadata and mapped device nodes.
+
+### How many NICs are simulated?
+
+The current worker has **one emulated Pensando PCI NIC with one RDMA port**.
+A separate virtio NIC provides SSH management; it is not an operator-managed
+Pensando resource. GPU count and NIC count are independent.
+
+Multiple ERNIC instances with separate sockets and QEMU PCI attachments are a
+possible extension, but multi-NIC operation and its maximum supported count
+have not been validated here. The current boot script creates one instance;
+guest networking selects one interface; the application/verifier expect one
+allocated NIC and `uverbs0`. Increasing a Kubernetes resource count alone would
+not create additional emulated hardware. A two-NIC extension must handle each
+instance's MAC/socket/TAP, guest interface and RDMA identity, then verify actual
+operator discovery and allocation for both devices.
 
 **CDI (Container Device Interface)** describes how the runtime exposes the
 allocated GPU devices to the container. The guest uses containerd's native CDI
@@ -180,9 +217,11 @@ The runner dumps application logs, sends an HTTP request, and runs the
 
 Actual captured output is linked from the demo's
 [captured-run section](../../demo/gpu-network/single-node/README.md#captured-run).
-Fresh worker installation and allocation were validated against the published
-artifact in an existing Kind cluster; the evidence does not represent recreation
-of the entire control plane. The [two-node demo](../../demo/gpu-network/two-node/README.md)
+The earlier captures validate a fresh worker in a retained control plane. A later
+[full fresh-deployment record](../../demo/gpu-network/single-node/fresh-deployment.md)
+validates deletion and recreation of both the Kind control plane and worker,
+using the published commands and images. It includes setup/application output
+and explains the startup waits and diagnostic checks. The [two-node demo](../../demo/gpu-network/two-node/README.md)
 is reserved for a future transfer/checksum milestone. No GPU compute, RDMA data
 transfer or GPU-direct DMA is claimed by the current logs.
 
