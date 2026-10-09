@@ -61,35 +61,47 @@ as the worker joins, so GPU discovery can overlap network-operator installation.
 
 ```text
 [1] Create Kind control plane + install published GPU Helm chart
-    |
+                           |
 [2] Start ERNIC process + QEMU worker
-    |   Guest kernel binds ionic + ionic_rdma
-    |   NIC visible IN THE GUEST: PCI device, net interface, RDMA device
-    |
-[3] Join worker to Kubernetes; wait for Node Ready
-    |
-[4] Install Network Operator + NFD; apply discovery rule + NetworkConfig
-    |   NFD matches PCI identity -> amd-nic label
-    |   Operator deploys NIC device plugin on the worker
-    |
-[5] Advertise resources TO KUBERNETES
-    |   NIC plugin registers with kubelet -> amd.com/nic capacity = 1
-    |   GPU mock sysfs -> AMD DRA -> GPU ResourceSlice for the worker
-    |   No application NIC allocation has occurred yet
-    |
-[6] run.sh creates Pod + GPU claim template
-    |   Pod asks for GPU claim AND amd.com/nic: 1 on the selected worker
-    |   Scheduler checks resources, allocates GPU claim, binds Pod
-    |   NIC resource request is accounted for in scheduling
-    |
-[7] Kubelet prepares container devices
-    |   AMD DRA prepares GPU allocation -> CDI entries
-    |   Kubelet selects NIC -> calls NIC plugin Allocate
-    |   Plugin returns RDMA device mappings + PCI allocation metadata
-    |
-[8] containerd starts application; readiness succeeds
-        Devices/metadata accessible IN THE CONTAINER
-        run.sh prints logs + verifies claim/devices + sends HTTP request
+    Guest sees PCI NIC through ionic + ionic_rdma (not yet Pod-allocated)
+                           |
+[3] Join VM worker to Kubernetes; wait for Node Ready
+                           |
+              +------------+----------------------+
+              v                                   v
+GPU discovery and allocation                 NIC discovery and allocation
+----------------------------                 ----------------------------
+GPU mock agent on VM                         ERNIC emulates a PCI NIC
+  | simulated sysfs/device nodes               | ionic + ionic_rdma drivers
+  v                                            v
+Upstream AMD DRA driver                       [4] NFD discovers PCI identity
+  | publishes ResourceSlices                   | applies amd-nic node label
+  v                                            v
+[5] Kubernetes sees available GPUs            Network Operator reconciles config
+  |                                            | deploys NIC device plugin
+  |                                            v
+  |                                          [5] Kubelet advertises amd.com/nic: 1
+  |                                            | available, not yet Pod-allocated
+  +---------------------+----------------------+
+                        v
+       [6] Pod requests a GPU claim and amd.com/nic: 1
+                        |
+       Scheduler selects VM; GPU claim is allocated
+       NIC request counts against worker capacity
+                        |
+                        v
+                 [7] Kubelet starts Pod
+                  |               |
+                  v               v
+        AMD DRA prepares      NIC plugin Allocate
+        GPU CDI entries       returns devices/metadata
+                 |               |
+                 +-------+-------+
+                         v
+             [8] containerd starts application
+             /dev/kfd + one renderD* device
+             /dev/infiniband/* + NIC metadata
+             Logs + verifier + HTTP response show container access
 ```
 
 ### When is the NIC visible, available and allocated?
