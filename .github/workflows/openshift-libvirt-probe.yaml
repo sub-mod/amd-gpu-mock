@@ -1,0 +1,27 @@
+# Experimental branch-only hosted capability probe.
+# All probe implementation stays in platforms/openshift/.
+name: Experimental OpenShift host capability probe
+on:
+  workflow_dispatch:
+  push:
+    branches: [experiment/openshift-libvirt-ci]
+    paths:
+      - platforms/openshift/probe-libvirt.sh
+      - .github/workflows/openshift-libvirt-probe.yaml
+permissions:
+  contents: read
+jobs:
+  libvirt:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Boot a Linux guest through libvirt with KVM
+        run: bash platforms/openshift/probe-libvirt.sh "$RUNNER_TEMP/amd-libvirt-probe"
+      - name: Upload capability evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: libvirt-capability
+          path: ${{ runner.temp }}/amd-libvirt-probe
+          if-no-files-found: warn
