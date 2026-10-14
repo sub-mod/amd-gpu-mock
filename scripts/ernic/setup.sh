@@ -104,8 +104,14 @@ NODE_IP="$("$CONTAINER_RUNTIME" inspect "$LAB" --format '{{(index .NetworkSettin
 CP_IP="$("$CONTAINER_RUNTIME" inspect "$CP" --format '{{(index .NetworkSettings.Networks "kind").IPAddress}}')"
 management_network=podman
 [ "$CONTAINER_RUNTIME" != docker ] || management_network=bridge
-"$CONTAINER_RUNTIME" inspect "$LAB" --format "{{(index .NetworkSettings.Networks \"$management_network\").IPAddress}}" > "$STATE/management-ip"
-"$CONTAINER_RUNTIME" inspect "$LAB" --format "{{(index .NetworkSettings.Networks \"$management_network\").Gateway}}" > "$STATE/management-gateway"
+"$CONTAINER_RUNTIME" inspect "$LAB" --format '{{json .NetworkSettings.Networks}}' | python3 -c '
+import json,pathlib,sys
+network=json.load(sys.stdin)[sys.argv[1]]
+root=pathlib.Path(sys.argv[2])
+for field,name in (("IPAddress","management-ip"),("Gateway","management-gateway")):
+ value=network[field];assert value,field
+ (root/name).write_text(value+"\n")
+' "$management_network" "$STATE"
 [ -n "$NODE_IP" ] && [ -n "$CP_IP" ]
 printf '%s\n' "$NODE_IP" > "$STATE/node-ip"
 if [ "${ERNIC_USE_PREPARED:-true}" != true ]; then
