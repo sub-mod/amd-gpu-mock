@@ -13,7 +13,7 @@ belongs to the worker, alongside its simulated GPUs. GPU allocation uses DRA;
 NIC allocation uses the Kubernetes device-plugin API.
 
 ```text
-Default Podman Linux VM
+Docker Linux host / Podman Linux VM
 |
 +-- Kind control plane
 |   +-- API + scheduler
@@ -207,3 +207,11 @@ The worker cleanup preserves cached VM disks/downloads and the Podman VM.
 Provisioning also accepts `ERNIC_CONTAINER`, `ERNIC_SSH_PORT`,
 `ERNIC_STATE_DIR`, and `ERNIC_CONTROL_PLANE`. Use separate values for a separate
 lab. These scripts do not create a second Kubernetes control plane.
+
+## Linux CI runtime
+
+The single-node setup supports Docker or Podman with an ARM64 Linux engine.
+Select explicitly with `CONTAINER_RUNTIME=docker` and use the same Kind provider
+when creating the cluster. No Podman machine is needed for Linux Docker.
+`python3 tests/gpu-network-e2e.py` runs this demo and checks NIC exhaustion and
+release/reuse; see [runtime and CI setup](../../../docs/guides/gpu-network.md#container-runtimes-and-ci).

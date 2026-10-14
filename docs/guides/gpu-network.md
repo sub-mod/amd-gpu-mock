@@ -1,6 +1,6 @@
 # GPU and network worker demo
 
-This demo adds one Ubuntu ARM64 VM worker to an existing Podman Kind cluster.
+This demo adds one Ubuntu ARM64 VM worker to an existing Docker or Podman Kind cluster.
 Kubernetes schedules one application onto that worker and allocates both:
 
 - One simulated AMD MI300X GPU through **Dynamic Resource Allocation (DRA)**.
@@ -21,9 +21,9 @@ The Kind control plane runs the Kubernetes API and scheduler. The application
 runs on the added VM worker, which joins the same Kubernetes cluster.
 
 ```text
-Apple-silicon Mac
+Linux ARM64 CI host or Apple-silicon Mac
 |
-+-- Default Podman Linux VM (preserved by setup)
++-- Docker Linux host / Podman Linux VM (preserved by setup)
     |
     +-- Kind control-plane container
     |   +-- Kubernetes API: Pods, ResourceClaims, ResourceSlices, NetworkConfig
@@ -322,7 +322,42 @@ uses the existing exporter image.
 ./scripts/ernic/cleanup.sh                     # remove the dedicated VM worker
 ```
 
-Cleanup preserves the Podman machine and cached downloads/disks. Provisioning
+Cleanup preserves the container runtime and cached downloads/disks. Provisioning
 logs and private VM state live under ignored `tmp/ernic/` by default. Do not
 commit SSH keys or join credentials. Bootstrap tokens expire after one hour and
 are revoked when setup exits.
+
+## Container runtimes and CI
+
+The single-node ERNIC setup selects a running Docker daemon first, then Podman.
+Set `CONTAINER_RUNTIME=docker` or `CONTAINER_RUNTIME=podman` to select explicitly.
+The selected engine also becomes Kind's provider; create the cluster using the
+same provider before adding a worker:
+
+```bash
+export CONTAINER_RUNTIME=docker
+export KIND_EXPERIMENTAL_PROVIDER=docker
+# Run the README quick start, then:
+./scripts/ernic/setup.sh
+python3 tests/gpu-network-e2e.py
+```
+
+Docker on Linux needs no Podman installation or `podman machine`. The script
+checks the container engine's architecture, so remote Docker/Podman engines
+are checked independently of the CLI host. The published ERNIC lab and prepared
+guest are ARM64; use Linux ARM64 or an ARM64 runtime VM. AMD64 ERNIC execution
+is outside this path's supported matrix. Existing operator/plugin images are
+multiarch, which does not make the lab/guest multiarch.
+
+The `gpu-network-e2e` workflow runs on `ubuntu-24.04-arm`, checks Docker and
+`/dev/net/tun`, uses the published quick-start artifacts, boots the ERNIC worker,
+and verifies GPU+NIC allocation, genuine NIC-exhaustion scheduling and reuse
+after release. QEMU uses TCG; KVM and physical AMD devices are unnecessary.
+The Kind interface is selected by its assigned address rather than assuming
+Docker and Podman always name it `eth1`. Diagnostics use a log allowlist and
+exclude private bootstrap keys and the large guest disk.
+
+The two-node scripts still explicitly require Podman; this change validates
+the single-worker CI environment first. Maintainer image-build commands remain
+Podman-based. Runtime portability needs no new published image because the
+updated boot/setup scripts are supplied from the checkout.

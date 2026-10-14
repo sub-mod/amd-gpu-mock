@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# Provision one ARM64 ERNIC VM worker in an existing Podman Kind cluster.
+# Provision one ARM64 ERNIC VM worker in an existing Docker or Podman Kind cluster.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/../.." && pwd)"
 source "$HERE/versions.env"
+source "$HERE/runtime.sh"
 CONTEXT="${KUBE_CONTEXT:-kind-amd-mock}"
 NODE="${ERNIC_NODE:-amd-ernic-worker-1}"
 LAB="${ERNIC_CONTAINER:-amd-ernic-lab}"
@@ -13,7 +14,7 @@ STATE="${ERNIC_STATE_DIR:-$ROOT/tmp/ernic}"
 BACKEND="${ERNIC_BACKEND:-loopback}"
 export KUBE_CONTEXT="$CONTEXT" ERNIC_NODE="$NODE" ERNIC_STATE_DIR="$STATE"
 k=(kubectl --context "$CONTEXT")
-for bin in podman kubectl helm python3 curl ssh scp ssh-keygen; do command -v "$bin" >/dev/null; done
+for bin in "$CONTAINER_RUNTIME" kubectl helm python3 curl ssh scp ssh-keygen; do command -v "$bin" >/dev/null; done
 "${k[@]}" cluster-info >/dev/null
 # Reusing an already joined worker is non-destructive.
 if "${k[@]}" get node "$NODE" >/dev/null 2>&1; then
@@ -23,9 +24,9 @@ if "${k[@]}" get node "$NODE" >/dev/null 2>&1; then
  "$HERE/install-gpu.sh"
  exit
 fi
-[ "$(podman machine ssh uname -m | tr -d '\r')" = aarch64 ] || { echo 'This ERNIC VM setup is currently ARM64 only.' >&2; exit 1; }
+[ "$ERNIC_RUNTIME_ARCH" = arm64 ] || { echo 'This ERNIC VM setup is currently ARM64 only.' >&2; exit 1; }
 RESUME=false
-if podman container exists "$LAB"; then
+if ernic_container_exists "$LAB"; then
  if [ "${ERNIC_RESUME_UNJOINED:-false}" = true ]; then
   existing_backend="$(cat "$STATE/backend" 2>/dev/null || printf loopback)"
   [ "$BACKEND" = "$existing_backend" ] || { echo "Cannot resume worker with a different ERNIC backend ($existing_backend)." >&2; exit 1; }
@@ -56,15 +57,15 @@ PY
 if [ "${ERNIC_USE_PREPARED:-true}" = true ]; then
  printf "Pulling prepared worker artifact %s...\n" "$ERNIC_WORKER_IMAGE"
  if [ "${ERNIC_PULL_PREPARED:-true}" = true ]; then
-  podman pull "$ERNIC_WORKER_IMAGE"
+  "$CONTAINER_RUNTIME" pull "$ERNIC_WORKER_IMAGE"
  else
-  podman image exists "$ERNIC_WORKER_IMAGE"
+  "$CONTAINER_RUNTIME" image inspect "$ERNIC_WORKER_IMAGE" >/dev/null
  fi
- artifact="$(podman create --entrypoint /unused "$ERNIC_WORKER_IMAGE")"
+ artifact="$("$CONTAINER_RUNTIME" create --entrypoint /unused "$ERNIC_WORKER_IMAGE")"
  for file in worker-base.img Image.raw initrd manifest.json packages.txt; do
-  podman cp "$artifact:/worker/$file" "$STATE/$file"
+  "$CONTAINER_RUNTIME" cp "$artifact:/worker/$file" "$STATE/$file"
  done
- podman rm "$artifact" >/dev/null
+ "$CONTAINER_RUNTIME" rm "$artifact" >/dev/null
  python3 - "$STATE" <<'CHECK'
 import hashlib,json,pathlib,sys
 p=pathlib.Path(sys.argv[1]);m=json.loads((p/'manifest.json').read_text())
@@ -90,25 +91,25 @@ user={'users':[{'name':'demo','sudo':'ALL=(ALL) NOPASSWD:ALL','shell':'/bin/bash
 (root/'user-data').write_text('#cloud-config\n'+json.dumps(user)+'\n')
 (root/'meta-data').write_text('instance-id: '+os.environ['NODE']+'\nlocal-hostname: '+os.environ['NODE']+'\n')
 PY
-podman run -d --name "$LAB" --device /dev/net/tun --cap-add NET_ADMIN \
+"$CONTAINER_RUNTIME" run -d --name "$LAB" --device /dev/net/tun --cap-add NET_ADMIN \
  -p "127.0.0.1:$SSH_PORT:2228" -v "$STATE:/opt/lab" "$ERNIC_LAB_IMAGE"
-podman network connect kind "$LAB"
-NODE_IP="$(podman inspect "$LAB" --format '{{(index .NetworkSettings.Networks "kind").IPAddress}}')"
-CP_IP="$(podman inspect "$CP" --format '{{(index .NetworkSettings.Networks "kind").IPAddress}}')"
+"$CONTAINER_RUNTIME" network connect kind "$LAB"
+NODE_IP="$("$CONTAINER_RUNTIME" inspect "$LAB" --format '{{(index .NetworkSettings.Networks "kind").IPAddress}}')"
+CP_IP="$("$CONTAINER_RUNTIME" inspect "$CP" --format '{{(index .NetworkSettings.Networks "kind").IPAddress}}')"
 [ -n "$NODE_IP" ] && [ -n "$CP_IP" ]
 printf '%s\n' "$NODE_IP" > "$STATE/node-ip"
 if [ "${ERNIC_USE_PREPARED:-true}" != true ]; then
- podman exec "$LAB" python3 /opt/lab/extract-kernel.py /opt/lab/vmlinuz /opt/lab/Image.raw
+ "$CONTAINER_RUNTIME" exec "$LAB" python3 /opt/lab/extract-kernel.py /opt/lab/vmlinuz /opt/lab/Image.raw
 fi
-podman exec "$LAB" qemu-img create -f qcow2 -F qcow2 -b /opt/lab/worker-base.img /opt/lab/worker.qcow2 30G
-podman exec "$LAB" cloud-localds /opt/lab/seed.img /opt/lab/user-data /opt/lab/meta-data
+"$CONTAINER_RUNTIME" exec "$LAB" qemu-img create -f qcow2 -F qcow2 -b /opt/lab/worker-base.img /opt/lab/worker.qcow2 30G
+"$CONTAINER_RUNTIME" exec "$LAB" cloud-localds /opt/lab/seed.img /opt/lab/user-data /opt/lab/meta-data
 rm -f "$STATE/boot.exit"
-podman exec -d "$LAB" bash -c 'bash /opt/lab/boot-worker.sh; echo $? > /opt/lab/boot.exit'
+"$CONTAINER_RUNTIME" exec -d "$LAB" bash -c 'bash /opt/lab/boot-worker.sh; echo $? > /opt/lab/boot.exit'
 fi
 # Refresh configuration when explicitly resuming a failed unjoined VM.
 cp "$HERE/configure-guest.sh" "$STATE/configure-guest.sh"
 NODE_IP="$(cat "$STATE/node-ip")"
-CP_IP="$(podman inspect "$CP" --format '{{(index .NetworkSettings.Networks "kind").IPAddress}}')"
+CP_IP="$("$CONTAINER_RUNTIME" inspect "$CP" --format '{{(index .NetworkSettings.Networks "kind").IPAddress}}')"
 ssh_args=(-o BatchMode=yes -o StrictHostKeyChecking=accept-new -o "UserKnownHostsFile=$STATE/known_hosts" -o ConnectTimeout=5 -i "$STATE/id_ed25519")
 printf "Booting guest; waiting for SSH (up to 10 minutes). Logs: %s/worker-console.log\n" "$STATE"
 ready=false
@@ -120,9 +121,9 @@ $ready || { echo "Guest SSH not ready; inspect $STATE/worker-console.log and qem
 printf "Guest SSH ready; configuring Kubernetes runtime...\n"
 if [ "${ERNIC_USE_PREPARED:-true}" != true ]; then
  mkdir -p "$STATE/worker-bits"
- podman cp "$CP:/usr/bin/kubeadm" "$STATE/worker-bits/kubeadm"
- podman cp "$CP:/usr/bin/kubelet" "$STATE/worker-bits/kubelet"
- podman cp "$CP:/opt/cni/bin" "$STATE/worker-bits/cni"
+ "$CONTAINER_RUNTIME" cp "$CP:/usr/bin/kubeadm" "$STATE/worker-bits/kubeadm"
+ "$CONTAINER_RUNTIME" cp "$CP:/usr/bin/kubelet" "$STATE/worker-bits/kubelet"
+ "$CONTAINER_RUNTIME" cp "$CP:/opt/cni/bin" "$STATE/worker-bits/cni"
  scp "${ssh_args[@]}" -P "$SSH_PORT" -r "$STATE/worker-bits" demo@127.0.0.1:/home/demo/
 fi
 scp "${ssh_args[@]}" -P "$SSH_PORT" "$STATE/configure-guest.sh" demo@127.0.0.1:/home/demo/
@@ -136,7 +137,7 @@ printf 'cgroupRoot: /\n' > "$STATE/kubeadm-patches/kubeletconfiguration0+merge.y
 # Store the short-lived bootstrap credential privately; never print it.
 STATE="$STATE" NODE="$NODE" NODE_IP="$NODE_IP" CP_IP="$CP_IP" CP="$CP" python3 - <<'PY'
 import json,os,pathlib,subprocess
-cmd=subprocess.check_output(['podman','exec',os.environ['CP'],'kubeadm','token','create','--ttl','1h','--print-join-command'],text=True).split()
+cmd=subprocess.check_output([os.environ['CONTAINER_RUNTIME'],'exec',os.environ['CP'],'kubeadm','token','create','--ttl','1h','--print-join-command'],text=True).split()
 token=cmd[cmd.index('--token')+1]
 ca=cmd[cmd.index('--discovery-token-ca-cert-hash')+1]
 cfg={'apiVersion':'kubeadm.k8s.io/v1beta4','kind':'JoinConfiguration','discovery':{'bootstrapToken':{'apiServerEndpoint':os.environ['CP_IP']+':6443','token':token,'caCertHashes':[ca]}},'nodeRegistration':{'name':os.environ['NODE'],'criSocket':'unix:///run/containerd/containerd.sock','kubeletExtraArgs':[{'name':'node-ip','value':os.environ['NODE_IP']}]},'patches':{'directory':'/home/demo/kubeadm-patches'}}
@@ -148,7 +149,7 @@ import json,os,pathlib,subprocess
 p=pathlib.Path(os.environ['STATE'])/'join-private.json'
 if p.exists():
  token=json.loads(p.read_text())['discovery']['bootstrapToken']['token'].split('.')[0]
- subprocess.run(['podman','exec',os.environ['CP'],'kubeadm','token','delete',token],stdout=subprocess.DEVNULL)
+ subprocess.run([os.environ['CONTAINER_RUNTIME'],'exec',os.environ['CP'],'kubeadm','token','delete',token],stdout=subprocess.DEVNULL)
  p.unlink()
 PY
  ssh "${ssh_args[@]}" -p "$SSH_PORT" demo@127.0.0.1 'rm -f ~/join-private.json' || true

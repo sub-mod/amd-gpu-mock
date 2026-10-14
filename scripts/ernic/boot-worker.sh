@@ -3,11 +3,14 @@
 set -euo pipefail
 cd /opt/lab
 NODE_IP="$(cat node-ip)"
+# Identify the Kind interface by address, not Docker/Podman attachment ordering.
+KIND_IF="$(ip -4 -o addr show | awk -v ip="$NODE_IP" '{split($4, address, "/"); if (address[1] == ip) print $2}')"
+[ -n "$KIND_IF" ] || { echo 'Kind interface not found' >&2; exit 1; }
 MAC="$(python3 -c 'import ipaddress,sys; print(":".join(f"{b:02x}" for b in bytes([2,173])+ipaddress.ip_address(sys.argv[1]).packed))' "$NODE_IP")"
 ip link show ernicbr0 >/dev/null 2>&1 || ip link add ernicbr0 type bridge
 ip link set ernicbr0 up
 ip tuntap show | grep -q '^ernic0:' || ip tuntap add dev ernic0 mode tap
-ip addr flush dev eth1
+ip addr flush dev "$KIND_IF"
 ip addr flush dev ernic0
 ip link set eth1 master ernicbr0
 ip link set ernic0 master ernicbr0

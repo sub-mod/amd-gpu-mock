@@ -1,0 +1,76 @@
+name: gpu-network-e2e
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, feat/ernic-container-runtimes]
+    paths:
+      - 'scripts/ernic/**'
+      - 'demo/gpu-network/single-node/**'
+      - 'tests/gpu-network-e2e.py'
+      - '.github/workflows/gpu-network-e2e.yaml'
+  pull_request:
+    paths:
+      - 'scripts/ernic/**'
+      - 'demo/gpu-network/single-node/**'
+      - 'tests/gpu-network-e2e.py'
+      - '.github/workflows/gpu-network-e2e.yaml'
+permissions:
+  contents: read
+jobs:
+  ernic-docker:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 35
+    env:
+      CONTAINER_RUNTIME: docker
+      KIND_EXPERIMENTAL_PROVIDER: docker
+      KUBE_CONTEXT: kind-amd-mock
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - name: Docker runtime and ARM64 preflight
+        run: |
+          docker info
+          source scripts/ernic/runtime.sh
+          test "$ERNIC_RUNTIME_ARCH" = arm64
+          test -c /dev/net/tun || sudo modprobe tun
+          df -h .
+      - uses: helm/kind-action@v1
+        with:
+          version: v0.33.0
+          kubectl_version: v1.37.0
+          node_image: docker.io/submod/amd-mock-kind-node:0.2.2
+          cluster_name: amd-mock
+          config: deployments/kind-node/kind-config.yaml
+          ignore_failed_clean: true
+          wait: 120s
+      - name: Install published GPU mock chart
+        run: |
+          helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock --version 0.2.13 \
+            --namespace amd-mock --create-namespace --wait --timeout 10m
+      - name: Boot ERNIC worker using Docker
+        run: bash scripts/ernic/setup.sh
+      - name: Verify GPU and NIC allocation, exhaustion and reuse
+        run: python3 tests/gpu-network-e2e.py
+      - name: Collect diagnostics
+        if: always()
+        run: |
+          mkdir -p artifacts
+          kubectl get nodes -o json > artifacts/nodes.json 2>&1 || true
+          kubectl get pods -A -o wide > artifacts/pods.txt 2>&1 || true
+          kubectl get events -A -o json > artifacts/events.json 2>&1 || true
+          kubectl -n kube-amd-network logs ds/ernic-device-plugin > artifacts/nic-plugin.log 2>&1 || true
+          kubectl -n kube-amd-network logs deployment/amd-network-network-operator-charts-controller-manager -c manager > artifacts/operator.log 2>&1 || true
+          # Explicit log allowlist: never upload the guest disk or bootstrap/SSH keys.
+          for file in worker-console.log ernic.log qemu.log guest-setup.log join.log; do
+            test ! -f "tmp/ernic/$file" || cp "tmp/ernic/$file" artifacts/
+          done
+      - name: Cleanup owned test resources
+        if: always()
+        run: |
+          bash scripts/ernic/cleanup.sh || true
+          kind delete cluster --name amd-mock
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ernic-docker-diagnostics
+          path: artifacts/
