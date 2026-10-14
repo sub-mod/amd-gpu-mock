@@ -26,3 +26,14 @@ case "$arch" in
 esac
 export CONTAINER_RUNTIME ERNIC_RUNTIME_ARCH KIND_EXPERIMENTAL_PROVIDER="$CONTAINER_RUNTIME"
 ernic_container_exists() { "$CONTAINER_RUNTIME" container inspect "$1" >/dev/null 2>&1; }
+
+ernic_guest_ssh() {
+ "$CONTAINER_RUNTIME" exec "$LAB" ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new \
+  -o UserKnownHostsFile=/opt/lab/known_hosts -o "HostKeyAlias=[127.0.0.1]:$SSH_PORT" \
+  -o ConnectTimeout=5 -i /opt/lab/id_ed25519 -p 2228 demo@127.0.0.1 "$@"
+}
+ernic_guest_scp() {
+ "$CONTAINER_RUNTIME" exec "$LAB" scp -o BatchMode=yes -o StrictHostKeyChecking=accept-new \
+  -o UserKnownHostsFile=/opt/lab/known_hosts -o "HostKeyAlias=[127.0.0.1]:$SSH_PORT" \
+  -o ConnectTimeout=5 -i /opt/lab/id_ed25519 -P 2228 "$@"
+}

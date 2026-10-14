@@ -16,6 +16,15 @@ ip link set eth1 master ernicbr0
 ip link set ernic0 master ernicbr0
 ip link set eth1 up
 ip link set ernic0 up
+# Moving the Kind endpoint can remove Docker's default route. Restore the
+# container's separate management gateway, never route management via ERNIC.
+if [ -s management-ip ] && [ -s management-gateway ]; then
+ MGMT_IP="$(cat management-ip)"
+ MGMT_GW="$(cat management-gateway)"
+ MGMT_IF="$(ip -4 -o addr show | awk -v ip="$MGMT_IP" '{split($4, address, "/"); if (address[1] == ip) print $2}')"
+ [ -n "$MGMT_IF" ] && [ -n "$MGMT_GW" ]
+ ip route replace default via "$MGMT_GW" dev "$MGMT_IF"
+fi
 BACKEND="$(cat backend 2>/dev/null || printf loopback)"
 if [[ "$BACKEND" == tcp:manager:self:* ]]; then
  BACKEND="tcp:manager:$(ip -4 -o addr show dev eth0 | awk '{print $4}' | cut -d/ -f1):${BACKEND##*:}"

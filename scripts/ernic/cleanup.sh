@@ -17,7 +17,7 @@ if "${k[@]}" get node "$NODE" >/dev/null 2>&1; then
 fi
 if ernic_container_exists "$LAB"; then
  if [ -f "$STATE/id_ed25519" ] && [ -f "$STATE/known_hosts" ]; then
-  ssh -o BatchMode=yes -o ConnectTimeout=5 -o "UserKnownHostsFile=$STATE/known_hosts" -i "$STATE/id_ed25519" -p "$SSH_PORT" demo@127.0.0.1 'sudo systemctl poweroff' || true
+  ernic_guest_ssh 'sudo systemctl poweroff' || true
   for attempt in $(seq 1 30); do
    [ ! -f "$STATE/boot.exit" ] || break
    sleep 2

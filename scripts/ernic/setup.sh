@@ -102,6 +102,10 @@ else
 fi
 NODE_IP="$("$CONTAINER_RUNTIME" inspect "$LAB" --format '{{(index .NetworkSettings.Networks "kind").IPAddress}}')"
 CP_IP="$("$CONTAINER_RUNTIME" inspect "$CP" --format '{{(index .NetworkSettings.Networks "kind").IPAddress}}')"
+management_network=podman
+[ "$CONTAINER_RUNTIME" != docker ] || management_network=bridge
+"$CONTAINER_RUNTIME" inspect "$LAB" --format "{{(index .NetworkSettings.Networks \"$management_network\").IPAddress}}" > "$STATE/management-ip"
+"$CONTAINER_RUNTIME" inspect "$LAB" --format "{{(index .NetworkSettings.Networks \"$management_network\").Gateway}}" > "$STATE/management-gateway"
 [ -n "$NODE_IP" ] && [ -n "$CP_IP" ]
 printf '%s\n' "$NODE_IP" > "$STATE/node-ip"
 if [ "${ERNIC_USE_PREPARED:-true}" != true ]; then
@@ -116,14 +120,15 @@ fi
 cp "$HERE/configure-guest.sh" "$STATE/configure-guest.sh"
 NODE_IP="$(cat "$STATE/node-ip")"
 CP_IP="$("$CONTAINER_RUNTIME" inspect "$CP" --format '{{(index .NetworkSettings.Networks "kind").IPAddress}}')"
-ssh_args=(-o BatchMode=yes -o StrictHostKeyChecking=accept-new -o "UserKnownHostsFile=$STATE/known_hosts" -o ConnectTimeout=5 -i "$STATE/id_ed25519")
+touch "$STATE/known_hosts"
+chmod 600 "$STATE/known_hosts"
 ssh_timeout="${ERNIC_SSH_TIMEOUT_SECONDS:-600}"
 [[ "$ssh_timeout" =~ ^[0-9]+$ ]] || { echo 'Invalid ERNIC_SSH_TIMEOUT_SECONDS' >&2; exit 1; }
 printf "Booting guest; waiting for SSH (up to %s seconds). Logs: %s/worker-console.log\n" "$ssh_timeout" "$STATE"
 ready=false
 deadline=$((SECONDS + ssh_timeout))
 while [ "$SECONDS" -lt "$deadline" ]; do
- if ssh "${ssh_args[@]}" -p "$SSH_PORT" demo@127.0.0.1 true 2>"$STATE/ssh-ready.log"; then ready=true; break; fi
+ if ernic_guest_ssh true 2>"$STATE/ssh-ready.log"; then ready=true; break; fi
  if [ -f "$STATE/boot.exit" ]; then
   echo "ERNIC VM exited: $(cat "$STATE/boot.exit")" >&2
   tail -30 "$STATE/qemu.log" "$STATE/ernic.log" >&2
@@ -138,10 +143,10 @@ if [ "${ERNIC_USE_PREPARED:-true}" != true ]; then
  "$CONTAINER_RUNTIME" cp "$CP:/usr/bin/kubeadm" "$STATE/worker-bits/kubeadm"
  "$CONTAINER_RUNTIME" cp "$CP:/usr/bin/kubelet" "$STATE/worker-bits/kubelet"
  "$CONTAINER_RUNTIME" cp "$CP:/opt/cni/bin" "$STATE/worker-bits/cni"
- scp "${ssh_args[@]}" -P "$SSH_PORT" -r "$STATE/worker-bits" demo@127.0.0.1:/home/demo/
+ ernic_guest_scp -r /opt/lab/worker-bits demo@127.0.0.1:/home/demo/
 fi
-scp "${ssh_args[@]}" -P "$SSH_PORT" "$STATE/configure-guest.sh" demo@127.0.0.1:/home/demo/
-ssh "${ssh_args[@]}" -p "$SSH_PORT" demo@127.0.0.1 "sudo bash /home/demo/configure-guest.sh '$NODE_IP' '$CP_IP' '$CP'" | tee "$STATE/guest-setup.log"
+ernic_guest_scp /opt/lab/configure-guest.sh demo@127.0.0.1:/home/demo/
+ernic_guest_ssh "sudo bash /home/demo/configure-guest.sh '$NODE_IP' '$CP_IP' '$CP'" | tee "$STATE/guest-setup.log"
 if [ "${ERNIC_PREPARE_ONLY:-false}" = true ]; then
  printf "Guest prepared; stopping before cluster join.\n"
  exit 0
@@ -166,11 +171,11 @@ if p.exists():
  subprocess.run([os.environ['CONTAINER_RUNTIME'],'exec',os.environ['CP'],'kubeadm','token','delete',token],stdout=subprocess.DEVNULL)
  p.unlink()
 PY
- ssh "${ssh_args[@]}" -p "$SSH_PORT" demo@127.0.0.1 'rm -f ~/join-private.json' || true
+ ernic_guest_ssh 'rm -f ~/join-private.json' || true
 }
 trap cleanup_token EXIT
-scp "${ssh_args[@]}" -P "$SSH_PORT" -r "$STATE/kubeadm-patches" "$STATE/join-private.json" demo@127.0.0.1:/home/demo/
-ssh "${ssh_args[@]}" -p "$SSH_PORT" demo@127.0.0.1 'sudo kubeadm join --config /home/demo/join-private.json' | tee "$STATE/join.log"
+ernic_guest_scp -r /opt/lab/kubeadm-patches /opt/lab/join-private.json demo@127.0.0.1:/home/demo/
+ernic_guest_ssh 'sudo kubeadm join --config /home/demo/join-private.json' | tee "$STATE/join.log"
 registered=false
 for attempt in $(seq 1 60); do
  if "${k[@]}" get node "$NODE" >/dev/null 2>&1; then registered=true; break; fi

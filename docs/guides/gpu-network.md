@@ -367,3 +367,10 @@ keeping the original management bridge as the default gateway and port-publishin
 endpoint while the Kind address moves to the guest NIC. SSH startup has a true
 600-second elapsed-time limit (`ERNIC_SSH_TIMEOUT_SECONDS` overrides it), reports
 the last SSH error and fails early if QEMU exits.
+
+Provisioning and cleanup execute OpenSSH inside the lab container, connecting
+to QEMU's loopback forward and the guest's separate virtio management NIC.
+SCP reads its input from `/opt/lab`, the mounted state directory. This avoids
+making CI provisioning depend on host-port NAT; the published host SSH port
+remains available for local inspection. The boot script restores the original
+management default route after bridging the Kind interface into ERNIC.
