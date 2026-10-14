@@ -68,7 +68,24 @@ NET
 chmod 600 /etc/netplan/60-ernic.yaml
 ip addr replace "$NODE_IP/24" dev enp0s4np0
 ip link set enp0s4np0 up
+# RDMA auto-probing before Ethernet is up can consume all shared IRQs. The
+# kernel command line delays its auto-load; explicit modprobe follows RX setup.
 modprobe ionic_rdma
+cat > /etc/systemd/system/amd-ernic-rdma.service <<'UNIT'
+[Unit]
+Description=Load ERNIC RDMA after Ethernet network setup
+Wants=network-online.target
+After=network-online.target
+Before=kubelet.service
+[Service]
+Type=oneshot
+ExecStart=/sbin/modprobe ionic_rdma
+RemainAfterExit=yes
+[Install]
+WantedBy=multi-user.target
+UNIT
+systemctl daemon-reload
+systemctl enable amd-ernic-rdma.service
 ready=false
 for attempt in $(seq 1 60); do
  if compgen -G '/sys/class/infiniband/*' >/dev/null; then ready=true; break; fi

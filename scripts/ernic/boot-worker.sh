@@ -48,7 +48,7 @@ for attempt in $(seq 1 30); do [ ! -S ernic.sock ] || break; sleep 1; done
 /usr/local/bin/qemu-system-aarch64 -M virt -accel tcg,thread=multi -cpu cortex-a72 -smp 4 -m 3072 \
  -object memory-backend-memfd,id=mem,size=3072M,share=on -numa node,memdev=mem \
  -kernel /opt/lab/Image.raw -initrd /opt/lab/initrd \
- -append 'root=LABEL=cloudimg-rootfs rw console=ttyAMA0' \
+ -append 'root=LABEL=cloudimg-rootfs rw console=ttyAMA0 modprobe.blacklist=ionic_rdma' \
  -drive file=/opt/lab/worker.qcow2,if=virtio,format=qcow2 \
  -drive file=/opt/lab/seed.img,if=virtio,format=raw \
  -netdev user,id=mgmt,hostfwd=tcp:0.0.0.0:2228-:22 \

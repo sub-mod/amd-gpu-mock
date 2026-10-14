@@ -134,7 +134,7 @@ printf "Booting guest; waiting for SSH (up to %s seconds). Logs: %s/worker-conso
 ready=false
 deadline=$((SECONDS + ssh_timeout))
 while [ "$SECONDS" -lt "$deadline" ]; do
- if ernic_guest_ssh true 2>"$STATE/ssh-ready.log"; then ready=true; break; fi
+ if ERNIC_GUEST_COMMAND_TIMEOUT=10 ernic_guest_ssh true 2>"$STATE/ssh-ready.log"; then ready=true; break; fi
  if [ -f "$STATE/boot.exit" ]; then
   echo "ERNIC VM exited: $(cat "$STATE/boot.exit")" >&2
   tail -30 "$STATE/qemu.log" "$STATE/ernic.log" >&2

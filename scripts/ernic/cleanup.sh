@@ -17,7 +17,7 @@ if "${k[@]}" get node "$NODE" >/dev/null 2>&1; then
 fi
 if ernic_container_exists "$LAB"; then
  if [ -f "$STATE/id_ed25519" ] && [ -f "$STATE/known_hosts" ]; then
-  ernic_guest_ssh 'sudo systemctl poweroff' || true
+  ERNIC_GUEST_COMMAND_TIMEOUT=15 ernic_guest_ssh 'sudo systemctl poweroff' || true
   for attempt in $(seq 1 30); do
    [ ! -f "$STATE/boot.exit" ] || break
    sleep 2

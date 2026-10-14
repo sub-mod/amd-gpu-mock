@@ -64,6 +64,10 @@ jobs:
           kubectl -n kube-amd-network logs deployment/amd-network-network-operator-charts-controller-manager -c manager > artifacts/operator.log 2>&1 || true
           docker inspect amd-ernic-lab --format '{{json .NetworkSettings}}' > artifacts/lab-network.json 2>&1 || true
           docker exec amd-ernic-lab sh -c 'ip -4 -o addr; ip route; ss -lntp' > artifacts/lab-network.txt 2>&1 || true
+          source scripts/ernic/runtime.sh
+          LAB=amd-ernic-lab SSH_PORT=2228 ERNIC_GUEST_COMMAND_TIMEOUT=30 ernic_guest_ssh \
+            'ip -s link; ip route; sudo journalctl -u kubelet -u containerd --no-pager -n 200; sudo dmesg | tail -80' \
+            > artifacts/guest-runtime.log 2>&1 || true
           # Explicit log allowlist: never upload the guest disk or bootstrap/SSH keys.
           for file in worker-console.log ernic.log qemu.log guest-setup.log join.log ssh-ready.log; do
             test ! -f "tmp/ernic/$file" || cp "tmp/ernic/$file" artifacts/

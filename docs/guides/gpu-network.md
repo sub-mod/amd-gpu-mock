@@ -379,3 +379,12 @@ The hosted allocation job disables optional monitoring/exporter workloads and
 sets `ERNIC_NETWORK_TIMEOUT=15m` for first-boot image pulls under TCG. The local
 Network Operator Helm rollout keeps its five-minute default; override that
 variable on slower machines. Discovery/allocation assertions are identical.
+
+Guest startup defers automatic `ionic_rdma` probing with the standard
+`modprobe.blacklist` boot option. Setup brings Ethernet up first and explicitly
+loads RDMA; a `network-online.target`-ordered service preserves that sequence
+on reboot. Both share the device's interrupt budget: early RDMA probing was
+observed consuming interrupts 1–8 and Ethernet then failed with
+`qcq alloc of rx0 failed -28`. Successful Ethernet-first runs reserve RX
+interrupts before RDMA obtains its remaining event queues. No driver or emulator
+source patch is applied. Guest SSH/SCP commands also have bounded timeouts.
