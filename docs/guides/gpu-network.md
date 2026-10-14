@@ -361,3 +361,9 @@ The two-node scripts still explicitly require Podman; this change validates
 the single-worker CI environment first. Maintainer image-build commands remain
 Podman-based. Runtime portability needs no new published image because the
 updated boot/setup scripts are supplied from the checkout.
+
+Docker Engine 28+ is required. The Kind attachment has gateway priority `-1`,
+keeping the original management bridge as the default gateway and port-publishing
+endpoint while the Kind address moves to the guest NIC. SSH startup has a true
+600-second elapsed-time limit (`ERNIC_SSH_TIMEOUT_SECONDS` overrides it), reports
+the last SSH error and fails early if QEMU exits.

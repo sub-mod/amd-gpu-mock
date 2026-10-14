@@ -60,8 +60,10 @@ jobs:
           kubectl get events -A -o json > artifacts/events.json 2>&1 || true
           kubectl -n kube-amd-network logs ds/ernic-device-plugin > artifacts/nic-plugin.log 2>&1 || true
           kubectl -n kube-amd-network logs deployment/amd-network-network-operator-charts-controller-manager -c manager > artifacts/operator.log 2>&1 || true
+          docker inspect amd-ernic-lab --format '{{json .NetworkSettings}}' > artifacts/lab-network.json 2>&1 || true
+          docker exec amd-ernic-lab sh -c 'ip -4 -o addr; ip route; ss -lntp' > artifacts/lab-network.txt 2>&1 || true
           # Explicit log allowlist: never upload the guest disk or bootstrap/SSH keys.
-          for file in worker-console.log ernic.log qemu.log guest-setup.log join.log; do
+          for file in worker-console.log ernic.log qemu.log guest-setup.log join.log ssh-ready.log; do
             test ! -f "tmp/ernic/$file" || cp "tmp/ernic/$file" artifacts/
           done
       - name: Cleanup owned test resources

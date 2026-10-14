@@ -11,7 +11,11 @@ if [ -z "${CONTAINER_RUNTIME:-}" ]; then
  fi
 fi
 case "$CONTAINER_RUNTIME" in
- docker) arch="$(docker info --format '{{.Architecture}}')" ;;
+ docker)
+  arch="$(docker info --format '{{.Architecture}}')"
+  version="$(docker version --format '{{.Server.Version}}')"
+  [ "${version%%.*}" -ge 28 ] || { echo 'ERNIC Docker setup requires Engine 28+ for gateway priority.' >&2; return 1; }
+  ;;
  podman) arch="$(podman info --format '{{.Host.Arch}}')" ;;
  *) echo 'CONTAINER_RUNTIME must be docker or podman' >&2; return 1 ;;
 esac

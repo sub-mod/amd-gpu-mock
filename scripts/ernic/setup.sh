@@ -93,7 +93,13 @@ user={'users':[{'name':'demo','sudo':'ALL=(ALL) NOPASSWD:ALL','shell':'/bin/bash
 PY
 "$CONTAINER_RUNTIME" run -d --name "$LAB" --device /dev/net/tun --cap-add NET_ADMIN \
  -p "127.0.0.1:$SSH_PORT:2228" -v "$STATE:/opt/lab" "$ERNIC_LAB_IMAGE"
-"$CONTAINER_RUNTIME" network connect kind "$LAB"
+if [ "$CONTAINER_RUNTIME" = docker ]; then
+ # Keep published management SSH on the original bridge. The Kind address is
+ # handed to the guest, so Docker must not select that endpoint for port NAT.
+ "$CONTAINER_RUNTIME" network connect --gw-priority=-1 kind "$LAB"
+else
+ "$CONTAINER_RUNTIME" network connect kind "$LAB"
+fi
 NODE_IP="$("$CONTAINER_RUNTIME" inspect "$LAB" --format '{{(index .NetworkSettings.Networks "kind").IPAddress}}')"
 CP_IP="$("$CONTAINER_RUNTIME" inspect "$CP" --format '{{(index .NetworkSettings.Networks "kind").IPAddress}}')"
 [ -n "$NODE_IP" ] && [ -n "$CP_IP" ]
@@ -111,13 +117,21 @@ cp "$HERE/configure-guest.sh" "$STATE/configure-guest.sh"
 NODE_IP="$(cat "$STATE/node-ip")"
 CP_IP="$("$CONTAINER_RUNTIME" inspect "$CP" --format '{{(index .NetworkSettings.Networks "kind").IPAddress}}')"
 ssh_args=(-o BatchMode=yes -o StrictHostKeyChecking=accept-new -o "UserKnownHostsFile=$STATE/known_hosts" -o ConnectTimeout=5 -i "$STATE/id_ed25519")
-printf "Booting guest; waiting for SSH (up to 10 minutes). Logs: %s/worker-console.log\n" "$STATE"
+ssh_timeout="${ERNIC_SSH_TIMEOUT_SECONDS:-600}"
+[[ "$ssh_timeout" =~ ^[0-9]+$ ]] || { echo 'Invalid ERNIC_SSH_TIMEOUT_SECONDS' >&2; exit 1; }
+printf "Booting guest; waiting for SSH (up to %s seconds). Logs: %s/worker-console.log\n" "$ssh_timeout" "$STATE"
 ready=false
-for attempt in $(seq 1 120); do
- if ssh "${ssh_args[@]}" -p "$SSH_PORT" demo@127.0.0.1 true 2>/dev/null; then ready=true; break; fi
+deadline=$((SECONDS + ssh_timeout))
+while [ "$SECONDS" -lt "$deadline" ]; do
+ if ssh "${ssh_args[@]}" -p "$SSH_PORT" demo@127.0.0.1 true 2>"$STATE/ssh-ready.log"; then ready=true; break; fi
+ if [ -f "$STATE/boot.exit" ]; then
+  echo "ERNIC VM exited: $(cat "$STATE/boot.exit")" >&2
+  tail -30 "$STATE/qemu.log" "$STATE/ernic.log" >&2
+  exit 1
+ fi
  sleep 5
 done
-$ready || { echo "Guest SSH not ready; inspect $STATE/worker-console.log and qemu.log" >&2; exit 1; }
+$ready || { cat "$STATE/ssh-ready.log" >&2; echo "Guest SSH not ready; inspect $STATE/worker-console.log and qemu.log" >&2; exit 1; }
 printf "Guest SSH ready; configuring Kubernetes runtime...\n"
 if [ "${ERNIC_USE_PREPARED:-true}" != true ]; then
  mkdir -p "$STATE/worker-bits"
