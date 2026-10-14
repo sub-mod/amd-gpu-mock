@@ -27,7 +27,7 @@ helm upgrade --install amd-network "$CHART" --kube-context "$CONTEXT" \
  --set "controllerManager.manager.image.repository=${NETWORK_OPERATOR_IMAGE%:*}" \
  --set "controllerManager.manager.image.tag=${NETWORK_OPERATOR_IMAGE##*:}" \
  --set controllerManager.manager.imagePullPolicy=IfNotPresent \
- --wait --timeout=5m
+ --wait --timeout="${ERNIC_NETWORK_TIMEOUT:-5m}"
 "${k[@]}" apply -f "$HERE/ernic-discovery.yaml"
 NETWORK_PLUGIN_IMAGE="$NETWORK_PLUGIN_IMAGE" python3 - <<'PY' | "${k[@]}" apply -f -
 import json,os

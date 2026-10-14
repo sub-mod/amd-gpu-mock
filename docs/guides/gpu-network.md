@@ -374,3 +374,8 @@ SCP reads its input from `/opt/lab`, the mounted state directory. This avoids
 making CI provisioning depend on host-port NAT; the published host SSH port
 remains available for local inspection. The boot script restores the original
 management default route after bridging the Kind interface into ERNIC.
+
+The hosted allocation job disables optional monitoring/exporter workloads and
+sets `ERNIC_NETWORK_TIMEOUT=15m` for first-boot image pulls under TCG. The local
+Network Operator Helm rollout keeps its five-minute default; override that
+variable on slower machines. Discovery/allocation assertions are identical.

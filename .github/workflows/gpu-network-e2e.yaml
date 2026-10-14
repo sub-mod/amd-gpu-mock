@@ -24,6 +24,7 @@ jobs:
       CONTAINER_RUNTIME: docker
       KIND_EXPERIMENTAL_PROVIDER: docker
       KUBE_CONTEXT: kind-amd-mock
+      ERNIC_NETWORK_TIMEOUT: 15m
     steps:
       - uses: actions/checkout@v4
       - uses: azure/setup-helm@v4
@@ -46,7 +47,8 @@ jobs:
       - name: Install published GPU mock chart
         run: |
           helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock --version 0.2.13 \
-            --namespace amd-mock --create-namespace --wait --timeout 10m
+            --namespace amd-mock --create-namespace --wait --timeout 10m \
+            --set monitoring.enabled=false --set metricsExporter.enabled=false
       - name: Boot ERNIC worker using Docker
         run: bash scripts/ernic/setup.sh
       - name: Verify GPU and NIC allocation, exhaustion and reuse
