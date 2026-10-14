@@ -215,3 +215,5 @@ Select explicitly with `CONTAINER_RUNTIME=docker` and use the same Kind provider
 when creating the cluster. No Podman machine is needed for Linux Docker.
 `python3 tests/gpu-network-e2e.py` runs this demo and checks NIC exhaustion and
 release/reuse; see [runtime and CI setup](../../../docs/guides/gpu-network.md#container-runtimes-and-ci).
+
+Hosted ARM64 Docker validation: [passing run](https://github.com/sub-mod/amd-gpu-mock/actions/runs/38611698813), [captured output](captured-docker-ci.txt). Includes GPU/NIC allocation, NIC exhaustion and reuse after release.

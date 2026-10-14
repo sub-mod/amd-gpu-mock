@@ -1,0 +1,13 @@
+Hosted ARM64 Docker validation — 2026-10-14
+Source: 4bfb27db112ffb721de5b3b1bc05ffdebd566435
+Run: https://github.com/sub-mod/amd-gpu-mock/actions/runs/38611698813
+Result: success
+Selected verbatim test output (full logs and diagnostics available in the run):
+
+2026-10-14T18:21:52.0894806Z PASS: same worker, AMD DRA claim -> matching injected GPU, Network Operator NIC -> discovered RDMA device, HTTP simulated response
+2026-10-14T18:21:52.0895394Z No RDMA transfer, real GPU compute, or GPU-direct DMA was tested.
+2026-10-14T18:21:54.7234743Z PASS: real ERNIC PCI device 0000:00:04.0 bound to ionic
+2026-10-14T18:21:54.9015097Z PASS: second Pod Pending: Insufficient amd.com/nic
+2026-10-14T18:22:30.6931026Z PASS: same worker, AMD DRA claim -> matching injected GPU, Network Operator NIC -> discovered RDMA device, HTTP simulated response
+2026-10-14T18:22:30.6931816Z No RDMA transfer, real GPU compute, or GPU-direct DMA was tested.
+2026-10-14T18:22:33.5664406Z PASS: released ERNIC NIC reused by second GPU+DRA workload

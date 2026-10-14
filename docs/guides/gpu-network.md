@@ -388,3 +388,5 @@ observed consuming interrupts 1–8 and Ethernet then failed with
 `qcq alloc of rx0 failed -28`. Successful Ethernet-first runs reserve RX
 interrupts before RDMA obtains its remaining event queues. No driver or emulator
 source patch is applied. Guest SSH/SCP commands also have bounded timeouts.
+
+Hosted ARM64 Docker validation passed on October 14, 2026: [run 38611698813](https://github.com/sub-mod/amd-gpu-mock/actions/runs/38611698813). It covered guest join, upstream discovery, GPU+NIC allocation, genuine NIC exhaustion, release and reuse. [Captured test output](../../demo/gpu-network/single-node/captured-docker-ci.txt) preserves the evidence. This allocation job does not validate RDMA transfer or real GPU computation.
