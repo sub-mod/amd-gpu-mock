@@ -1,0 +1,16 @@
+gpu:
+  profile: mi300x
+  partition: SPX
+devicePlugin:
+  enabled: true
+  image: docker.io/rocm/k8s-device-plugin:1.31.0.11
+dra:
+  enabled: false
+nri:
+  enabled: false
+metricsExporter:
+  enabled: false
+monitoring:
+  enabled: false
+dashboard:
+  enabled: false

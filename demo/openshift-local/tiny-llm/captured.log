@@ -1,0 +1,66 @@
+Validated 2026-10-14: CRC2.64.0 / OpenShift4.22.14 / Kubernetes1.35.6 / ARM64 / CRI-O1.35.7.
+Published chart0.2.13, mockv0.2.7, AMDplugin1.31.0.11.
+Demo namespace reinstall passed; application recreated with explicit restricted-v2 requirement.
+No real GPU computation or DRA/Operator integration is claimed.
+
+NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+version   4.22.14   True        False         27d     Cluster version is 4.22.14
+namespace/amd-mock-crc-llm unchanged
+configmap/amd-gpu-mock unchanged
+service/amd-gpu-mock-metrics unchanged
+serviceaccount/mock-node unchanged
+role.rbac.authorization.k8s.io/mock-privileged-scc unchanged
+rolebinding.rbac.authorization.k8s.io/mock-privileged-scc unchanged
+daemonset.apps/amd-gpu-mock unchanged
+daemon set "amd-gpu-mock" successfully rolled out
+daemonset.apps/amd-gpu-mock-device-plugin unchanged
+daemon set "amd-gpu-mock-device-plugin" successfully rolled out
+pod/tiny-llm created
+pod/tiny-llm condition met
+APPLICATION_SCC restricted-v2
+{
+  "text": "The future of AI is bright and full of possibilities",
+  "allocation": {
+    "node": "crc",
+    "devices": {
+      "/dev/kfd": {
+        "major": 234,
+        "minor": 0
+      },
+      "/dev/dri/renderD128": {
+        "major": 226,
+        "minor": 128
+      }
+    },
+    "simulation": true
+  }
+}
+DEVICE_EVIDENCE {"node": "crc", "devices": {"/dev/kfd": {"major": 234, "minor": 0}, "/dev/dri/renderD128": {"major": 226, "minor": 128}}, "simulation": true}
+AMD device plugin -> kubelet/CRI-O -> allocated mock character devices.
+Scripted response; no model weights or ROCm computation.
+10.217.0.2 - - [14/Oct/2026 21:47:01] "GET /healthz HTTP/1.1" 200 -
+SIMULATED_RESPONSE {"text": "The future of AI is bright and full of possibilities", "allocation": {"node": "crc", "devices": {"/dev/kfd": {"major": 234, "minor": 0}, "/dev/dri/renderD128": {"major": 226, "minor": 128}}, "simulation": true}}
+127.0.0.1 - - [14/Oct/2026 21:47:01] "POST /generate HTTP/1.1" 200 -
+PASS: OpenShift scheduler -> AMD device plugin -> CRI-O device injection -> scripted Tiny LLM response
+I1014 21:45:15.068103       1 amdgpu.go:208] /sys/module/amdgpu/drivers/pci:amdgpu/0000:05:00.0
+I1014 21:45:15.068210       1 amdgpu.go:208] /sys/module/amdgpu/drivers/pci:amdgpu/0000:26:00.0
+I1014 21:45:15.068303       1 amdgpu.go:208] /sys/module/amdgpu/drivers/pci:amdgpu/0000:46:00.0
+I1014 21:45:15.068404       1 amdgpu.go:208] /sys/module/amdgpu/drivers/pci:amdgpu/0000:65:00.0
+I1014 21:45:15.068503       1 amdgpu.go:208] /sys/module/amdgpu/drivers/pci:amdgpu/0000:85:00.0
+I1014 21:45:15.068601       1 amdgpu.go:208] /sys/module/amdgpu/drivers/pci:amdgpu/0000:a6:00.0
+I1014 21:45:15.068693       1 amdgpu.go:208] /sys/module/amdgpu/drivers/pci:amdgpu/0000:c6:00.0
+I1014 21:45:15.068787       1 amdgpu.go:208] /sys/module/amdgpu/drivers/pci:amdgpu/0000:e5:00.0
+I1014 21:45:15.068834       1 amdgpu.go:277] Devices map: map[0000:05:00.0:map[card:0 computePartitionType:spx devID:0000:05:00:0 memoryPartitionType:nps1 nodeId:1 numaNode:0 renderD:128] 0000:26:00.0:map[card:1 computePartitionType:spx devID:0000:26:00:0 memoryPartitionType:nps1 nodeId:2 numaNode:0 renderD:129] 0000:46:00.0:map[card:2 computePartitionType:spx devID:0000:46:00:0 memoryPartitionType:nps1 nodeId:3 numaNode:0 renderD:130] 0000:65:00.0:map[card:3 computePartitionType:spx devID:0000:65:00:0 memoryPartitionType:nps1 nodeId:4 numaNode:0 renderD:131] 0000:85:00.0:map[card:4 computePartitionType:spx devID:0000:85:00:0 memoryPartitionType:nps1 nodeId:5 numaNode:1 renderD:132] 0000:a6:00.0:map[card:5 computePartitionType:spx devID:0000:a6:00:0 memoryPartitionType:nps1 nodeId:6 numaNode:1 renderD:133] 0000:c6:00.0:map[card:6 computePartitionType:spx devID:0000:c6:00:0 memoryPartitionType:nps1 nodeId:7 numaNode:1 renderD:134] 0000:e5:00.0:map[card:7 computePartitionType:spx devID:0000:e5:00:0 memoryPartitionType:nps1 nodeId:8 numaNode:1 renderD:135]]
+I1014 21:45:15.069144       1 amdgpu.go:294] Partition counts: map[spx_nps1:8]
+I1014 21:45:15.069263       1 plugin.go:254] Watching GPU with bus ID: 0000:85:00.0 NUMA Node: [1]
+I1014 21:45:15.069386       1 plugin.go:254] Watching GPU with bus ID: 0000:a6:00.0 NUMA Node: [1]
+I1014 21:45:15.069410       1 plugin.go:254] Watching GPU with bus ID: 0000:c6:00.0 NUMA Node: [1]
+I1014 21:45:15.069433       1 plugin.go:254] Watching GPU with bus ID: 0000:e5:00.0 NUMA Node: [1]
+I1014 21:45:15.069458       1 plugin.go:254] Watching GPU with bus ID: 0000:05:00.0 NUMA Node: [0]
+I1014 21:45:15.069488       1 plugin.go:254] Watching GPU with bus ID: 0000:26:00.0 NUMA Node: [0]
+I1014 21:45:15.069510       1 plugin.go:254] Watching GPU with bus ID: 0000:46:00.0 NUMA Node: [0]
+I1014 21:45:15.069531       1 plugin.go:254] Watching GPU with bus ID: 0000:65:00.0 NUMA Node: [0]
+I1014 21:45:27.552415       1 besteffort_policy.go:149] best device subset:[0000:05:00.0] best score:0
+I1014 21:45:27.554038       1 plugin.go:377] Allocating device ID: 0000:05:00.0
+I1014 21:47:00.331270       1 besteffort_policy.go:149] best device subset:[0000:05:00.0] best score:0
+I1014 21:47:00.333273       1 plugin.go:377] Allocating device ID: 0000:05:00.0

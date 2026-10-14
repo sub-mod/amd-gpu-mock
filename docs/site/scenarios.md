@@ -18,6 +18,7 @@ Keep different allocator configurations in separate clusters.
 | --- | --- | --- |
 | [AMD device plugin](../guides/device-plugin.md) | Alternative allocator | A Pod requesting `amd.com/gpu` receives allocated devices |
 | [AMD DRA](../guides/dra.md) | Default quick start | ResourceSlices, ResourceClaims, scheduler selection and CDI injection |
+| [OpenShift Local Tiny LLM](../guides/openshift-local.md) | Separate CRC cluster | GPU allocation and scripted response with explicit `restricted-v2` application admission |
 | [AMD GPU Operator](../guides/gpu-operator.md) | Operator guide | Tested Operator reconciliation and operand discovery |
 | [GPU and NIC worker](../../demo/gpu-network/single-node/README.md) | Prepared ERNIC VM | One application receives a DRA GPU and device-plugin NIC |
 | [Two-worker GPU and RDMA](../../demo/gpu-network/two-node/README.md) | Two prepared ERNIC VMs | Separate GPU/NIC allocations, CPU-buffer payloads and checksum rejection |
