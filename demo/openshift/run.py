@@ -13,6 +13,7 @@ STAGES = {
     'dra': 'dra/run.py', 'telemetry': 'telemetry/run.py',
     'partition-allocation': 'partition-allocation/run.py',
     'network-preflight': 'gpu-network/preflight.py', 'spur-preflight': 'spur/preflight.py',
+    'spur': 'spur/run.py',
     'restore': 'restore-device-plugin.py',
 }
 if __name__ == '__main__':
@@ -21,7 +22,10 @@ if __name__ == '__main__':
     args=parser.parse_args()
     if args.demo=='list':
         for name in STAGES:
-            print(name + (' — prerequisite probe only; see guide for current blocker' if name.endswith('preflight') else ' — executable demo'))
+            detail=' — executable demo'
+            if name=='network-preflight': detail=' — prerequisite probe only; see guide for current blocker'
+            elif name.endswith('preflight'): detail=' — published image architecture check'
+            print(name + detail)
         sys.exit(0)
     guard()
     if args.demo in ['multi-gpu','allocation']:
@@ -29,7 +33,7 @@ if __name__ == '__main__':
             raise RuntimeError('Device-plugin demo requires SPX mode: run restore first')
     if args.demo=='partition-allocation':
         oc('delete','namespace','amd-crc-dra','--ignore-not-found','--wait=true','--timeout=120s')
-    if args.demo in ['dra','telemetry']:
+    if args.demo in ['dra','telemetry','spur']:
         if subprocess.run([sys.executable,str(HERE/args.demo/'setup.py')]).returncode:
             sys.exit(1)
     command=[sys.executable,str(HERE/STAGES[args.demo])]

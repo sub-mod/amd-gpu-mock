@@ -23,6 +23,7 @@ not example responses. Each stage checks its claimed behavior before printing
 | 7 | [AMD DRA](../../demo/openshift/dra/captured.log) | Stable claims, real driver preparation, CRI-O/CDI injection, occupied-device rejection and same-device release/reuse |
 | 8 | [Telemetry](../../demo/openshift/telemetry/captured.log) | Real AMD exporter reports eight GPUs; injected ECC and recovery reach Prometheus; Grafana is provisioned |
 | 9 | [Same-GPU partition allocation](../../demo/openshift/partition-allocation/captured.log) | Two containers receive distinct 96 GiB DPX slice descriptors with the same physical PCI parent |
+| 10 | [Spur queueing](../../demo/openshift/spur/captured.log) | Published native ARM64 controller/operator, queued second job, completion and GPU reuse; all Pods restricted-v2 |
 
 **Application consumers explicitly require `restricted-v2`.** The runners
 verify the admitted SCC, non-root UID and allocated character devices.
@@ -57,6 +58,8 @@ python demo/openshift/run.py telemetry
 python demo/openshift/run.py partition-allocation
 # Return to the initial device-plugin/SPX Tiny LLM presentation:
 python demo/openshift/run.py restore
+# Run Spur on the restored device-plugin pool (temporarily stops Tiny LLM):
+python demo/openshift/run.py spur
 ```
 
 Each consumer demo retains its last successful Pod for inspection. Clean its
@@ -141,18 +144,39 @@ two-node transfer demonstrations remain blocked on that infrastructure work.
 See [vfkit device configuration](https://github.com/crc-org/vfkit/blob/main/doc/usage.md)
 and [CRC requirements](https://crc.dev/docs/installing/).
 
-## Spur: architecture prerequisite
+## Spur: native ARM64 image
 
 ```bash
 python demo/openshift/run.py spur-preflight
+python demo/openshift/run.py spur
 ```
 
-[Captured image inspection](../../demo/openshift/spur/captured-preflight.log)
-shows the current pinned upstream Spur image is AMD64 and this node is ARM64.
-The probe exits nonzero on that mismatch; it does not claim a running Spur
-scheduler. Next work is an upstream ARM64 image or a separately built, published
-and validated ARM64 artifact, followed by OpenShift admission and queueing tests.
-No new image was built or published for the demos above.
+The original pinned ROCm image is AMD64. The demo now pulls published native
+`docker.io/submod/spur:0.14.0-arm64.1`, pinned by digest in
+`demo/openshift/spur/versions.env`. [Image provenance, patch and rebuild guide](spur-arm64-image.md).
+This is a downstream build with a small C `char` portability patch; Spur's
+scheduler and Kubernetes allocation code are unchanged.
+
+[Captured architecture check](../../demo/openshift/spur/captured-preflight.log)
+and [live job output](../../demo/openshift/spur/captured.log) show the ARM64
+controller/operator and actual GPU allocation/queueing/completion/reuse. The
+second job stays Pending without a Pod while the first owns all eight GPUs.
+All controller, operator and job Pods were admitted under `restricted-v2`.
+This validates one managed node, not multi-node placement or actual computation.
+
+Setup removes the known Tiny LLM Pod so the managed GPU pool belongs to Spur.
+It refuses unrelated GPU consumers. Completed job Pods remain for log review.
+Before rerunning, clean up this demo with:
+
+```bash
+python demo/openshift/spur/cleanup.py
+python demo/openshift/run.py spur
+```
+
+Cleanup removes its dedicated namespace, operator RBAC and Spur node labels,
+and reinstalls the Tiny LLM presentation. The shared SpurJob CRD is retained.
+Use `SPUR_ARM64_IMAGE` to test another compatible Docker Hub image reference;
+normal setup requires no compiler, custom build or emulator.
 
 ## Cleanup and limits
 

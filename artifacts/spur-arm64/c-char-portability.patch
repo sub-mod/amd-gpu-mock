@@ -1,0 +1,17 @@
+--- a/crates/spurd/src/mpi_plugin.rs
++++ b/crates/spurd/src/mpi_plugin.rs
+@@ -212 +212 @@
+-        let mut runtime_buf = vec![0i8; 256];
++        let mut runtime_buf = vec![0 as c_char; 256];
+@@ -251 +251 @@
+-        let mut errbuf = vec![0i8; 512];
++        let mut errbuf = vec![0 as c_char; 512];
+@@ -270 +270 @@
+-        let mut errbuf = vec![0i8; 512];
++        let mut errbuf = vec![0 as c_char; 512];
+@@ -301 +301 @@
+-        let mut errbuf = vec![0i8; 256];
++        let mut errbuf = vec![0 as c_char; 256];
+@@ -836 +836 @@
+-        let mut dest = [0i8; 8];
++        let mut dest = [0 as c_char; 8];
