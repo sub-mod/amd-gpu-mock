@@ -1,0 +1,17 @@
+Captured 2026-10-15 UTC on CRC/OpenShift4.22.14, Kubernetes1.35.6, ARM64/CRI-O.
+Published chart0.2.13 and mockv0.2.7; see docs/guides/openshift-demos.md for exact proof and limits.
+
+{
+  "mode": "CPX",
+  "partitions": 8,
+  "system": {
+    "amdgpu_version": "6.19.4",
+    "rocm_version": "7.14.0",
+    "amdsmi_version": "27.0.0",
+    "profile_name": "AMD Instinct MI300X",
+    "node_name": "mock-node"
+  },
+  "total_gpus": 64
+}
+PASS: CPX dashboard state changes; schedulable GPU capacity remains unchanged
+PASS: SPX state restored; this is not allocatable hardware slicing

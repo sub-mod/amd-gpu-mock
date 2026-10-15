@@ -1,0 +1,10 @@
+Captured 2026-10-15 UTC on CRC/OpenShift4.22.14, Kubernetes1.35.6, ARM64/CRI-O.
+Published chart0.2.13 and mockv0.2.7; see docs/guides/openshift-demos.md for exact proof and limits.
+
+PASS: real AMD exporter reports eight GPUs to Prometheus
+PASS: dashboard ECC=7 -> mock AMD SMI -> real AMD exporter -> Prometheus
+ECC_QUERY [7.0]
+PASS: ECC recovery reaches Prometheus
+ROUTE https://amd-mock-dashboard-amd-mock-crc-llm.apps-crc.testing
+ROUTE https://amd-mock-grafana-amd-mock-crc-llm.apps-crc.testing
+PASS: Grafana healthy and provisioned with Prometheus; Prometheus/Grafana use restricted-v2

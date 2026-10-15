@@ -1,0 +1,11 @@
+Captured 2026-10-15 UTC on CRC/OpenShift4.22.14, Kubernetes1.35.6, ARM64/CRI-O.
+Published chart0.2.13 and mockv0.2.7; see docs/guides/openshift-demos.md for exact proof and limits.
+
+namespace/amd-crc-multi-gpu created
+pod/two-gpus created
+{"pod": "amd-crc-multi-gpu/two-gpus", "node": "crc", "scc": "restricted-v2", "devices": ["/dev/kfd", "/dev/dri/renderD129", "/dev/dri/renderD130"], "uid": 1000670000}
+pod/single-a created
+{"pod": "amd-crc-multi-gpu/single-a", "node": "crc", "scc": "restricted-v2", "devices": ["/dev/kfd", "/dev/dri/renderD131"], "uid": 1000670000}
+pod/single-b created
+{"pod": "amd-crc-multi-gpu/single-b", "node": "crc", "scc": "restricted-v2", "devices": ["/dev/kfd", "/dev/dri/renderD132"], "uid": 1000670000}
+PASS: one Pod receives two GPUs; concurrent Pods receive distinct GPUs under restricted-v2

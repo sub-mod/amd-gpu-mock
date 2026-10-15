@@ -1,0 +1,10 @@
+Captured 2026-10-15 UTC on CRC/OpenShift4.22.14, Kubernetes1.35.6, ARM64/CRI-O.
+Published chart0.2.13 and mockv0.2.7; see docs/guides/openshift-demos.md for exact proof and limits.
+
+PASS: AMD DRA discovers 16 DPX slices from eight physical GPUs
+namespace/amd-crc-partition-allocation created
+resourceclaim.resource.k8s.io/same-gpu created
+pod/two-slices created
+EVIDENCE a gpu-1-129 /dev/dri/renderD129 memory=96Gi parent=0000:05:00.0
+EVIDENCE b gpu-0-128 /dev/dri/renderD128 memory=96Gi parent=0000:05:00.0
+PASS: two restricted containers, distinct allocated slices, same physical GPU parent; no real memory isolation or compute claim

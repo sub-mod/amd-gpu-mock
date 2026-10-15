@@ -63,6 +63,7 @@ nav:
           - AMD GPU Operator: docs/guides/gpu-operator.md
           - Tiny LLM: demo/llm/README.md
           - OpenShift Local (restricted-v2): docs/guides/openshift-local.md
+          - OpenShift demo sequence: docs/guides/openshift-demos.md
           - DRA allocation: demo/dra/README.md
           - Multiple GPUs: demo/multi-gpu/README.md
           - Same-GPU partition allocation: demo/partition-allocation/README.md

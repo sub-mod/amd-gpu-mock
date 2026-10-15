@@ -1,0 +1,104 @@
+Captured 2026-10-15 UTC on CRC/OpenShift4.22.14, Kubernetes1.35.6, ARM64/CRI-O.
+Published chart0.2.13 and mockv0.2.7; see docs/guides/openshift-demos.md for exact proof and limits.
+
+[
+  {
+    "slug": "mi210",
+    "name": "AMD Instinct MI210",
+    "architecture": "cdna2",
+    "memory_gb": 64,
+    "gpu_count": 8,
+    "tdp_w": 300
+  },
+  {
+    "slug": "mi250x",
+    "name": "AMD Instinct MI250X",
+    "architecture": "cdna2",
+    "memory_gb": 64,
+    "gpu_count": 16,
+    "tdp_w": 500
+  },
+  {
+    "slug": "mi300a",
+    "name": "AMD Instinct MI300A",
+    "architecture": "cdna3",
+    "memory_gb": 128,
+    "gpu_count": 4,
+    "tdp_w": 550
+  },
+  {
+    "slug": "mi300x",
+    "name": "AMD Instinct MI300X",
+    "architecture": "cdna3",
+    "memory_gb": 192,
+    "gpu_count": 8,
+    "tdp_w": 750
+  },
+  {
+    "slug": "mi325x",
+    "name": "AMD Instinct MI325X",
+    "architecture": "cdna3",
+    "memory_gb": 256,
+    "gpu_count": 8,
+    "tdp_w": 1000
+  },
+  {
+    "slug": "mi350x",
+    "name": "AMD Instinct MI350X",
+    "architecture": "cdna4",
+    "memory_gb": 288,
+    "gpu_count": 8,
+    "tdp_w": 1000
+  },
+  {
+    "slug": "mi355x",
+    "name": "AMD Instinct MI355X",
+    "architecture": "cdna4",
+    "memory_gb": 288,
+    "gpu_count": 8,
+    "tdp_w": 1400
+  }
+]
+[
+  {
+    "index": 0,
+    "bdf": "0000:05:00.0",
+    "profile": "mi300x"
+  },
+  {
+    "index": 1,
+    "bdf": "0000:26:00.0",
+    "profile": "mi300x"
+  },
+  {
+    "index": 2,
+    "bdf": "0000:46:00.0",
+    "profile": "mi300x"
+  },
+  {
+    "index": 3,
+    "bdf": "0000:65:00.0",
+    "profile": "mi300x"
+  },
+  {
+    "index": 4,
+    "bdf": "0000:85:00.0",
+    "profile": "mi300x"
+  },
+  {
+    "index": 5,
+    "bdf": "0000:a6:00.0",
+    "profile": "mi300x"
+  },
+  {
+    "index": 6,
+    "bdf": "0000:c6:00.0",
+    "profile": "mi300x"
+  },
+  {
+    "index": 7,
+    "bdf": "0000:e5:00.0",
+    "profile": "mi300x"
+  }
+]
+PASS: eight physical MI300X mock devices and published profile catalog; topology unchanged

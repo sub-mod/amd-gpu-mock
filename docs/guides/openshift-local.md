@@ -7,7 +7,7 @@ existing `privileged` SCC; the application receives no privileged grant.
 
 Status: live deployment and clean namespace reinstall passed on October 14, 2026.
 Validated on Apple Silicon: CRC 2.64.0, OpenShift 4.22.14, Kubernetes 1.35.6,
-ARM64 and CRI-O. See [captured live output](../../demo/openshift-local/tiny-llm/captured.log).
+ARM64 and CRI-O. See [captured live output](../../demo/openshift/tiny-llm/captured.log).
 
 This separate demo deploys eight mock MI300X GPUs and a scripted Tiny LLM service
 using published images. It starts with the real AMD device plugin, rather than
@@ -33,6 +33,9 @@ macOS Apple Silicon
        +-- [6] App verifies character devices and returns scripted HTTP response
 ```
 
+See the [OpenShift demo sequence](openshift-demos.md) for additional scenarios
+and their captured evidence.
+
 ## Start CRC
 
 Install CRC with the official macOS installer, plus Helm and Python 3. Use
@@ -40,9 +43,9 @@ CRC's bundled oc CLI. Download the Red Hat pull secret to a private local file;
 do not paste it into logs or commit it.
 
 ```bash
-./demo/openshift-local/tiny-llm/setup.sh
+./demo/openshift/tiny-llm/setup.sh
 # Override for another local folder or a CI-provided protected file:
-# PULL_SECRET_FILE=/absolute/path/to/pull-secret.json ./demo/openshift-local/tiny-llm/setup.sh
+# PULL_SECRET_FILE=/absolute/path/to/pull-secret.json ./demo/openshift/tiny-llm/setup.sh
 eval "$(crc oc-env --shell bash)"
 # Follow CRC's login instructions, with the kubeadmin user.
 # Use the kubeadmin login instruction printed by crc start.
@@ -67,9 +70,9 @@ From the repository root, after CRC is running and admin login is established:
 ```bash
 python3 -m venv /tmp/amd-crc-demo-venv
 /tmp/amd-crc-demo-venv/bin/pip install PyYAML
-/tmp/amd-crc-demo-venv/bin/python demo/openshift-local/tiny-llm/run.py render
-/tmp/amd-crc-demo-venv/bin/python demo/openshift-local/tiny-llm/run.py install
-/tmp/amd-crc-demo-venv/bin/python demo/openshift-local/tiny-llm/run.py verify
+/tmp/amd-crc-demo-venv/bin/python demo/openshift/tiny-llm/run.py render
+/tmp/amd-crc-demo-venv/bin/python demo/openshift/tiny-llm/run.py install
+/tmp/amd-crc-demo-venv/bin/python demo/openshift/tiny-llm/run.py verify
 oc -n amd-mock-crc-llm get pods -o wide
 oc -n amd-mock-crc-llm logs tiny-llm
 ```
@@ -97,7 +100,7 @@ response, plus upstream plugin discovery logs.
 ## Clean up
 
 ```bash
-/tmp/amd-crc-demo-venv/bin/python demo/openshift-local/tiny-llm/run.py cleanup
+/tmp/amd-crc-demo-venv/bin/python demo/openshift/tiny-llm/run.py cleanup
 crc stop
 ```
 
