@@ -1,0 +1,27 @@
+Starting pod/crc-debug-56689 ...
+To use host binaries, run `chroot /host`. Instead, if you need to access host namespaces, run `nsenter -a -t 1`.
+5.14.0-687.46.1.el9_8.aarch64
+PCI_IDENTITIES
+/sys/bus/pci/devices/0000:00:00.0 0x106b
+0x1a05
+/sys/bus/pci/devices/0000:00:01.0 0x1af4
+0x1041
+/sys/bus/pci/devices/0000:00:05.0 0x1af4
+0x1043
+/sys/bus/pci/devices/0000:00:06.0 0x1af4
+0x1042
+/sys/bus/pci/devices/0000:00:07.0 0x1af4
+0x105a
+/sys/bus/pci/devices/0000:00:08.0 0x1af4
+0x1053
+/sys/bus/pci/devices/0000:00:09.0 0x1af4
+0x1044
+ERNIC_ETHERNET_DRIVER
+/lib/modules/5.14.0-687.46.1.el9_8.aarch64/kernel/drivers/net/ethernet/pensando/ionic/ionic.ko.xz
+ERNIC_RDMA_DRIVER
+modinfo: ERROR: Module ionic_rdma not found.
+RDMA_DEVICES
+BLOCKED: CRC has no real/emulated Pensando PCI NIC; no NIC allocation proof.
+
+Removing debug pod ...
+error: non-zero exit code from debug container

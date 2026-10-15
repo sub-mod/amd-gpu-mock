@@ -1,0 +1,13 @@
+Captured 2026-10-15 UTC on CRC/OpenShift4.22.14, Kubernetes1.35.6, ARM64/CRI-O.
+Published chart0.2.13 and mockv0.2.7; see docs/guides/openshift-demos.md for exact proof and limits.
+
+namespace/amd-crc-dra created
+resourceclaim.resource.k8s.io/first-gpu created
+pod/first-consumer created
+{"pod": "amd-crc-dra/first-consumer", "node": "crc", "scc": "restricted-v2", "devices": ["/dev/kfd", "/dev/dri/renderD129"], "uid": 1000700000}
+ALLOCATED {'device': 'gpu-1-129', 'driver': 'gpu.amd.com', 'pool': 'crc', 'request': 'gpu'}
+resourceclaim.resource.k8s.io/reuse-gpu created
+pod/reuse-consumer created
+PASS: second DRA consumer cannot allocate the occupied selected GPU
+{"pod": "amd-crc-dra/reuse-consumer", "node": "crc", "scc": "restricted-v2", "devices": ["/dev/kfd", "/dev/dri/renderD129"], "uid": 1000700000}
+PASS: ResourceSlice -> claim -> scheduler -> AMD NodePrepare -> CRI-O/CDI -> restricted-v2 consumer; selected GPU released and reused

@@ -1,0 +1,6 @@
+{
+  "image": "rocm/spur@sha256:f42a234b6b93650a9ca0e76ae2ff124585a07bccb5b7ee2f4706a42aedd2846b",
+  "image_architecture": "amd64",
+  "node_architecture": "arm64"
+}
+BLOCKED: pinned upstream Spur image does not match CRC architecture. Need an upstream ARM64 image or separately published and validated ARM64 build.

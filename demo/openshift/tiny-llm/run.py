@@ -73,6 +73,8 @@ def install():
                 capture_output=True).stdout
     if 'api.crc.testing' not in server:
         raise RuntimeError('Select the CRC admin context before running this demo')
+    if oc('-n', NS, 'get', 'ds', RELEASE + '-dra-kubeletplugin', '--ignore-not-found', '-o', 'name', capture_output=True).stdout.strip():
+        raise RuntimeError('DRA is active; run demo/openshift/restore-device-plugin.py before device-plugin installation')
     oc('get', 'clusterversion', 'version')
     n = node()
     if int(n['status'].get('capacity', {}).get('amd.com/gpu', 0)):

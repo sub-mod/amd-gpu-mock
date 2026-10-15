@@ -1,0 +1,10 @@
+Captured 2026-10-15 UTC on CRC/OpenShift4.22.14, Kubernetes1.35.6, ARM64/CRI-O.
+Published chart0.2.13 and mockv0.2.7; see docs/guides/openshift-demos.md for exact proof and limits.
+
+namespace/amd-crc-allocation unchanged
+pod/reserve-free-pool created
+{"pod": "amd-crc-allocation/reserve-free-pool", "node": "crc", "scc": "restricted-v2", "devices": ["/dev/kfd", "/dev/dri/renderD133", "/dev/dri/renderD134", "/dev/dri/renderD135"], "uid": 1000680000}
+pod/waiting-consumer created
+PASS: genuine GPU exhaustion keeps second consumer Pending
+{"pod": "amd-crc-allocation/waiting-consumer", "node": "crc", "scc": "restricted-v2", "devices": ["/dev/kfd", "/dev/dri/renderD133"], "uid": 1000680000}
+PASS: release returns a previously allocated GPU to a pending restricted-v2 Pod

@@ -1,0 +1,8 @@
+Captured 2026-10-15 UTC on CRC/OpenShift4.22.14, Kubernetes1.35.6, ARM64/CRI-O.
+Published chart0.2.13 and mockv0.2.7; see docs/guides/openshift-demos.md for exact proof and limits.
+
+PASS: dashboard overheat action -> API state 105C -> synthetic hwmon 105000mC
+PASS: dashboard ECC action -> API count7 -> KFD RAS counter7
+PASS: busy action changes GPU utilization: 85
+PASS: idle action restores zero utilization
+PASS: healthy state restored; no workload eviction or remediation claim
