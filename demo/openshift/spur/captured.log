@@ -1,0 +1,85 @@
+Clean namespace repeat, 2026-10-15 UTC: OpenShift4.22.14/Kubernetes1.35.6 ARM64/CRI-O.
+Source Spur0.14.0 bd28e6395547377cb47c7d911390f99432a5fc73 with documented c_char portability patch.
+Full setup plus queue/allocation/completion/reuse via demo/openshift/run.py spur.
+
+namespace/amd-crc-spur created
+secret/spur-auth created
+configmap/spur-config created
+serviceaccount/spur-operator created
+clusterrole.rbac.authorization.k8s.io/amd-crc-spur-operator created
+clusterrolebinding.rbac.authorization.k8s.io/amd-crc-spur-operator created
+service/spurctld created
+deployment.apps/spurctld created
+service/spur-k8s-operator created
+deployment.apps/spur-k8s-operator created
+PASS: native ARM64 Spur controller/operator ready under restricted-v2
+RUNTIME_IMAGE spur-k8s-operator-b4b8b8ddc-vqkzz docker.io/submod/spur@sha256:b3fd4a8887e8f4cc6b3530fba281c3b181db5cd2cbea53548594aba415cc85c2
+RUNTIME_IMAGE spurctld-54c7f6965b-bq5vt docker.io/submod/spur@sha256:b3fd4a8887e8f4cc6b3530fba281c3b181db5cd2cbea53548594aba415cc85c2
+spur 0.14.0 (bd28e6395547377cb47c7d911390f99432a5fc73-dirty)
+
+PASS: Spur creates a running job consuming the whole mock GPU pool
+EVIDENCE SpurJob=hold-pool id=1 Pod=spur-job-1-crc node=crc amd.com/gpu=8
+BEGIN job=hold-pool requested_gpus=8 host=spur-job-1-crc
+/dev/kfd ea:0
+/dev/dri/renderD128 e2:80
+/dev/dri/renderD129 e2:81
+/dev/dri/renderD130 e2:82
+/dev/dri/renderD131 e2:83
+/dev/dri/renderD132 e2:84
+/dev/dri/renderD133 e2:85
+/dev/dri/renderD134 e2:86
+/dev/dri/renderD135 e2:87
+DEVICE_INJECTION_PASS
+Waiting for presenter release; no GPU computation is performed.
+
+APPLICATION_SCC restricted-v2
+PASS: second SpurJob is Pending while the pool is occupied
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+                 2   default queued-g      k8s PD       0:00      1 (Resources)
+                 1   default hold-poo      k8s  R       0:14      1 crc
+
+PASS: Spur keeps the second job queued without creating a competing GPU Pod
+PASS: hold-pool reaches Completed through Spur
+BEGIN job=hold-pool requested_gpus=8 host=spur-job-1-crc
+/dev/kfd ea:0
+/dev/dri/renderD128 e2:80
+/dev/dri/renderD129 e2:81
+/dev/dri/renderD130 e2:82
+/dev/dri/renderD131 e2:83
+/dev/dri/renderD132 e2:84
+/dev/dri/renderD133 e2:85
+/dev/dri/renderD134 e2:86
+/dev/dri/renderD135 e2:87
+DEVICE_INJECTION_PASS
+Waiting for presenter release; no GPU computation is performed.
+JOB_COMPLETED
+
+PASS: queued job starts after the first job releases the GPU pool
+EVIDENCE SpurJob=queued-gpu id=2 Pod=spur-job-2-crc node=crc amd.com/gpu=1
+BEGIN job=queued-gpu requested_gpus=1 host=spur-job-2-crc
+/dev/kfd ea:0
+/dev/dri/renderD128 e2:80
+DEVICE_INJECTION_PASS
+Waiting for presenter release; no GPU computation is performed.
+
+APPLICATION_SCC restricted-v2
+PASS: queued-gpu reaches Completed through Spur
+BEGIN job=queued-gpu requested_gpus=1 host=spur-job-2-crc
+/dev/kfd ea:0
+/dev/dri/renderD128 e2:80
+DEVICE_INJECTION_PASS
+Waiting for presenter release; no GPU computation is performed.
+JOB_COMPLETED
+
+NAME                              STATE       JOB ID
+spurjob.spur.amd.com/hold-pool    Completed   1
+spurjob.spur.amd.com/queued-gpu   Completed   2
+
+NAME                                    READY   STATUS      RESTARTS   AGE   IP            NODE   NOMINATED NODE   READINESS GATES
+pod/spur-job-1-crc                      0/1     Completed   0          25s   10.217.0.82   crc    <none>           <none>
+pod/spur-job-2-crc                      0/1     Completed   0          8s    10.217.0.83   crc    <none>           <none>
+pod/spur-k8s-operator-b4b8b8ddc-vqkzz   1/1     Running     0          33s   10.217.0.81   crc    <none>           <none>
+pod/spurctld-54c7f6965b-bq5vt           1/1     Running     0          33s   10.217.0.80   crc    <none>           <none>
+
+PASS: unchanged Spur submission, GPU allocation, queueing, completion and reuse
+PASS: ARM64 Spur queueing, GPU allocation, completion and reuse on OpenShift; all Pods restricted-v2

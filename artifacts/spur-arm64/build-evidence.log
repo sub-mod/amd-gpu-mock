@@ -1,0 +1,34 @@
+Native ARM64 build of Spur bd28e6395547377cb47c7d911390f99432a5fc73 with c-char-portability.patch
+Published image docker.io/submod/spur@sha256:b3fd4a8887e8f4cc6b3530fba281c3b181db5cd2cbea53548594aba415cc85c2
+Selected verbatim build/test output:
+
+test mpi_plugin::tests::a_second_start_for_one_step_is_refused ... ok
+test mpi_plugin::tests::a_failed_start_registers_nothing ... ok
+test mpi_plugin::tests::apply_pmix_uri_aliases_fills_missing_uri_from_uri4 ... ok
+test mpi_plugin::tests::parse_setup_fork_env_splits_key_value_pairs ... ok
+test mpi_plugin::tests::normalize_pmix_fork_env_aligns_multi_node_hostname_and_sizes ... ok
+test mpi_plugin::tests::missing_plugin_returns_actionable_error ... ok
+test mpi_plugin::tests::pmix_launch_guard_drop_rolls_back_after_successful_start ... ignored, requires SPUR_TEST_MPI_PLUGIN pointing at a built spur_mpi_pmix.so
+test mpi_plugin::tests::release_evicts_namespace_when_stop_fails ... ok
+test mpi_plugin::tests::pmix_launch_guard_start_failure_leaves_no_active_namespace ... ok
+test mpi_plugin::tests::release_stops_the_step_server_and_forgets_it ... ok
+test mpi_plugin::tests::plan_modex_timeouts_survive_proto_roundtrip ... ok
+test mpi_plugin::tests::releasing_a_server_this_process_never_hosted_is_an_error ... ok
+test mpi_plugin::tests::start_rejects_more_than_256_local_procs ... ok
+test mpi_plugin::tests::stop_pmix_server_clears_entry_even_when_plugin_unloaded ... ok
+test mpi_plugin::tests::plan_credentials_survive_proto_roundtrip_and_plan_to_c ... ok
+test mpi_plugin::tests::stopping_a_job_clears_every_step_it_hosts_and_leaves_other_jobs_alone ... ok
+test mpi_plugin::tests::strip_launcher_mpi_env_removes_stale_launcher_keys ... ok
+test mpi_plugin::tests::validate_pmix_env_requires_all_keys ... ok
+test mpi_plugin::tests::write_c_str_noop_on_empty_dest ... ok
+test mpi_plugin::tests::write_c_str_rejects_overlong_value ... ok
+test mpi_plugin::tests::stop_pmix_server_evicts_namespace_when_stop_fails ... ok
+test result: ok. 20 passed; 0 failed; 1 ignored; 0 measured; 642 filtered out; finished in 0.00s
+  spur: requires GLIBC_2.28
+  spurctld: requires GLIBC_2.28
+  spurd: requires GLIBC_2.28
+  spurstepd: requires GLIBC_2.28
+  spurauthd: requires GLIBC_2.28
+  spur-k8s-operator: requires GLIBC_2.28
+linux/arm64
+spur 0.14.0 (bd28e6395547377cb47c7d911390f99432a5fc73-dirty)

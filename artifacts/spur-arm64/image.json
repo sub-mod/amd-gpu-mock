@@ -1,0 +1,23 @@
+{
+  "upstream": "https://github.com/ROCm/spur",
+  "revision": "bd28e6395547377cb47c7d911390f99432a5fc73",
+  "image": "docker.io/submod/spur:0.14.0-arm64.1",
+  "platform": "linux/arm64",
+  "source_archive_sha256": "d58a21f13846e9bab4ab0a5b976acfc39d2cb569f50618995170b4051b1485a1",
+  "cargo_lock_sha256": "46b40447efb5e14e774514dab43fa4d76b48a8e9ba0a800072a9d1bdca96d885",
+  "upstream_dockerfile_sha256": "b9474f63f2b8a704e795fc8d9c6d8d36ff6eae6ccf289acfd54744e660eba46c",
+  "build_recipe_sha256": "2fae5610a8a7ba8bd86211e940242bf032eff8943e04c0d7111d83b442a070ed",
+  "source_changes": "artifacts/spur-arm64/c-char-portability.patch",
+  "recipe_change": "protoc download linux-x86_64 -> linux-aarch_64",
+  "digest": "sha256:b3fd4a8887e8f4cc6b3530fba281c3b181db5cd2cbea53548594aba415cc85c2",
+  "portability_patch_sha256": "f7e19839874239f7fd819e219a51ad777803b3609fe18e0a8b83409233ae8211",
+  "validation": {
+    "native_help_checks": 6,
+    "mpi_plugin_unit_tests_passed": 20,
+    "mpi_plugin_unit_tests_ignored": 1,
+    "openshift": "4.22.14",
+    "kubernetes": "1.35.6",
+    "all_test_pod_scc": "restricted-v2",
+    "spur_queue_allocation_completion_reuse": "passed"
+  }
+}
