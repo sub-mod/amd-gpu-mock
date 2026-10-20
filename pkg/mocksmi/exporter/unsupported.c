@@ -19,10 +19,7 @@ amdsmi_status_t amdsmi_get_processor_handles_by_type(
     amdsmi_processor_handle *processor_handles, uint32_t *processor_count) {
   return AMDSMI_STATUS_NOT_SUPPORTED;
 }
-amdsmi_status_t amdsmi_get_processor_handle_from_bdf(
-    amdsmi_bdf_t bdf, amdsmi_processor_handle *processor_handle) {
-  return AMDSMI_STATUS_NOT_SUPPORTED;
-}
+
 amdsmi_status_t
 amdsmi_get_gpu_device_cuid(amdsmi_processor_handle processor_handle,
                            unsigned int *cuid_length, char *cuid) {

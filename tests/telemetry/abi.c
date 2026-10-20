@@ -17,6 +17,13 @@ static void *reader(void *arg) {
   return NULL;
 }
 int main(void) {
+  amdsmi_bdf_t query = {0};
+  query.bdf.domain_number = 1;
+  query.bdf.bus_number = 0x26;
+  query.bdf.device_number = 3;
+  query.bdf.function_number = 2;
+  amdsmi_processor_handle found = (void *)0x123;
+  assert(amdsmi_get_processor_handle_from_bdf(query, &found) == AMDSMI_STATUS_NOT_INIT && found == NULL);
   assert(amdsmi_init(AMDSMI_INIT_AMD_GPUS) == 0);
   uint32_t n = 0;
   assert(amdsmi_get_socket_handles(&n, NULL) == 0 && n == 1);
@@ -30,6 +37,10 @@ int main(void) {
          AMDSMI_STATUS_OUT_OF_RESOURCES);
   n = 8;
   assert(amdsmi_get_processor_handles(socket, &n, handles) == 0);
+  assert(amdsmi_get_processor_handle_from_bdf(query, &found) == 0 && found == handles[1]);
+  assert(amdsmi_get_processor_handle_from_bdf(query, NULL) == AMDSMI_STATUS_INVAL);
+  query.bdf.bus_number = 0xff;
+  assert(amdsmi_get_processor_handle_from_bdf(query, &found) == AMDSMI_STATUS_NOT_FOUND && found == NULL);
   amdsmi_asic_info_t asic;
   assert(amdsmi_get_gpu_asic_info(handles[0], &asic) == 0 &&
          asic.device_id == 0x74a1);
@@ -65,6 +76,8 @@ int main(void) {
   for (int i = 0; i < 8; i++)
     pthread_join(threads[i], NULL);
   assert(amdsmi_shut_down() == 0);
-  puts("AMD SMI ABI: enumeration, units, structures, ECC, buffers, unsupported "
+  found = handles[0];
+  assert(amdsmi_get_processor_handle_from_bdf(query, &found) == AMDSMI_STATUS_NOT_INIT && found == NULL);
+  puts("AMD SMI ABI: BDF lookup, enumeration, units, structures, ECC, buffers, unsupported "
        "capabilities, concurrent calls PASS");
 }

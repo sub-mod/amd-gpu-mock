@@ -112,6 +112,26 @@ amdsmi_status_t amdsmi_get_gpu_device_bdf(amdsmi_processor_handle h,
   p->function_number = function;
   return 0;
 }
+// Identity lookup used by discovery clients such as HAMi. Resolve from the
+// same snapshots as enumeration; unknown or missing devices never succeed.
+amdsmi_status_t amdsmi_get_processor_handle_from_bdf(
+    amdsmi_bdf_t bdf, amdsmi_processor_handle *processor_handle) {
+  if (!processor_handle)
+    return AMDSMI_STATUS_INVAL;
+  *processor_handle = NULL;
+  if (!initialized)
+    return AMDSMI_STATUS_NOT_INIT;
+  for (int i = 0; i < gpu_count; i++) {
+    amdsmi_bdf_t candidate = {0};
+    amdsmi_processor_handle handle = (void *)(uintptr_t)(0x1000 + i);
+    if (amdsmi_get_gpu_device_bdf(handle, &candidate) == AMDSMI_STATUS_SUCCESS &&
+        candidate.as_uint == bdf.as_uint) {
+      *processor_handle = handle;
+      return AMDSMI_STATUS_SUCCESS;
+    }
+  }
+  return AMDSMI_STATUS_NOT_FOUND;
+}
 amdsmi_status_t amdsmi_get_gpu_bdf_id(amdsmi_processor_handle h, uint64_t *p) {
   VALID(h, p);
   unsigned domain, bus, device, function;
