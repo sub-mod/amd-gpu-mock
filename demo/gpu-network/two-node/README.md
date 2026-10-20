@@ -63,7 +63,7 @@ connection. The Pods use host networking, not isolated secondary networks.
 
 Prerequisites are the [single-node setup requirements](../single-node/README.md#set-up-and-run)
 and an existing README quick-start Kind cluster with its GPU Helm release.
-Use chart **0.2.15** or later (mock image **v0.2.9**): it fixes agent restart
+Use chart **0.2.16** or later (mock image **v0.2.9**): it fixes agent restart
 when mock character devices remain from an earlier process. The current implementation is ARM64/Podman. The machine must have at least
 16 GiB RAM. The pair uses 6 GiB of guest RAM plus QEMU, ERNIC, control-plane and
 telemetry overhead, and eight virtual CPUs. Use these two workers without other

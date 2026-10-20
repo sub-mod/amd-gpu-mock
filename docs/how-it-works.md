@@ -7,7 +7,7 @@ A scheduled GPU pod proves allocation and device injection, not GPU execution.
 ## From quick start to a GPU pod
 
 1. The published kind image starts Kubernetes v1.37.0 with CDI enabled.
-2. Chart 0.2.15 starts the mock node agent and AMD DRA driver by default.
+2. Chart 0.2.16 starts the mock node agent and AMD DRA driver by default.
 3. The agent reads a profile, writes mock KFD/PCI/DRM/driver sysfs, creates
    character devices and initializes runtime state.
 4. AMD's unchanged driver discovers the mounted sysfs and publishes ResourceSlices.
@@ -21,6 +21,10 @@ A scheduled GPU pod proves allocation and device injection, not GPU execution.
 The alternative [device-plugin path](guides/device-plugin.md) registers
 `amd.com/gpu` capacity and allocates physical GPUs to extended-resource requests.
 The allocators run separately to avoid independent allocation of one pool.
+
+The optional [HAMi sharing demo](guides/hami.md) runs a third allocator on a
+dedicated cluster, backed by main's CUSE devices and staged AMD libraries.
+It demonstrates software shares of one MI300X, not hardware partitions.
 
 ## Why real AMD consumers discover devices
 

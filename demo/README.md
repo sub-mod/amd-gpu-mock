@@ -94,6 +94,7 @@ python3 demo/run.py list
 | [llm](llm/README.md) | Tiny LLM scheduling and scripted output with one GPU | `python3 demo/run.py llm` |
 | [partition-allocation](partition-allocation/README.md) | Two containers, distinct 96-GiB partitions of one MI300X; requires DPX/NPS2 startup | `./demo/partition-allocation/run.sh` |
 | [partitioning](partitioning/README.md) | SPX/DPX/QPX/CPX virtual dashboard state | `python3 demo/run.py partitioning --mode CPX` |
+| [hami](hami/README.md) | Optional dedicated HAMi cluster: two Pods share one MI300X; exhaustion/reuse and faults | `./demo/hami/setup.sh` then `python3 demo/hami/verify.py` |
 | [dra](dra/README.md) | ResourceSlice, ResourceClaim allocation and CDI devices | `python3 demo/run.py dra` |
 | [faults](faults/README.md) | Overheat, ECC, crash and recovery across real telemetry | `python3 demo/run.py faults --action overheat` |
 | [multi-gpu](multi-gpu/README.md) | Two GPUs in one pod, or multiple independent consumers | `python3 demo/run.py multi-gpu --count 2` |
@@ -166,7 +167,7 @@ cluster is deleted.
 
 | Component | Version |
 | --- | --- |
-| Chart (default dashboards) | 0.2.15 |
+| Chart (default dashboards) | 0.2.16 |
 | kind node / Kubernetes | 0.2.2 / v1.37.0 |
 | Mock node-agent image | v0.2.9 |
 | AMD exporter runtime | v1.5.2-mock.2 |

@@ -4,7 +4,7 @@ A searchable Material for MkDocs site now brings these guides and demo READMEs
 together. See [building and publishing the site](site/maintaining.md) for local
 preview and GitHub Pages setup.
 
-The current published setup uses chart **0.2.15**, mock image **v0.2.9**,
+The current published setup uses chart **0.2.16**, mock image **v0.2.9**,
 node image **0.2.2 / Kubernetes v1.37.0**, AMD DRA **v1.0.0-mock.3** and
 exporter **v1.5.2-mock.2**. These components have independent versions.
 The root README contains the short installation path; these guides explain
@@ -15,6 +15,7 @@ behavior, validation and limits.
 | [How it works](how-it-works.md) | Mock interfaces, allocation and telemetry paths |
 | [Architecture](architecture.md) | ASCII component diagrams and fault flow |
 | [GPU profiles](profiles.md) | Model inventory, capacities and fidelity limits |
+| [HAMi sharing](guides/hami.md) | Optional same-GPU software shares, native opens, exhaustion/reuse and dashboard faults |
 | [Native device/library backend](guides/driver-mock.md) | Optional CUSE devices, libdrm/AMD SMI queries, published images and fidelity limits |
 | [DRA](guides/dra.md) | ResourceClaims, allocation, CDI and lifecycle checks |
 | [Same-GPU partition allocation](guides/partition-allocation.md) | Fixed MI300X DPX/NPS2, two containers sharing a physical parent, each layer's responsibilities |

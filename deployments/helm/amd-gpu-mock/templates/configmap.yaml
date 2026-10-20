@@ -1,3 +1,27 @@
+{{- $profile := .Files.Get (printf "profiles/%s.yaml" .Values.gpu.profile) | fromYaml -}}
+{{- if ne (toString .Values.gpu.count) "" -}}
+{{- $text := toString .Values.gpu.count -}}
+{{- if not (regexMatch "^[1-9][0-9]*$" $text) -}}
+{{- fail "gpu.count must be a positive integer within the selected profile inventory" -}}
+{{- end -}}
+{{- $count := int $text -}}
+{{- if gt $count (len $profile.devices) -}}
+{{- fail "gpu.count exceeds the selected profile inventory" -}}
+{{- end -}}
+{{- $_ := set $profile "devices" (slice $profile.devices 0 $count) -}}
+{{- $bdfs := list -}}
+{{- range $profile.devices -}}{{- $bdfs = append $bdfs .pci_bdf -}}{{- end -}}
+{{- $roots := list -}}
+{{- range $profile.pcie_topology.root_complexes -}}
+{{- $devices := list -}}
+{{- range .devices -}}{{- if has . $bdfs -}}{{- $devices = append $devices . -}}{{- end -}}{{- end -}}
+{{- if $devices -}}
+{{- $_ := set . "devices" $devices -}}
+{{- $roots = append $roots . -}}
+{{- end -}}
+{{- end -}}
+{{- $_ := set $profile.pcie_topology "root_complexes" $roots -}}
+{{- end -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,4 +30,4 @@ metadata:
     {{- include "amd-gpu-mock.labels" . | nindent 4 }}
 data:
   config.yaml: |
-    {{- .Files.Get (printf "profiles/%s.yaml" .Values.gpu.profile) | nindent 4 }}
+    {{- toYaml $profile | nindent 4 }}

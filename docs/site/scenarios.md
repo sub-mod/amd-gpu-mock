@@ -9,7 +9,7 @@ captured logs, inspection commands and the boundaries of each proof.
 
 Install kind v0.33.0+, kubectl, Helm and Docker or Podman. Complete the
 [quick start](getting-started.md) for the default DRA scenarios. Device-plugin,
-fixed-partition, GPU/network and Spur scenarios describe their additional setup.
+fixed-partition, GPU/network, HAMi and Spur scenarios describe their additional setup.
 Keep different allocator configurations in separate clusters.
 
 ## Component scenarios
@@ -17,6 +17,7 @@ Keep different allocator configurations in separate clusters.
 | Scenario | Setup | Result |
 | --- | --- | --- |
 | [AMD device plugin](../guides/device-plugin.md) | Alternative allocator | A Pod requesting `amd.com/gpu` receives allocated devices |
+| [HAMi sharing](../guides/hami.md) | Dedicated CUSE cluster, AMD64/ARM64 | Two Pods share one MI300X; exhaustion/reuse and dashboard health propagation |
 | [AMD DRA](../guides/dra.md) | Default quick start | ResourceSlices, ResourceClaims, scheduler selection and CDI injection |
 | [OpenShift Local Tiny LLM](../guides/openshift-local.md) | Separate CRC cluster | GPU allocation and scripted response with explicit `restricted-v2` application admission |
 | [AMD GPU Operator](../guides/gpu-operator.md) | Operator guide | Tested Operator reconciliation and operand discovery |

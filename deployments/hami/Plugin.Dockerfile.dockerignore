@@ -1,0 +1,8 @@
+.git
+**/__pycache__
+tmp/*
+!tmp/hami-main
+tmp/hami-main/*
+!tmp/hami-main/amd-device-plugin
+!tmp/hami-main/HAMi
+tmp/hami-main/**/.git

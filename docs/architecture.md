@@ -214,7 +214,7 @@ setup scrapes the separate AMD collector endpoint instead.
 
 ## Allocation and runtime
 
-Chart 0.2.15 defaults to AMD's unchanged DRA v1.0.0 driver, republished for
+Chart 0.2.16 defaults to AMD's unchanged DRA v1.0.0 driver, republished for
 AMD64 and ARM64. Its chart mounts mock sysfs at the driver's `/sys`. Kubernetes
 allocates ResourceClaims; kubelet calls prepare/unprepare; the driver writes
 per-claim CDI specs. Containerd injects only the allocated card/render devices
@@ -225,7 +225,7 @@ GPU capacity as `amd.com/gpu`. See the [device-plugin guide](guides/device-plugi
 
 The published `amd-mock-kind-node:0.2.2` contains Kubernetes v1.37.0 and AMD's
 container toolkit, with CDI enabled. Both allocation paths use this image.
-Chart 0.2.15 uses node-agent image `amd-gpu-mock:v0.2.9`. The kind configuration
+Chart 0.2.16 uses node-agent image `amd-gpu-mock:v0.2.9`. The kind configuration
 maps localhost:8080 to dashboard NodePort 30080 automatically.
 
 ## Optional native device/library consumers
@@ -258,6 +258,18 @@ CUSE requires a Linux host with `/dev/cuse`; AMD64 and ARM64 are validated.
 This backend models device opens, discovery and selected library queries.
 Raw GPU ioctls, real GPU memory isolation and HIP execution are outside its
 scope. RocJITsu remains a separate optional computation experiment.
+
+## Optional HAMi allocation
+
+The [HAMi demo](../demo/hami/README.md) uses the same live node agent and
+CUSE/library backend, with one MI300X selected from the original profile. The
+unchanged HAMi plugin discovers capacity through staged sysfs, AMD SMI and
+libdrm; its webhook/scheduler allocate software shares and kubelet injects the
+same GPU into two Pods with distinct CU masks and configured memory limits.
+DRA and the ordinary AMD device plugin are disabled in that dedicated cluster.
+Dashboard crash/recovery updates the shared RAS state consumed by HAMi health
+reporting. See the [numbered HAMi flow](guides/hami.md#architecture-and-execution-order)
+for order of execution and the limits of the sharing proof.
 
 ## Telemetry
 
