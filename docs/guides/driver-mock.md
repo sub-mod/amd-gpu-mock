@@ -49,7 +49,7 @@ kind create cluster --name amd-mock \
   --config deployments/kind-node/kind-config.yaml
 
 helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-  --version 0.2.15 -n amd-mock --create-namespace \
+  --version 0.2.16 -n amd-mock --create-namespace \
   --set driverMock.enabled=true \
   --set image.repository=docker.io/submod/amd-gpu-mock-driver \
   --set image.tag=v0.1.1 --wait --timeout 5m

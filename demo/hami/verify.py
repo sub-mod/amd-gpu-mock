@@ -34,6 +34,7 @@ def evidence(name):
  data=json.loads(k('-n',NS,'logs',name).strip().splitlines()[-1]);p=get('pod',name)
  print('EVIDENCE',name,json.dumps({'podUID':p['metadata']['uid'],'node':p['spec'].get('nodeName'),'scheduler':p['spec']['schedulerName'],'allocation':p['metadata'].get('annotations',{}).get('hami.io/amd-devices-allocated'),'consumer':data}),flush=True)
  assert p['spec']['schedulerName']=='hami-scheduler'
+ assert p['metadata']['annotations']['hami.io/amd-devices-allocated']==devices[0]['id']+',AMD Instinct MI300X,98304,152:;'
  assert data['settings']['LD_AUDIT']=='/usr/local/vgpu/libamvgpu.so'
  assert data['settings']['HIP_DEVICE_MEMORY_LIMIT_0']=='98304m'
  assert data['native_device_open'] and data['settings']['ROCR_VISIBLE_DEVICES']=='GPU-9c4f000000000001'

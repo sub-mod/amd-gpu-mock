@@ -6,7 +6,9 @@ own Kind cluster and kubeconfig. DRA and the ordinary AMD device plugin are
 disabled in this cluster so only HAMi manages its GPUs.
 
 The initial supported configuration is one simulated MI300X in SPX, 304 CUs,
-192 GiB VRAM, and four advertised share slots, on Linux AMD64 or ARM64. The
+192 GiB VRAM, and four advertised share slots, on Linux AMD64 or ARM64.
+Chart `0.2.16` adds the bounded `gpu.count` inventory selection; the ordinary
+quick start keeps its original eight-GPU inventory. The
 host kernel must provide CUSE. On macOS, this means the container runtime's
 Linux VM; macOS itself does not provide CUSE. Windows and OpenShift are outside
 this demo's validation scope.
@@ -58,6 +60,16 @@ python3 -u tests/hami/lifecycle.py
 
 kubectl --kubeconfig tmp/hami-main/kubeconfig -n amd-hami-demo get pods
 kubectl --kubeconfig tmp/hami-main/kubeconfig -n amd-hami-demo logs right
+```
+
+Each workload requests a software share through HAMi's resources:
+
+```yaml
+resources:
+  limits:
+    amd.com/gpu: 1
+    amd.com/gpucores: 50   # Percent of the physical GPU's CUs
+    amd.com/gpumem: 98304 # MiB (96 GiB)
 ```
 
 The mock dashboard starts at `http://localhost:8081`; Grafana starts at

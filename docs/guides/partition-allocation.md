@@ -28,7 +28,7 @@ add one setting to the same chart installation:
 
 ```bash
 helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-  --version 0.2.15 -n amd-mock --create-namespace \
+  --version 0.2.16 -n amd-mock --create-namespace \
   --set gpu.partition=DPX --wait --timeout 5m
 ```
 

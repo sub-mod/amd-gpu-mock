@@ -41,12 +41,15 @@ jobs:
           tests/dra/chart-validation.sh
       - name: Build pinned unchanged HAMi consumers
         if: ${{ !inputs.published }}
-        run: scripts/build-hami-images.sh
+        run: |
+          docker build -f deployments/driver-mock/Dockerfile -t local/amd-gpu-mock-driver:hami .
+          scripts/build-hami-images.sh
       - name: Fresh setup using main node agent
         run: |
           mkdir -p tmp/hami-main/evidence
           if [ '${{ inputs.published }}' != true ]; then
             export HAMI_SOURCE_TEST=1
+            export HAMI_TEST_DRIVER_IMAGE=local/amd-gpu-mock-driver:hami
             export HAMI_TEST_PLUGIN_IMAGE=local/amd-gpu-mock-hami:test
             export HAMI_TEST_SCHEDULER_IMAGE=local/amd-gpu-mock-hami-scheduler:test
           fi

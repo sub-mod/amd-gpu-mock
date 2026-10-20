@@ -15,7 +15,8 @@ KUBE="$ROOT/tmp/hami-main/kubeconfig"
 mkdir -p tmp/hami-main
 if kind get clusters 2>/dev/null | grep -qx amd-hami-main; then echo 'Cluster amd-hami-main already exists; run demo/hami/cleanup.sh first' >&2; exit 1; fi
 # The setup never builds images or modifies the default kubeconfig.
-"$runtime" run --rm --privileged --entrypoint sh "$HAMI_DRIVER_IMAGE" -ec 'test -c /dev/cuse || { echo "Host CUSE missing: load cuse in the runtime Linux kernel" >&2; exit 1; }'
+driver="${HAMI_TEST_DRIVER_IMAGE:-$HAMI_DRIVER_IMAGE}"
+"$runtime" run --rm --privileged --entrypoint sh "$driver" -ec 'test -c /dev/cuse || { echo "Host CUSE missing: load cuse in the runtime Linux kernel" >&2; exit 1; }'
 demo/hami/fetch.sh
 python3 - <<'PY'
 import json,os
@@ -29,14 +30,14 @@ plugin="${HAMI_TEST_PLUGIN_IMAGE:-$HAMI_PLUGIN_IMAGE}"
 scheduler="${HAMI_TEST_SCHEDULER_IMAGE:-$HAMI_SCHEDULER_IMAGE}"
 if [[ "${HAMI_SOURCE_TEST:-0}" == 1 ]]; then
  if [[ "$runtime" == podman ]]; then
-  "$runtime" save --format docker-archive -o tmp/hami-main/images.tar "$plugin" "$scheduler"
+  "$runtime" save --format docker-archive -o tmp/hami-main/images.tar "$plugin" "$scheduler" "$driver"
   kind load image-archive tmp/hami-main/images.tar --name amd-hami-main
- else kind load docker-image "$plugin" "$scheduler" --name amd-hami-main; fi
+ else kind load docker-image "$plugin" "$scheduler" "$driver" --name amd-hami-main; fi
  chart_args=(deployments/helm/amd-gpu-mock)
 else chart_args=(oci://docker.io/submod/amd-gpu-mock --version "$CHART_VERSION"); fi
 helm --kubeconfig "$KUBE" install amd-gpu-mock "${chart_args[@]}" -n amd-mock --create-namespace \
  --set dra.enabled=false --set devicePlugin.enabled=false --set driverMock.enabled=true \
- --set image.repository="${HAMI_DRIVER_IMAGE%:*}" --set image.tag="${HAMI_DRIVER_IMAGE##*:}" \
+ --set image.repository="${driver%:*}" --set image.tag="${driver##*:}" \
  --set gpu.count=1 --wait --timeout 5m
 python3 - "$plugin" "$scheduler" <<'PY'
 import json,sys
