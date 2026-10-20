@@ -1,0 +1,12 @@
+PREFLIGHT node=amd-cuse-integration-control-plane root=pci0000:00 free_siblings=4
+PASS: memory request 192Gi allocates a matching device with CDI injection
+PASS: oversized memory request is accepted but remains Pending and unallocated
+EVIDENCE init/main device identity:
+/dev/kfd 1f4:ff
+/dev/dri/card2 1f4:2
+/dev/dri/renderD130 1f4:82
+PASS: init and main containers use one allocation and identical card/render/KFD identities
+EVIDENCE same-root allocation: [{"device": "gpu-2-130", "driver": "gpu.amd.com", "pool": "amd-cuse-integration-control-plane", "request": "left"}, {"device": "gpu-3-131", "driver": "gpu.amd.com", "pool": "amd-cuse-integration-control-plane", "request": "right"}]
+PASS: two distinct devices satisfy the same-PCIe-root matchAttribute constraint
+PASS: individually matching requests with contradictory PCIe-root constraint remain unallocated
+Results: 5 passed, 0 failed

@@ -1,0 +1,79 @@
+==> Fetching AMD DRA driver v1.0.0
+    commit 7bf0efa6704371a928b533fce8b33993631bdb8a
+==> Building probe (GOPATH mode)
+==> mi210
+  ok   0000:03:00.0 card0 renderD128 AMD_Instinct_MI210 cu=104 vram=68719476736 numa=0 root=pci0000:00 driver=6.12.12
+  ok   0000:23:00.0 card1 renderD129 AMD_Instinct_MI210 cu=104 vram=68719476736 numa=0 root=pci0000:00 driver=6.12.12
+  ok   0000:43:00.0 card2 renderD130 AMD_Instinct_MI210 cu=104 vram=68719476736 numa=0 root=pci0000:00 driver=6.12.12
+  ok   0000:63:00.0 card3 renderD131 AMD_Instinct_MI210 cu=104 vram=68719476736 numa=0 root=pci0000:00 driver=6.12.12
+  ok   0000:83:00.0 card4 renderD132 AMD_Instinct_MI210 cu=104 vram=68719476736 numa=1 root=pci0000:80 driver=6.12.12
+  ok   0000:a3:00.0 card5 renderD133 AMD_Instinct_MI210 cu=104 vram=68719476736 numa=1 root=pci0000:80 driver=6.12.12
+  ok   0000:c3:00.0 card6 renderD134 AMD_Instinct_MI210 cu=104 vram=68719476736 numa=1 root=pci0000:80 driver=6.12.12
+  ok   0000:e3:00.0 card7 renderD135 AMD_Instinct_MI210 cu=104 vram=68719476736 numa=1 root=pci0000:80 driver=6.12.12
+PASS
+==> mi250x
+  ok   0000:03:00.0 card0 renderD128 AMD_Instinct_MI250X cu=110 vram=68719476736 numa=0 root=pci0000:00 driver=6.12.12
+  ok   0000:23:00.0 card1 renderD129 AMD_Instinct_MI250X cu=110 vram=68719476736 numa=0 root=pci0000:00 driver=6.12.12
+  ok   0000:43:00.0 card2 renderD130 AMD_Instinct_MI250X cu=110 vram=68719476736 numa=0 root=pci0000:00 driver=6.12.12
+  ok   0000:63:00.0 card3 renderD131 AMD_Instinct_MI250X cu=110 vram=68719476736 numa=0 root=pci0000:00 driver=6.12.12
+  ok   0000:83:00.0 card4 renderD132 AMD_Instinct_MI250X cu=110 vram=68719476736 numa=1 root=pci0000:80 driver=6.12.12
+  ok   0000:a3:00.0 card5 renderD133 AMD_Instinct_MI250X cu=110 vram=68719476736 numa=1 root=pci0000:80 driver=6.12.12
+  ok   0000:c3:00.0 card6 renderD134 AMD_Instinct_MI250X cu=110 vram=68719476736 numa=1 root=pci0000:80 driver=6.12.12
+  ok   0000:e3:00.0 card7 renderD135 AMD_Instinct_MI250X cu=110 vram=68719476736 numa=1 root=pci0000:80 driver=6.12.12
+  ok   0000:06:00.0 card8 renderD136 AMD_Instinct_MI250X cu=110 vram=68719476736 numa=0 root=pci0000:00 driver=6.12.12
+  ok   0000:27:00.0 card9 renderD137 AMD_Instinct_MI250X cu=110 vram=68719476736 numa=0 root=pci0000:00 driver=6.12.12
+  ok   0000:47:00.0 card10 renderD138 AMD_Instinct_MI250X cu=110 vram=68719476736 numa=0 root=pci0000:00 driver=6.12.12
+  ok   0000:66:00.0 card11 renderD139 AMD_Instinct_MI250X cu=110 vram=68719476736 numa=0 root=pci0000:00 driver=6.12.12
+  ok   0000:86:00.0 card12 renderD140 AMD_Instinct_MI250X cu=110 vram=68719476736 numa=1 root=pci0000:80 driver=6.12.12
+  ok   0000:a7:00.0 card13 renderD141 AMD_Instinct_MI250X cu=110 vram=68719476736 numa=1 root=pci0000:80 driver=6.12.12
+  ok   0000:c7:00.0 card14 renderD142 AMD_Instinct_MI250X cu=110 vram=68719476736 numa=1 root=pci0000:80 driver=6.12.12
+  ok   0000:e6:00.0 card15 renderD143 AMD_Instinct_MI250X cu=110 vram=68719476736 numa=1 root=pci0000:80 driver=6.12.12
+PASS
+==> mi300a
+  ok   0000:05:00.0 card0 renderD128 AMD_Instinct_MI300A cu=228 vram=137438953472 numa=0 root=pci0000:00 driver=6.19.4
+  ok   0000:26:00.0 card1 renderD129 AMD_Instinct_MI300A cu=228 vram=137438953472 numa=0 root=pci0000:00 driver=6.19.4
+  ok   0000:45:00.0 card2 renderD130 AMD_Instinct_MI300A cu=228 vram=137438953472 numa=1 root=pci0000:40 driver=6.19.4
+  ok   0000:66:00.0 card3 renderD131 AMD_Instinct_MI300A cu=228 vram=137438953472 numa=1 root=pci0000:40 driver=6.19.4
+PASS
+==> mi300x
+  ok   0000:05:00.0 card0 renderD128 AMD_Instinct_MI300X_OAM cu=304 vram=206158430208 numa=0 root=pci0000:00 driver=6.19.4
+  ok   0000:26:00.0 card1 renderD129 AMD_Instinct_MI300X_OAM cu=304 vram=206158430208 numa=0 root=pci0000:00 driver=6.19.4
+  ok   0000:46:00.0 card2 renderD130 AMD_Instinct_MI300X_OAM cu=304 vram=206158430208 numa=0 root=pci0000:00 driver=6.19.4
+  ok   0000:65:00.0 card3 renderD131 AMD_Instinct_MI300X_OAM cu=304 vram=206158430208 numa=0 root=pci0000:00 driver=6.19.4
+  ok   0000:85:00.0 card4 renderD132 AMD_Instinct_MI300X_OAM cu=304 vram=206158430208 numa=1 root=pci0000:80 driver=6.19.4
+  ok   0000:a6:00.0 card5 renderD133 AMD_Instinct_MI300X_OAM cu=304 vram=206158430208 numa=1 root=pci0000:80 driver=6.19.4
+  ok   0000:c6:00.0 card6 renderD134 AMD_Instinct_MI300X_OAM cu=304 vram=206158430208 numa=1 root=pci0000:80 driver=6.19.4
+  ok   0000:e5:00.0 card7 renderD135 AMD_Instinct_MI300X_OAM cu=304 vram=206158430208 numa=1 root=pci0000:80 driver=6.19.4
+PASS
+==> mi325x
+  ok   0000:05:00.0 card0 renderD128 AMD_Instinct_MI325X cu=304 vram=274877906944 numa=0 root=pci0000:00 driver=6.19.4
+  ok   0000:26:00.0 card1 renderD129 AMD_Instinct_MI325X cu=304 vram=274877906944 numa=0 root=pci0000:00 driver=6.19.4
+  ok   0000:46:00.0 card2 renderD130 AMD_Instinct_MI325X cu=304 vram=274877906944 numa=0 root=pci0000:00 driver=6.19.4
+  ok   0000:65:00.0 card3 renderD131 AMD_Instinct_MI325X cu=304 vram=274877906944 numa=0 root=pci0000:00 driver=6.19.4
+  ok   0000:85:00.0 card4 renderD132 AMD_Instinct_MI325X cu=304 vram=274877906944 numa=1 root=pci0000:80 driver=6.19.4
+  ok   0000:a6:00.0 card5 renderD133 AMD_Instinct_MI325X cu=304 vram=274877906944 numa=1 root=pci0000:80 driver=6.19.4
+  ok   0000:c6:00.0 card6 renderD134 AMD_Instinct_MI325X cu=304 vram=274877906944 numa=1 root=pci0000:80 driver=6.19.4
+  ok   0000:e5:00.0 card7 renderD135 AMD_Instinct_MI325X cu=304 vram=274877906944 numa=1 root=pci0000:80 driver=6.19.4
+PASS
+==> mi350x
+  ok   0000:05:00.0 card0 renderD128 AMD_Instinct_MI350X cu=256 vram=309237645312 numa=0 root=pci0000:00 driver=6.22.0
+  ok   0000:26:00.0 card1 renderD129 AMD_Instinct_MI350X cu=256 vram=309237645312 numa=0 root=pci0000:00 driver=6.22.0
+  ok   0000:46:00.0 card2 renderD130 AMD_Instinct_MI350X cu=256 vram=309237645312 numa=0 root=pci0000:00 driver=6.22.0
+  ok   0000:65:00.0 card3 renderD131 AMD_Instinct_MI350X cu=256 vram=309237645312 numa=0 root=pci0000:00 driver=6.22.0
+  ok   0000:85:00.0 card4 renderD132 AMD_Instinct_MI350X cu=256 vram=309237645312 numa=1 root=pci0000:80 driver=6.22.0
+  ok   0000:a6:00.0 card5 renderD133 AMD_Instinct_MI350X cu=256 vram=309237645312 numa=1 root=pci0000:80 driver=6.22.0
+  ok   0000:c6:00.0 card6 renderD134 AMD_Instinct_MI350X cu=256 vram=309237645312 numa=1 root=pci0000:80 driver=6.22.0
+  ok   0000:e5:00.0 card7 renderD135 AMD_Instinct_MI350X cu=256 vram=309237645312 numa=1 root=pci0000:80 driver=6.22.0
+PASS
+==> mi355x
+  ok   0000:05:00.0 card0 renderD128 AMD_Instinct_MI355X cu=256 vram=309237645312 numa=0 root=pci0000:00 driver=6.22.0
+  ok   0000:26:00.0 card1 renderD129 AMD_Instinct_MI355X cu=256 vram=309237645312 numa=0 root=pci0000:00 driver=6.22.0
+  ok   0000:46:00.0 card2 renderD130 AMD_Instinct_MI355X cu=256 vram=309237645312 numa=0 root=pci0000:00 driver=6.22.0
+  ok   0000:65:00.0 card3 renderD131 AMD_Instinct_MI355X cu=256 vram=309237645312 numa=0 root=pci0000:00 driver=6.22.0
+  ok   0000:85:00.0 card4 renderD132 AMD_Instinct_MI355X cu=256 vram=309237645312 numa=1 root=pci0000:80 driver=6.22.0
+  ok   0000:a6:00.0 card5 renderD133 AMD_Instinct_MI355X cu=256 vram=309237645312 numa=1 root=pci0000:80 driver=6.22.0
+  ok   0000:c6:00.0 card6 renderD134 AMD_Instinct_MI355X cu=256 vram=309237645312 numa=1 root=pci0000:80 driver=6.22.0
+  ok   0000:e5:00.0 card7 renderD135 AMD_Instinct_MI355X cu=256 vram=309237645312 numa=1 root=pci0000:80 driver=6.22.0
+PASS
+
+All 7 profile(s) pass AMD DRA driver v1.0.0 discovery.

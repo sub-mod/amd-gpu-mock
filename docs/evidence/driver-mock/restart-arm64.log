@@ -1,0 +1,7 @@
+Killing actual node-agent PID 12
+
+PASS actual unclean node-agent restart: count 0 -> 1; CUSE/API ready
+amd-driver-mock: libdrm initialize card2 (CUSE provider, library backend)
+PASS: native open, profile capacity/name, invalid handles, unsupported ioctl/read and /dev/null rejection
+PASS: allocated workload native KFD/render access and libdrm capacity
+

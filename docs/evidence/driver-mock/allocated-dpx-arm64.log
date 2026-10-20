@@ -1,0 +1,21 @@
+Release "amd-gpu-mock" has been upgraded. Happy Helming!
+NAME: amd-gpu-mock
+LAST DEPLOYED: Mon Oct 19 23:37:25 2026
+NAMESPACE: amd-mock
+STATUS: deployed
+REVISION: 2
+DESCRIPTION: Upgrade complete
+TEST SUITE: None
+NOTES:
+AMD DRA driver installed with the mock. Inspect published devices:
+  kubectl get resourceslices
+
+Use ResourceClaim / ResourceClaimTemplate requests for deviceClassName gpu.amd.com.
+The device plugin is disabled, so amd.com/gpu capacity is not advertised.
+See https://github.com/sub-mod/amd-gpu-mock/blob/main/docs/guides/dra.md
+Dashboard: http://localhost:8080 (when using the quick-start kind configuration).
+To change the host port, see the README Dashboard section.
+amd-driver-mock: libdrm initialize card2 (CUSE provider, library backend)
+PASS: native open, profile capacity/name, invalid handles, unsupported ioctl/read and /dev/null rejection
+PASS: allocated workload native KFD/render access and libdrm capacity
+

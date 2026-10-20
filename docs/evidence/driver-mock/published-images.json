@@ -1,0 +1,47 @@
+{
+  "sourceCommit": "320986db2771c4817f31f0f4f76ddd9032d0c1a5",
+  "sourceBuildAndValidation": "https://github.com/sub-mod/amd-gpu-mock/actions/runs/39364896183",
+  "images": {
+    "amd-gpu-mock": {
+      "reference": "docker.io/submod/amd-gpu-mock:v0.2.8",
+      "digest": "sha256:40e9f05a530dea7c82b50d4b6ad7ef72428af9cee4164a157565d7e0258b3297",
+      "platforms": {
+        "amd64": {
+          "digest": "sha256:b2cf3ced3a65300eef9d7aa525f4ba5aa4414c634f412756590cc78a0e751dab",
+          "config": "sha256:d96b04246821c513ce8c5930d04d5523ea9553bbed0d7bf944f1bcdb275601e5",
+          "anonymousPullVerified": true
+        },
+        "arm64": {
+          "digest": "sha256:0b5052c3cd418a9c6fd618dfbfd4c5e0baf3ec4f42476569173a07d251a9240a",
+          "config": "sha256:c7682722010931587c27522f545ac2506693f4bd3ecaff9fe50eb7ac4f93ff46",
+          "anonymousPullVerified": true
+        }
+      }
+    },
+    "amd-gpu-mock-driver": {
+      "reference": "docker.io/submod/amd-gpu-mock-driver:v0.1.0",
+      "digest": "sha256:ef99d5e5501434b78773168fc985ed8420ca886d262e211d305a0e96d9e3587d",
+      "platforms": {
+        "amd64": {
+          "digest": "sha256:28a496d54ef3d1a237b26625d16e04f80002c05ede328f3423d2b77fced47105",
+          "config": "sha256:d71df759f852eaca8ec9f643ac959e15ddd26094951c6b5b5c03f59807055d6b",
+          "anonymousPullVerified": true
+        },
+        "arm64": {
+          "digest": "sha256:99b8fd4c4b30f4f700b3e9d9cddf115dc506ac5a752d9ef1b313e6dae25d36bf",
+          "config": "sha256:a985eb67c3ee2b505599b0f3ebda88161bbf5fefd1fc37d61a7b06add94ea8ba",
+          "anonymousPullVerified": true
+        }
+      }
+    }
+  },
+  "chart": {
+    "reference": "oci://docker.io/submod/amd-gpu-mock",
+    "version": "0.2.14",
+    "digest": "sha256:052b2b61d51311df4eb5b42bc3cf00dfc2fd463f5fb3a8d93da5becdc388f139"
+  },
+  "validation": {
+    "sourceMatrix": "passed",
+    "publishedFreshSetup": "pending"
+  }
+}

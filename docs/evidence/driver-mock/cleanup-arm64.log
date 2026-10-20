@@ -1,0 +1,7 @@
+release "amd-gpu-mock" uninstalled
+pod/amd-gpu-mock-jk8xz condition met
+e2:80 /dev/dri/renderD128
+using podman due to KIND_EXPERIMENTAL_PROVIDER
+enabling experimental podman provider
+Deleting cluster "amd-cuse-integration" ...
+Deleted nodes: ["amd-cuse-integration-control-plane"]

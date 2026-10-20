@@ -1,0 +1,72 @@
+name: driver-backend-published
+on:
+  workflow_dispatch:
+  push:
+    branches: [feat/cuse-libdrm-consumers]
+    paths: ['.github/workflows/driver-backend-published.yaml', 'docs/evidence/driver-mock/published-images.json']
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  fresh:
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        backend: [nodes, cuse]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - uses: docker/setup-qemu-action@v3
+      - name: Host CUSE prerequisite
+        if: matrix.backend == 'cuse'
+        run: |
+          sudo modprobe cuse
+          test -c /dev/cuse
+      - uses: helm/kind-action@v1
+        with:
+          version: v0.33.0
+          kubectl_version: v1.37.0
+          node_image: docker.io/submod/amd-mock-kind-node:0.2.2
+          cluster_name: amd-published-driver
+          config: deployments/kind-node/kind-config.yaml
+          wait: 120s
+      - name: Fresh published chart and images (no build)
+        run: |
+          args=()
+          if [ '${{ matrix.backend }}' = cuse ]; then
+            args+=(--set driverMock.enabled=true --set image.repository=docker.io/submod/amd-gpu-mock-driver --set image.tag=v0.1.0)
+          fi
+          helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock --version 0.2.14 \
+            -n amd-mock --create-namespace "${args[@]}" --wait --timeout 6m
+      - name: Allocated native opens, libdrm and provider restart
+        if: matrix.backend == 'cuse'
+        env:
+          DRIVER_IMAGE: docker.io/submod/amd-gpu-mock-driver:v0.1.0
+        run: |
+          python3 -u tests/driver-mock/allocated.py
+          python3 -u tests/driver-mock/restart.py
+          python3 -u tests/driver-mock/allocated.py
+      - name: DRA Tiny LLM, virtual partition demo and automatic dashboards
+        env:
+          MODE: dra
+        run: |
+          python3 -u tests/demo-e2e.py
+          python3 tests/dashboard-e2e.py
+          python3 tests/demo/grafana-e2e.py
+      - name: Diagnostics
+        if: always()
+        run: |
+          mkdir -p artifacts
+          kubectl get pods,resourceclaims -A -o wide > artifacts/pods.log || true
+          kubectl get events -A > artifacts/events.log || true
+          kubectl -n amd-mock logs ds/amd-gpu-mock > artifacts/agent.log || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: published-driver-${{ matrix.runner }}-${{ matrix.backend }}
+          path: artifacts/

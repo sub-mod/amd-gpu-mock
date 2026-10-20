@@ -39,10 +39,47 @@ nodes are never deleted. Bidirectional propagation exposes that overlay to the
 node's kubelet. Cleanup removes the overlay and restores the underlying device.
 Do not use the simulated node for unrelated DRM workloads during the demo.
 
-The image and chart installation commands will be recorded here with verified
-published digests after the source-backed compatibility matrix passes. The
-ordinary quick start and image remain unchanged; CUSE is opt-in through
-`driverMock.enabled=true` and the dedicated driver image.
+Use Kind v0.33.0+, kubectl v1.37, Helm and Python 3. After loading CUSE in the
+runtime's Linux kernel, create a dedicated cluster using the normal node image:
+
+```bash
+# For Podman: export KIND_EXPERIMENTAL_PROVIDER=podman
+kind create cluster --name amd-mock \
+  --image docker.io/submod/amd-mock-kind-node:0.2.2 \
+  --config deployments/kind-node/kind-config.yaml
+
+helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
+  --version 0.2.14 -n amd-mock --create-namespace \
+  --set driverMock.enabled=true \
+  --set image.repository=docker.io/submod/amd-gpu-mock-driver \
+  --set image.tag=v0.1.0 --wait --timeout 5m
+
+DRIVER_IMAGE=docker.io/submod/amd-gpu-mock-driver:v0.1.0 \
+  python3 -u tests/driver-mock/allocated.py
+```
+
+The consumer requests a real DRA allocation, opens only its injected render/KFD
+nodes, and queries the staged libdrm library. It checks profile capacity, both
+memory query layouts, short buffers, unsupported operations and invalid handles.
+It prints `PASS: allocated workload native KFD/render access and libdrm capacity`
+and cleans up its test namespace. The cluster and dashboards stay available.
+No compiler or image build is required. See [release provenance](../evidence/driver-mock/published-images.json),
+[validation logs](../evidence/driver-mock/README.md), and the
+[build recipe](../../deployments/driver-mock/Dockerfile).
+
+For the AMD device-plugin allocator, add `--set dra.enabled=false` and
+`--set devicePlugin.enabled=true` to installation; set `ALLOCATOR=device-plugin`
+when running the probe. Use separate clusters for the two allocators.
+The ordinary quick start continues to use the lightweight backend.
+Native-open tests currently use the container's default UID 0 without privileged
+mode; non-root and OpenShift SCC access are separate validation work.
+
+When finished:
+
+```bash
+helm uninstall amd-gpu-mock -n amd-mock
+kind delete cluster --name amd-mock
+```
 
 Consumer containers must explicitly use the staged library at
 `/var/lib/amd-gpu-mock/driver/usr/lib64/libdrm_amdgpu.so.1` (mount the overlay

@@ -1,0 +1,4 @@
+amd-driver-mock: libdrm initialize card2 (CUSE provider, library backend)
+PASS: native open, profile capacity/name, invalid handles, unsupported ioctl/read and /dev/null rejection
+PASS: allocated workload native KFD/render access and libdrm capacity
+
