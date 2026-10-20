@@ -1,0 +1,29 @@
+[HAMI-core-hip Error(pid:13 tid:13 /hami/amd-hami-core/src/multiprocess/hip_multiprocess_memory_limit.c:531)]: Device 0 OOM: usage 0 + alloc 67108865 = 67108865 > limit 67108864
+[HAMI-core-hip Warn(pid:13 tid:13 /hami/amd-hami-core/src/hip/libamvgpu_audit.c:244)]: hipMalloc: OOM rejected 67108865 bytes on device 0
+[HAMI-core-hip Error(pid:13 tid:13 /hami/amd-hami-core/src/multiprocess/hip_multiprocess_memory_limit.c:531)]: Device 0 OOM: usage 50331648 + alloc 33554432 = 83886080 > limit 67108864
+[HAMI-core-hip Warn(pid:13 tid:13 /hami/amd-hami-core/src/hip/libamvgpu_audit.c:244)]: hipMalloc: OOM rejected 33554432 bytes on device 0
+KFD_MASK queue=1 bits=160 result=0 errno=0 expected=0:0-151 match=yes
+KFD_MASK queue=2 bits=160 result=0 errno=0 expected=0:0-151 match=yes
+Allocation: ROCR=GPU-9c4f000000000001 CU=0:0-151 memory=64m audit=/usr/local/vgpu/libamvgpu.so
+HIP device=AMD Instinct MI300X cu=304 visible_memory=67108864 expected=67108864
+HIP PCI address: 0000:05:00.0
+Over-limit allocation: out of memory
+Cumulative over-limit allocation: out of memory
+PASS: HIP memory cap, cumulative accounting, and free/reallocate
+HSA identity: GPU-9c4f000000000001
+HSA queue mask (0 enabled CUs): 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+NOTE: ROCr 7.2 CU-mask getter cache is not used as enforcement evidence
+PASS: shared KFD identity; queue-mask validation uses the KFD observer
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from HipVectorAddTest
+[ RUN      ] HipVectorAddTest.CorrectResult
+KFD_MASK queue=1 bits=160 result=0 errno=0 expected=0:0-151 match=yes
+KFD_MASK queue=2 bits=160 result=0 errno=0 expected=0:0-151 match=yes
+[       OK ] HipVectorAddTest.CorrectResult (393 ms)
+[----------] 1 test from HipVectorAddTest (393 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (393 ms total)
+[  PASSED  ] 1 test.
+PASS: allocated Pod computation complete

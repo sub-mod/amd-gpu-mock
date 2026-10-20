@@ -1,0 +1,15 @@
+NAMESPACE              NAME                                                    READY   STATUS      RESTARTS   AGE   IP            NODE                            NOMINATED NODE   READINESS GATES
+amd-driver-mock-demo   compute-left                                            1/1     Running     0          9s    10.244.0.10   amd-hami-driver-control-plane   <none>           <none>
+amd-driver-mock-demo   compute-right                                           1/1     Running     0          9s    10.244.0.11   amd-hami-driver-control-plane   <none>           <none>
+amd-hami               amd-gpu-device-plugin-daemonset-d72vx                   1/1     Running     0          1s    10.244.0.12   amd-hami-driver-control-plane   <none>           <none>
+amd-hami               amd-gpu-device-plugin-daemonset-mw47m                   0/1     Completed   0          10s   10.244.0.9    amd-hami-driver-control-plane   <none>           <none>
+amd-hami               hami-scheduler-79cb865c88-nmk9k                         2/2     Running     0          46s   10.244.0.7    amd-hami-driver-control-plane   <none>           <none>
+kube-system            coredns-559f6c778d-hbtrv                                1/1     Running     0          74s   10.244.0.4    amd-hami-driver-control-plane   <none>           <none>
+kube-system            coredns-559f6c778d-lh47h                                1/1     Running     0          74s   10.244.0.2    amd-hami-driver-control-plane   <none>           <none>
+kube-system            etcd-amd-hami-driver-control-plane                      1/1     Running     0          81s   172.18.0.2    amd-hami-driver-control-plane   <none>           <none>
+kube-system            kindnet-ldxjn                                           1/1     Running     0          74s   172.18.0.2    amd-hami-driver-control-plane   <none>           <none>
+kube-system            kube-apiserver-amd-hami-driver-control-plane            1/1     Running     0          81s   172.18.0.2    amd-hami-driver-control-plane   <none>           <none>
+kube-system            kube-controller-manager-amd-hami-driver-control-plane   1/1     Running     0          81s   172.18.0.2    amd-hami-driver-control-plane   <none>           <none>
+kube-system            kube-proxy-sjpfd                                        1/1     Running     0          74s   172.18.0.2    amd-hami-driver-control-plane   <none>           <none>
+kube-system            kube-scheduler-amd-hami-driver-control-plane            1/1     Running     0          81s   172.18.0.2    amd-hami-driver-control-plane   <none>           <none>
+local-path-storage     local-path-provisioner-75f7fc7dc5-6tbk6                 1/1     Running     0          74s   10.244.0.3    amd-hami-driver-control-plane   <none>           <none>

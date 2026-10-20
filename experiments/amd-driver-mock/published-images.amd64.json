@@ -35,7 +35,8 @@
   },
   "validation": {
     "nativeAllocatedCompute": "passed",
-    "publishedFreshSetup": "pending",
-    "macMaskedCompute": "blocked: QEMU process_vm_readv ENOSYS"
+    "publishedFreshSetup": "passed",
+    "macMaskedCompute": "blocked: QEMU process_vm_readv ENOSYS",
+    "publishedFreshSetupRun": "https://github.com/sub-mod/amd-gpu-mock/actions/runs/39357566039"
   }
 }

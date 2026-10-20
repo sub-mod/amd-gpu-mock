@@ -1,0 +1,21 @@
+{"source": "original renderer snapshot", "kfd_unique_id": 11263221193076899841, "rocr_uuid": "GPU-9c4f000000000001", "smi_uuid": "6c5a8aa5-b19f-8083-8be1-d4f7d007dcac", "bdf": "0000:05:00.0", "cu_count": 304, "vram_bytes": 206158430208, "functional_topology": "8x2x19"}
+namespace/amd-driver-mock-demo created
+daemonset.apps/amd-gpu-device-plugin-daemonset env updated
+
+Waiting for daemon set "amd-gpu-device-plugin-daemonset" rollout to finish: 0 out of 1 new pods have been updated...
+Waiting for daemon set "amd-gpu-device-plugin-daemonset" rollout to finish: 0 out of 1 new pods have been updated...
+Waiting for daemon set "amd-gpu-device-plugin-daemonset" rollout to finish: 0 of 1 updated pods are available...
+daemon set "amd-gpu-device-plugin-daemonset" successfully rolled out
+
+configmap/rocjitsu-shared-profile created
+pod/compute-left created
+pod/compute-right created
+
+PASS: two genuinely allocated Pods, shared identity, memory enforcement, disjoint KFD masks and HIP computation
+daemonset.apps/amd-gpu-device-plugin-daemonset env updated
+
+Waiting for daemon set "amd-gpu-device-plugin-daemonset" rollout to finish: 0 out of 1 new pods have been updated...
+Waiting for daemon set "amd-gpu-device-plugin-daemonset" rollout to finish: 0 out of 1 new pods have been updated...
+Waiting for daemon set "amd-gpu-device-plugin-daemonset" rollout to finish: 0 of 1 updated pods are available...
+daemon set "amd-gpu-device-plugin-daemonset" successfully rolled out
+

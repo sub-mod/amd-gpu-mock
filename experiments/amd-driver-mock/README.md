@@ -42,7 +42,10 @@ is not being validated. Raw unsupported ioctls return ENOTTY.
 
 Validated platform: Linux ARM64 in this Mac's default Podman VM, Kind Kubernetes
 v1.37.0. Requires running Podman, Kind, kubectl, Helm, Git, Python 3 and host CUSE.
-See [host prerequisites](HOST.md). AMD64, Docker and CRC are not validated yet.
+Native AMD64 Linux with Docker also passed fresh published-image CI; use the
+[AMD64 setup and compute guide](rocjitsu/README.md#fedoralinux-amd64-use-the-published-images)
+for its image configuration. Fedora is a target, with a local validation run
+still pending. See [host prerequisites](HOST.md). CRC is not validated for this backend.
 Do not run this on a node where another allocator owns the same GPUs.
 
 ```bash
