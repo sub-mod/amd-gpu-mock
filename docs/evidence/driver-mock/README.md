@@ -30,6 +30,9 @@ and [ERNIC GPU/NIC allocation](https://github.com/sub-mod/amd-gpu-mock/actions/r
 The default regression runs use the feature branch before the optional image's
 memory-layout extension; that extension affects only the opt-in library backend.
 
-Fresh published-image installation is a separate gate recorded in the provenance.
+[Final source matrix including DPX libdrm queries](https://github.com/sub-mod/amd-gpu-mock/actions/runs/39365365506)
+passed all 12 jobs. [Fresh published-image installation](https://github.com/sub-mod/amd-gpu-mock/actions/runs/39366109803)
+passed all four AMD64/ARM64 × default/CUSE combinations without a compiler or
+image build. This separately verifies the published chart and exact image refs.
 No HIP execution, real memory allocation, physical isolation or performance
 claim follows from these interface and infrastructure tests.

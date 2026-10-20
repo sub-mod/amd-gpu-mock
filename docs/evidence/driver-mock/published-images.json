@@ -42,6 +42,8 @@
   },
   "validation": {
     "sourceMatrix": "passed",
-    "publishedFreshSetup": "pending"
+    "publishedFreshSetup": "passed",
+    "publishedFreshSetupRun": "https://github.com/sub-mod/amd-gpu-mock/actions/runs/39366109803",
+    "finalSourceMatrix": "https://github.com/sub-mod/amd-gpu-mock/actions/runs/39365365506"
   }
 }
