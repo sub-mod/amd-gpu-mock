@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 runtime=${CONTAINER_RUNTIME:-podman}
 repository=${DRIVER_IMAGE_REPOSITORY:-docker.io/submod/amd-gpu-mock-driver}
-version=${DRIVER_IMAGE_VERSION:-v0.1.0}
+version=${DRIVER_IMAGE_VERSION:-v0.1.1}
 push=false
 if [ "${1:-}" = --push ]; then push=true; shift; fi
 [ "$#" = 0 ] || { echo "usage: $0 [--push]" >&2; exit 2; }

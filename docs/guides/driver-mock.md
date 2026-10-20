@@ -49,12 +49,12 @@ kind create cluster --name amd-mock \
   --config deployments/kind-node/kind-config.yaml
 
 helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock \
-  --version 0.2.14 -n amd-mock --create-namespace \
+  --version 0.2.15 -n amd-mock --create-namespace \
   --set driverMock.enabled=true \
   --set image.repository=docker.io/submod/amd-gpu-mock-driver \
-  --set image.tag=v0.1.0 --wait --timeout 5m
+  --set image.tag=v0.1.1 --wait --timeout 5m
 
-DRIVER_IMAGE=docker.io/submod/amd-gpu-mock-driver:v0.1.0 \
+DRIVER_IMAGE=docker.io/submod/amd-gpu-mock-driver:v0.1.1 \
   python3 -u tests/driver-mock/allocated.py
 ```
 
@@ -137,3 +137,13 @@ allocated native-open/libdrm check, scripted Tiny LLM/presenter demos, dashboard
 telemetry and attribution. Captured CI results distinguish planned checks from
 passed checks. The existing default-backend workflows remain regression gates.
 No HIP computation, DMA, physical isolation or performance fidelity is claimed.
+
+## Rolling updates and mounted state
+
+The node agent preserves staged state during shutdown so collectors and
+allocators retain their mounted directory inodes. Startup reconciles inventory
+inside the existing sysfs directory and replaces SMI state files atomically.
+Both forced and graceful restart checks require stable sys/SMI directory inodes,
+then repeat native calls from a newly allocated Pod. Final directory removal
+belongs to dedicated cluster teardown. Existing open CUSE handles still require
+application retry/reopening when their backing provider is replaced.

@@ -32,8 +32,9 @@ func NewRenderer(profile *Profile, rootDir string) *Renderer {
 // re-renders the sysfs tree. Device nodes are not recreated — they don't
 // change between profiles (same /dev/kfd and /dev/dri/renderD* paths).
 func (r *Renderer) SwitchProfile(profile *Profile) error {
-	sysDir := filepath.Join(r.rootDir, "sys")
-	os.RemoveAll(sysDir)
+	if err := clearDirectory(filepath.Join(r.rootDir, "sys")); err != nil {
+		return err
+	}
 	r.profile = profile
 	if err := r.renderKFDTopology(); err != nil {
 		return fmt.Errorf("kfd topology: %w", err)
@@ -156,6 +157,11 @@ func (r *Renderer) UpdateGPUSysfs(gpu *GPUState) error {
 
 // RenderAll writes every simulated surface.
 func (r *Renderer) RenderAll() error {
+	// Keep the /sys directory inode mounted by consumers while dropping stale
+	// inventory from a previous profile or agent incarnation.
+	if err := clearDirectory(filepath.Join(r.rootDir, "sys")); err != nil {
+		return err
+	}
 	if err := r.renderKFDTopology(); err != nil {
 		return fmt.Errorf("kfd topology: %w", err)
 	}
@@ -753,4 +759,21 @@ func ensureDevicePlaceholder(path string) error {
 		return err
 	}
 	return writeFile(path, "")
+}
+
+// clearDirectory preserves the directory inode used by hostPath bind mounts.
+func clearDirectory(path string) error {
+	if err := os.MkdirAll(path, 0755); err != nil {
+		return err
+	}
+	entries, err := os.ReadDir(path)
+	if err != nil {
+		return err
+	}
+	for _, entry := range entries {
+		if err := os.RemoveAll(filepath.Join(path, entry.Name())); err != nil {
+			return err
+		}
+	}
+	return nil
 }

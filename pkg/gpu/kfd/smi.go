@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 )
 
 // The AMD SMI replacement reads this device state, not Prometheus responses.
@@ -40,6 +42,22 @@ func (r *Renderer) renderSMIState() error {
 	for i := range gpus {
 		if err := r.WriteSMIState(&gpus[i]); err != nil {
 			return err
+		}
+	}
+	// Drop removed GPUs without replacing the SMI directory inode mounted by
+	// live collectors. Common GPU state files are replaced atomically above.
+	entries, err := os.ReadDir(filepath.Join(r.rootDir, "smi"))
+	if err != nil && !os.IsNotExist(err) {
+		return err
+	}
+	for _, entry := range entries {
+		if strings.HasPrefix(entry.Name(), "gpu") {
+			index, err := strconv.Atoi(strings.TrimPrefix(entry.Name(), "gpu"))
+			if err == nil && index >= len(gpus) {
+				if err := os.Remove(filepath.Join(r.rootDir, "smi", entry.Name())); err != nil {
+					return err
+				}
+			}
 		}
 	}
 	return writeFile(filepath.Join(r.rootDir, "smi/count"), fmt.Sprintf("%d\n", len(gpus)))

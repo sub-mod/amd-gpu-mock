@@ -199,9 +199,11 @@ func main() {
 		provider.Close()
 	}
 
-	if err := renderer.Cleanup(); err != nil {
-		log.Printf("cleanup error: %v", err)
-	}
+	// These hostPath directories are mounted by the exporter and allocators.
+	// Removing them here strands existing consumers on unlinked directory inodes
+	// during a rolling update. The next agent reconciles inventory in place;
+	// cluster teardown owns final removal of the persistent staging directory.
+	log.Printf("preserving staged surfaces for mounted consumers across restart")
 	log.Printf("shutdown complete")
 	if backendErr != nil {
 		os.Exit(1)
