@@ -1,0 +1,91 @@
+name: hami-e2e
+on:
+  workflow_dispatch:
+    inputs:
+      published:
+        description: Pull published images/chart without building
+        type: boolean
+        default: false
+  push:
+    branches: [main, feat/hami-main-support]
+    paths: ['demo/hami/**', 'tests/hami/**', 'deployments/hami/**', 'deployments/helm/**', 'pkg/mockdriver/**', 'pkg/gpu/kfd/**', 'cmd/node-agent/**', 'scripts/build-hami-images.sh', '.github/workflows/hami-e2e.yaml']
+  pull_request:
+    paths: ['demo/hami/**', 'tests/hami/**', 'deployments/hami/**', 'deployments/helm/**', 'pkg/mockdriver/**', '.github/workflows/hami-e2e.yaml']
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  consumer:
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    env:
+      CONTAINER_RUNTIME: docker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - uses: helm/kind-action@v1
+        with:
+          install_only: true
+          version: v0.33.0
+          kubectl_version: v1.37.0
+      - name: Host prerequisite and chart inventory
+        run: |
+          sudo modprobe cuse
+          tests/hami/chart.sh
+          tests/dra/chart-validation.sh
+      - name: Build pinned unchanged HAMi consumers
+        if: ${{ !inputs.published }}
+        run: scripts/build-hami-images.sh
+      - name: Fresh setup using main node agent
+        run: |
+          mkdir -p tmp/hami-main/evidence
+          if [ '${{ inputs.published }}' != true ]; then
+            export HAMI_SOURCE_TEST=1
+            export HAMI_TEST_PLUGIN_IMAGE=local/amd-gpu-mock-hami:test
+            export HAMI_TEST_SCHEDULER_IMAGE=local/amd-gpu-mock-hami-scheduler:test
+          fi
+          demo/hami/setup.sh 2>&1 | tee tmp/hami-main/evidence/setup.log
+      - name: Same-GPU shares, native opens, exhaustion and reuse
+        run: python3 -u demo/hami/verify.py | tee tmp/hami-main/evidence/allocation.log
+      - name: Plugin lifecycle and dashboard fault propagation
+        run: python3 -u tests/hami/lifecycle.py | tee tmp/hami-main/evidence/lifecycle.log
+      - name: Agent restart and real exporter telemetry
+        env:
+          KUBECONFIG: tmp/hami-main/kubeconfig
+          DEMO_CONTEXT: kind-amd-hami-main
+          DEMO_DASHBOARD_URL: http://localhost:8081
+          GRAFANA_URL: http://localhost:3001
+          EXPECTED_GPU_COUNT: '1'
+        run: |
+          PROVIDER_RESTART_MODE=graceful python3 -u tests/driver-mock/restart.py | tee tmp/hami-main/evidence/agent-restart.log
+          python3 tests/demo/grafana-e2e.py | tee tmp/hami-main/evidence/grafana.log
+      - name: Export tested consumer images
+        if: ${{ !inputs.published }}
+        run: |
+          docker save local/amd-gpu-mock-hami:test | gzip > /tmp/hami-plugin.tar.gz
+          docker save local/amd-gpu-mock-hami-scheduler:test | gzip > /tmp/hami-scheduler.tar.gz
+      - uses: actions/upload-artifact@v4
+        if: ${{ success() && !inputs.published }}
+        with:
+          name: hami-images-${{ matrix.runner }}
+          path: /tmp/hami-*.tar.gz
+          retention-days: 3
+      - name: Diagnostics
+        if: always()
+        run: |
+          mkdir -p tmp/hami-main/evidence
+          kubectl --kubeconfig tmp/hami-main/kubeconfig get pods -A -o wide > tmp/hami-main/evidence/pods.log 2>&1 || true
+          kubectl --kubeconfig tmp/hami-main/kubeconfig get events -A > tmp/hami-main/evidence/events.log 2>&1 || true
+          kubectl --kubeconfig tmp/hami-main/kubeconfig -n amd-hami logs ds/amd-gpu-device-plugin-daemonset > tmp/hami-main/evidence/plugin.log 2>&1 || true
+          kind export logs tmp/hami-main/evidence/kind --name amd-hami-main || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hami-evidence-${{ matrix.runner }}
+          path: tmp/hami-main/evidence/
