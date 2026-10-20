@@ -58,6 +58,14 @@ jobs:
           experiments/amd-driver-mock/setup.sh > tmp/rocjitsu-results/setup.log 2>&1
           kind load docker-image docker.io/submod/amd-driver-mock-compute:0.1.0-experiment.1-amd64 --name amd-hami-driver
           python3 experiments/amd-driver-mock/rocjitsu/run-pods.py | tee tmp/rocjitsu-results/allocated-compute.log
+      - name: Export validated AMD64 images
+        run: docker save localhost/amd-driver-mock:experiment localhost/amd-driver-mock-hami:experiment localhost/amd-driver-mock-scheduler:experiment docker.io/submod/amd-driver-mock-compute:0.1.0-experiment.1-amd64 > /tmp/validated-images.tar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: validated-amd64-images
+          path: /tmp/validated-images.tar
+          compression-level: 1
+          retention-days: 3
       - name: Collect diagnostics
         if: always()
         run: |
