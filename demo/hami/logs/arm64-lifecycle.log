@@ -1,0 +1,5 @@
+PASS: plugin restart restores four share slots
+PASS: both existing consumer Pod identities survive plugin replacement
+PASS: simulated fatal state -> libdrm initialization failure -> real HAMi ListAndWatch -> kubelet allocatable=0
+PASS: recovery restores kubelet share-slot advertisement
+Existing processes are not claimed to be evicted or to execute kernels.

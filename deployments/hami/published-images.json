@@ -1,0 +1,54 @@
+{
+  "sourceCommit": "e411dfe41681b727a92737570dfb57fa78dd56dd",
+  "sourceBuildAndValidation": "https://github.com/sub-mod/amd-gpu-mock/actions/runs/39371568059",
+  "images": {
+    "amd-gpu-mock-hami": {
+      "reference": "docker.io/submod/amd-gpu-mock-hami:v0.1.0",
+      "digest": "sha256:c2e050c8cc979e765f559a4feff714f5396c11e874aef6b8368b96775d239736",
+      "platforms": {
+        "amd64": {
+          "digest": "sha256:8f019cfc25976fb1219c4ccf4f98692eb9e2c82df5c60da305e7f48663010981",
+          "config": "sha256:95876266c4744b6f46f2ad5af5408b75f90e9ec0bb0082b2c02eac7041d9e2a5",
+          "anonymousPullVerified": true
+        },
+        "arm64": {
+          "digest": "sha256:823e2ba81e19b3b6e55de18ce7d81a75789ff1ff75a2a99feff476217da8bc0c",
+          "config": "sha256:89122a1ecfd21666bf4c4593ef42307c27b9fdcb53079e61cde21d2df4af9eda",
+          "anonymousPullVerified": true
+        }
+      }
+    },
+    "amd-gpu-mock-hami-scheduler": {
+      "reference": "docker.io/submod/amd-gpu-mock-hami-scheduler:v0.1.0",
+      "digest": "sha256:9b706070e5b59a9688d25ac0c80b1d636b00f8dba0fcfa77e32a92754790f830",
+      "platforms": {
+        "amd64": {
+          "digest": "sha256:aba76ec2ac174e3aaf8e32b9ce7b5bab779b36eb29356e14c20408fcfd6179b8",
+          "config": "sha256:2563ef518732281fdad028240ea7433ef61254c2e8d57dc06e0b18d2574899d9",
+          "anonymousPullVerified": true
+        },
+        "arm64": {
+          "digest": "sha256:743369a5f90820db0f9a0989bc2058cd91bf10dc30f296a7833b52823d479dfa",
+          "config": "sha256:6c142a7750ee2b8d12a11e530cd77da7ae44691d67ca710b6fdf0fcbab4953b9",
+          "anonymousPullVerified": true
+        }
+      }
+    }
+  },
+  "chart": {
+    "reference": "oci://docker.io/submod/amd-gpu-mock",
+    "version": "0.2.16",
+    "digest": "sha256:e6bcc9e8d908959c205b3bdea5ad32e36aef6204eab91c655ea1e63fa8754b15"
+  },
+  "validation": {
+    "sourceMatrix": "passed",
+    "publishedFreshSetup": "passed",
+    "publishedFreshSetupRun": "https://github.com/sub-mod/amd-gpu-mock/actions/runs/39372296888"
+  },
+  "integrationBranch": "hami",
+  "mergedToMain": false,
+  "backend": {
+    "image": "docker.io/submod/amd-gpu-mock-driver:v0.1.1",
+    "digest": "sha256:5dcc04c9a83db5a232c05c7c6adf632b337af4f5da1a94035b2f063380493524"
+  }
+}

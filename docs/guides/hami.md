@@ -107,7 +107,7 @@ its HIP allocation hooks. The kernel dmem backend is disabled. Use real AMD
 hardware for compute/isolation claims. RocJITsu remains a separate experiment.
 
 See [CUSE/library fidelity](driver-mock.md), [build recipes and pins](../../deployments/hami/README.md),
-and [demo evidence](../../demo/hami/README.md#captured-validation).
+and [captured AMD64/ARM64 validation](../../demo/hami/README.md#captured-validation).
 
 ## Cleanup
 

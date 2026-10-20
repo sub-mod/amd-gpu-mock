@@ -37,9 +37,30 @@ Neither DRA nor the ordinary AMD device plugin runs in this dedicated cluster.
 
 ## Captured validation
 
-Validation logs and immutable image/source provenance are recorded here after
-native AMD64/ARM64 CI and published-image setup complete. The test scripts print
-their own live logs; no illustrative success output is substituted for results.
+[Native AMD64/ARM64 CI](https://github.com/sub-mod/amd-gpu-mock/actions/runs/39371568059)
+passed both jobs. The [fresh public-image run](https://github.com/sub-mod/amd-gpu-mock/actions/runs/39372296888)
+also passed both architectures, without builds. The logs below are actual
+artifacts from that public-image run on `hami`.
+
+| Check | AMD64 | ARM64 |
+| --- | --- | --- |
+| Sharing, native opens, library provenance, exhaustion/reuse | [Actual log](logs/amd64-allocation.log) | [Actual log](logs/arm64-allocation.log) |
+| Plugin restart and dashboard crash/recovery | [Actual log](logs/amd64-lifecycle.log) | [Actual log](logs/arm64-lifecycle.log) |
+| Real agent restart | [Actual log](logs/amd64-agent-restart.log) | [Actual log](logs/arm64-agent-restart.log) |
+| Grafana and real exporter | [Actual log](logs/amd64-grafana.log) | [Actual log](logs/arm64-grafana.log) |
+
+Excerpt from the captured lifecycle output:
+
+```text
+PASS: plugin restart restores four share slots
+PASS: both existing consumer Pod identities survive plugin replacement
+PASS: simulated fatal state -> libdrm initialization failure -> real HAMi ListAndWatch -> kubelet allocatable=0
+PASS: recovery restores kubelet share-slot advertisement
+```
+
+[Published image provenance](../../deployments/hami/published-images.json) records
+source pins and anonymously verified image digests. Public-only setup passed
+both architectures; the live scripts always print their own logs.
 
 ## Cleanup
 

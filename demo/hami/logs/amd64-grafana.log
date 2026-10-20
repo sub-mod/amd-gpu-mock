@@ -1,0 +1,11 @@
+PASS Grafana host access without port-forward
+PASS AMD dashboard provisioned by default
+PASS automatic 5-second dashboard refresh
+PASS real AMD exporter GPU count through built-in Prometheus
+PASS Grafana panel: GPU Temperature
+PASS Grafana panel: GPU Power Draw
+PASS Grafana panel: GPU Utilization
+PASS Grafana panel: VRAM Usage
+PASS Grafana panel: VRAM Usage
+PASS Grafana panel: GPU Clock Frequencies
+PASS Grafana panel: ECC Errors

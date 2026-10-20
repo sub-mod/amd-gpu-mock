@@ -1,0 +1,24 @@
+PASS: HAMi dynamically links byte-identical libdrm/AMD SMI libraries staged by main node-agent
+	linux-vdso.so.1 (0x0000ff9a360fd000)
+	libdrm_amdgpu.so.1 => /var/lib/amd-gpu-mock/driver/usr/lib64/libdrm_amdgpu.so.1 (0x0000ff9a36080000)
+	libhwloc.so.15 => /lib/aarch64-linux-gnu/libhwloc.so.15 (0x0000ff9a36000000)
+	libamd_smi.so.27 => /var/lib/amd-gpu-mock/driver/usr/lib64/libamd_smi.so.27 (0x0000ff9a35fd0000)
+	libc.so.6 => /lib/aarch64-linux-gnu/libc.so.6 (0x0000ff9a35e20000)
+	libm.so.6 => /lib/aarch64-linux-gnu/libm.so.6 (0x0000ff9a35d70000)
+	libudev.so.1 => /lib/aarch64-linux-gnu/libudev.so.1 (0x0000ff9a35d20000)
+	/lib/ld-linux-aarch64.so.1 (0x0000ff9a360b0000)
+
+PASS: native HAMi registers one original-profile MI300X: 304 CU, 192 GiB, 4 share slots
+namespace/amd-hami-demo created
+pod/left created
+PASS: left running through HAMi
+pod/right created
+PASS: right running through HAMi
+EVIDENCE left {"podUID": "07a07c2b-75dd-446a-977e-a7b0f5250d17", "node": "amd-hami-main-control-plane", "scheduler": "hami-scheduler", "allocation": "6c5a8aa5-b19f-8083-8be1-d4f7d007dcac,AMD Instinct MI300X,98304,152:;", "consumer": {"devices": ["/dev/kfd", "/dev/dri/renderD128", "/dev/dri/card0"], "settings": {"HSA_CU_MASK": "0:0-151", "ROCR_VISIBLE_DEVICES": "GPU-9c4f000000000001", "HIP_VISIBLE_DEVICES": "0", "HIP_DEVICE_MEMORY_LIMIT_0": "98304m", "LD_AUDIT": "/usr/local/vgpu/libamvgpu.so"}, "native_device_open": true, "gpu_compute": false}}
+EVIDENCE right {"podUID": "a8ef4628-e5e1-47a0-9942-9ea60c260dc5", "node": "amd-hami-main-control-plane", "scheduler": "hami-scheduler", "allocation": "6c5a8aa5-b19f-8083-8be1-d4f7d007dcac,AMD Instinct MI300X,98304,152:;", "consumer": {"devices": ["/dev/kfd", "/dev/dri/renderD128", "/dev/dri/card0"], "settings": {"HSA_CU_MASK": "0:152-303", "ROCR_VISIBLE_DEVICES": "GPU-9c4f000000000001", "HIP_VISIBLE_DEVICES": "0", "HIP_DEVICE_MEMORY_LIMIT_0": "98304m", "LD_AUDIT": "/usr/local/vgpu/libamvgpu.so"}, "native_device_open": true, "gpu_compute": false}}
+PASS: two Pods share one GPU with disjoint 152-CU masks and 96-GiB configured memory limits; no hardware isolation claim
+pod/waiting created
+PASS: third Pod remains unbound/Pending when the physical GPU share budget is full
+PASS: released budget admits waiting consumer
+EVIDENCE waiting {"podUID": "d24605fe-b1c0-4194-8916-40624f485f16", "node": "amd-hami-main-control-plane", "scheduler": "hami-scheduler", "allocation": "6c5a8aa5-b19f-8083-8be1-d4f7d007dcac,AMD Instinct MI300X,98304,152:;", "consumer": {"devices": ["/dev/kfd", "/dev/dri/renderD128", "/dev/dri/card0"], "settings": {"HSA_CU_MASK": "0:0-151", "ROCR_VISIBLE_DEVICES": "GPU-9c4f000000000001", "HIP_VISIBLE_DEVICES": "0", "HIP_DEVICE_MEMORY_LIMIT_0": "98304m", "LD_AUDIT": "/usr/local/vgpu/libamvgpu.so"}, "native_device_open": true, "gpu_compute": false}}
+PASS: budget reuse while sibling remains Running; real HAMi scheduler and plugin, no forged allocation annotations

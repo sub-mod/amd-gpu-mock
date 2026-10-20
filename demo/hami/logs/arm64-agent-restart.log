@@ -1,0 +1,3 @@
+Killing actual node-agent PID 14
+
+PASS actual graceful node-agent restart: count 0 -> 1; mounted directories preserved, CUSE/API ready
