@@ -19,7 +19,9 @@ for item in 'backend:Containerfile:amd-driver-mock' 'plugin:Hami.Containerfile:a
   IFS=: read -r kind file name <<< "$item"
   platform_args=()
   if [[ -n "${DRIVER_MOCK_PLATFORM:-}" ]]; then platform_args=(--platform "$DRIVER_MOCK_PLATFORM"); fi
-  "$runtime" build "${platform_args[@]}" --ignorefile "$EXP/containerignore" -t "localhost/$name:experiment" -f "$EXP/$file" .
+  ignore_args=()
+  if [[ "$runtime" = podman ]]; then ignore_args=(--ignorefile "$EXP/containerignore"); fi
+  "$runtime" build "${platform_args[@]}" "${ignore_args[@]}" -t "localhost/$name:experiment" -f "$EXP/$file" .
   arch="$("$runtime" image inspect "localhost/$name:experiment" --format '{{.Architecture}}')"
   [[ "$arch" = arm64 || "$arch" = amd64 ]] || { echo "Unsupported architecture: $arch" >&2; exit 1; }
   if [[ "${1:-}" = --push ]]; then
