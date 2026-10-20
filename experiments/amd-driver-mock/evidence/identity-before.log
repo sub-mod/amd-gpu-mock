@@ -1,0 +1,9 @@
+--- FAIL: TestKFDDecimalUniqueID (0.04s)
+    --- FAIL: TestKFDDecimalUniqueID/0x9c4f000000000001 (0.01s)
+        renderer_identity_test.go:33: not a decimal kernel property: "0x9c4f000000000001"
+    --- FAIL: TestKFDDecimalUniqueID/#00 (0.00s)
+        renderer_identity_test.go:33: not a decimal kernel property: ""
+    renderer_identity_test.go:54: invalid identity accepted
+FAIL
+FAIL	github.com/amd-gpu-mock/pkg/gpu/kfd	0.248s
+FAIL

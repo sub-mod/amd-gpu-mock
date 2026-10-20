@@ -1,0 +1,88 @@
+PASS: explicit library backend, one MI300X/SPX, four HAMi share slots
+Trying to pull docker.io/submod/amd-driver-mock:0.1.0-experiment.1-arm64...
+Getting image source signatures
+Copying blob sha256:3e440173c70970dc5043db55c94f1da3eef6c7ee6f00f8fce82ebae4c390e91e
+Copying blob sha256:530153b36df2ac5406c4cfb0065500818132777ae1bd48ab0cadc6e392efb40b
+Copying blob sha256:d5aec63251bb323f816a0f4b8a554bd84e478466a9ed1068daef07368328e9a3
+Copying blob sha256:64f7e7e7c9bc88feb83acb02ae05e447a263e1af97a491f664404e5d048ea156
+Copying blob sha256:04f0eef3c91c31c12a1e4b82bdaa1598c848321094da4250af49d4fb557abf55
+Copying blob sha256:306b3e1f116f14b8d7ea66fda80ad49379c56a3abf36e2b2d712646c49ae89fa
+Copying blob sha256:390c0ee34399f450d4ada935479cb488f409db418f1031754e8e0730291f874e
+Copying config sha256:6fef30c7c9de56cf54c3d316aebb7937213aeb12ae22fd09f8fb7b0c1df7face
+Writing manifest to image destination
+6fef30c7c9de56cf54c3d316aebb7937213aeb12ae22fd09f8fb7b0c1df7face
+Trying to pull docker.io/submod/amd-driver-mock-hami:0.1.0-experiment.1-arm64...
+Getting image source signatures
+Copying blob sha256:3e440173c70970dc5043db55c94f1da3eef6c7ee6f00f8fce82ebae4c390e91e
+Copying blob sha256:530153b36df2ac5406c4cfb0065500818132777ae1bd48ab0cadc6e392efb40b
+Copying blob sha256:d5aec63251bb323f816a0f4b8a554bd84e478466a9ed1068daef07368328e9a3
+Copying blob sha256:64f7e7e7c9bc88feb83acb02ae05e447a263e1af97a491f664404e5d048ea156
+Copying blob sha256:04f0eef3c91c31c12a1e4b82bdaa1598c848321094da4250af49d4fb557abf55
+Copying blob sha256:306b3e1f116f14b8d7ea66fda80ad49379c56a3abf36e2b2d712646c49ae89fa
+Copying blob sha256:390c0ee34399f450d4ada935479cb488f409db418f1031754e8e0730291f874e
+Copying blob sha256:974367b4984d18937b89d99b9d7ba692bcd7decbd2d73eb1967a4121f2ef7bda
+Copying blob sha256:c27c2bbedf34fc74a3e066053c9921449c483e340a652c96c85c72f12a1291c1
+Copying blob sha256:c05d3e24377a7ee742ba13058cccb21dce6339dadbbc649d2ddf2e99e598ee7d
+Copying config sha256:fda3d78e41ec943b4ca993ac1d2355b592faf432d767c41d9b613d5594a0ff87
+Writing manifest to image destination
+fda3d78e41ec943b4ca993ac1d2355b592faf432d767c41d9b613d5594a0ff87
+Trying to pull docker.io/submod/amd-driver-mock-scheduler:0.1.0-experiment.1-arm64...
+Getting image source signatures
+Copying blob sha256:a48bb73142d53af805017abcd5ce6e9c4f6ace0635a6bc4cf3c2965ef3fd3a2a
+Copying blob sha256:d5aec63251bb323f816a0f4b8a554bd84e478466a9ed1068daef07368328e9a3
+Copying config sha256:944cb05f63facae9fb2e4126f8fc0d4e933fd4e419c97109c54299b1b6d6cfc0
+Writing manifest to image destination
+944cb05f63facae9fb2e4126f8fc0d4e933fd4e419c97109c54299b1b6d6cfc0
+From https://github.com/Project-HAMi/amd-device-plugin
+ * branch            35c84ab2b224f7f43c74bb68e307dfd244c71bae -> FETCH_HEAD
+HEAD is now at 35c84ab Merge pull request #209 from Project-HAMi/docs/changelog-208
+From https://github.com/Project-HAMi/HAMi
+ * branch            84c75baf89b2bec4fd11660126ad2660b9d957f2 -> FETCH_HEAD
+HEAD is now at 84c75ba docs: remove docs/develop (#3258)
+amd-driver-mock-state
+2026/10/20 00:35:23 rendered one AMD Instinct MI300X using original profile/renderer
+fd8ff232f352e55acaebfaf8d7768541b399215510d5e1f1d4933cfa241c3948
+using podman due to KIND_EXPERIMENTAL_PROVIDER
+enabling experimental podman provider
+Creating cluster "amd-hami-driver" ...
+ • Ensuring node image (docker.io/submod/amd-mock-kind-node:0.2.2) 🖼️  ...
+ ✓ Ensuring node image (docker.io/submod/amd-mock-kind-node:0.2.2) 🖼️
+ • Preparing nodes 📦   ...
+ ✓ Preparing nodes 📦 
+ • Writing configuration 📜  ...
+ ✓ Writing configuration 📜
+ • Starting control-plane 🕹️  ...
+ ✓ Starting control-plane 🕹️
+ • Installing CNI 🔌  ...
+ ✓ Installing CNI 🔌
+ • Installing StorageClass 💾  ...
+ ✓ Installing StorageClass 💾
+ • Waiting ≤ 2m0s for control-plane = Ready ⏳  ...
+ ✓ Waiting ≤ 2m0s for control-plane = Ready ⏳
+ • Ready after 15s 💚
+Set kubectl context to "kind-amd-hami-driver"
+You can now use your cluster with:
+
+kubectl cluster-info --context kind-amd-hami-driver --kubeconfig tmp/hami/kubeconfig
+
+Have a question, bug, or feature request? Let us know! https://kind.sigs.k8s.io/#community 🙂
+namespace/amd-hami created
+serviceaccount/amd-gpu-device-plugin created
+clusterrole.rbac.authorization.k8s.io/amd-gpu-device-plugin created
+clusterrolebinding.rbac.authorization.k8s.io/amd-gpu-device-plugin created
+daemonset.apps/amd-gpu-device-plugin-daemonset created
+
+Release "hami" does not exist. Installing it now.
+NAME: hami
+LAST DEPLOYED: Mon Oct 19 20:35:50 2026
+NAMESPACE: amd-hami
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+TEST SUITE: None
+NOTES:
+** Please be patient while the chart is being deployed **
+Resource name: nvidia.com/gpu
+deployment "hami-scheduler" successfully rolled out
+daemon set "amd-gpu-device-plugin-daemonset" successfully rolled out
+Ready. Run: python3 experiments/amd-driver-mock/verify.py

@@ -1,0 +1,14 @@
+PASS: native HAMi registers one original-profile MI300X: 304 CU, 192 GiB, 4 share slots
+namespace/amd-driver-mock-demo created
+pod/left created
+PASS: left running through HAMi
+pod/right created
+PASS: right running through HAMi
+EVIDENCE left {"podUID": "88711b1b-dfd3-4c77-9901-46451f3f1ad3", "node": "amd-hami-driver-control-plane", "scheduler": "hami-scheduler", "allocation": "6c5a8aa5-b19f-8083-8be1-d4f7d007dcac,AMD Instinct MI300X,98304,152:;", "consumer": {"devices": ["/dev/kfd", "/dev/dri/renderD128", "/dev/dri/card0"], "settings": {"HSA_CU_MASK": "0:0-151", "ROCR_VISIBLE_DEVICES": "GPU-9c4f000000000001", "HIP_VISIBLE_DEVICES": "0", "HIP_DEVICE_MEMORY_LIMIT_0": "98304m", "LD_AUDIT": "/usr/local/vgpu/libamvgpu.so"}, "native_device_open": true, "gpu_compute": false}}
+EVIDENCE right {"podUID": "bf633776-f234-4994-9c8a-d60536ad3e58", "node": "amd-hami-driver-control-plane", "scheduler": "hami-scheduler", "allocation": "6c5a8aa5-b19f-8083-8be1-d4f7d007dcac,AMD Instinct MI300X,98304,152:;", "consumer": {"devices": ["/dev/kfd", "/dev/dri/renderD128", "/dev/dri/card0"], "settings": {"HSA_CU_MASK": "0:152-303", "ROCR_VISIBLE_DEVICES": "GPU-9c4f000000000001", "HIP_VISIBLE_DEVICES": "0", "HIP_DEVICE_MEMORY_LIMIT_0": "98304m", "LD_AUDIT": "/usr/local/vgpu/libamvgpu.so"}, "native_device_open": true, "gpu_compute": false}}
+PASS: two Pods share one GPU with disjoint 152-CU masks and 96-GiB configured memory limits; no hardware isolation claim
+pod/waiting created
+PASS: third Pod remains unbound/Pending when the physical GPU share budget is full
+PASS: released budget admits waiting consumer
+EVIDENCE waiting {"podUID": "0549cfac-6c67-4f81-aa89-d8d77d532d64", "node": "amd-hami-driver-control-plane", "scheduler": "hami-scheduler", "allocation": "6c5a8aa5-b19f-8083-8be1-d4f7d007dcac,AMD Instinct MI300X,98304,152:;", "consumer": {"devices": ["/dev/kfd", "/dev/dri/renderD128", "/dev/dri/card0"], "settings": {"HSA_CU_MASK": "0:0-151", "ROCR_VISIBLE_DEVICES": "GPU-9c4f000000000001", "HIP_VISIBLE_DEVICES": "0", "HIP_DEVICE_MEMORY_LIMIT_0": "98304m", "LD_AUDIT": "/usr/local/vgpu/libamvgpu.so"}, "native_device_open": true, "gpu_compute": false}}
+PASS: budget reuse while sibling remains Running; real HAMi scheduler and plugin, no forged allocation annotations

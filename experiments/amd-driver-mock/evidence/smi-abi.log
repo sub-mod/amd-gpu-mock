@@ -1,0 +1,2 @@
+amd-gpu-mock: AMD SMI ABI 27 backend initialized
+AMD SMI ABI: BDF lookup, enumeration, units, structures, ECC, buffers, unsupported capabilities, concurrent calls PASS
