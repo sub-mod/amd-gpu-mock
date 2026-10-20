@@ -22,7 +22,7 @@ try:
                'metadata':{'name':'gpu','namespace':NS},'spec':{'spec':{'devices':{'requests':[
                    {'name':'gpu','exactly':{'deviceClassName':'gpu.amd.com'}}]}}}})
     spec = {'restartPolicy':'Never','containers':[{'name':'consumer','image':IMAGE,
-            'imagePullPolicy':'Never','command':['sh','-ec', '''
+            'imagePullPolicy':'Never','env':[{'name':'LD_LIBRARY_PATH','value':'/var/lib/amd-gpu-mock/driver/usr/lib64'}],'command':['sh','-ec', '''
 set -- /dev/dri/renderD*
 test "$#" = 1
 test -c "$1"

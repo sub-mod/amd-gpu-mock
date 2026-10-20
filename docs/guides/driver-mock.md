@@ -33,7 +33,11 @@ The host kernel must provide CUSE (`sudo modprobe cuse`, then check `/dev/cuse`)
 For a VM-backed runtime, load it in that Linux VM. A container image cannot
 supply a missing host kernel module. The provider is privileged infrastructure;
 allocated workload Pods do not need privileged mode. Real AMDGPU nodes are
-rejected; unrelated registered device nodes are never replaced.
+rejected. Existing DRM nodes inherited by CPU VMs (for example virtual displays)
+are covered by reversible bind mounts inside the dedicated node; the underlying
+nodes are never deleted. Bidirectional propagation exposes that overlay to the
+node's kubelet. Cleanup removes the overlay and restores the underlying device.
+Do not use the simulated node for unrelated DRM workloads during the demo.
 
 The image and chart installation commands will be recorded here with verified
 published digests after the source-backed compatibility matrix passes. The
@@ -57,6 +61,8 @@ preloaded with a replacement libdrm.
 - Multiple GPUs and fixed partition inventory use the same original renderer.
   Profile changes reconcile endpoints. Simulated crashes remove owned host
   paths; recovery restores the registered endpoints, not legacy dummy numbers.
+- The driver image supplies the existing ABI 27 AMD SMI shim, including BDF
+  lookup, using the original renderer's same SMI state.
 - Fatal RAS state rejects libdrm capacity/initialization calls. This does not
   promise automatic workload eviction or real hardware failure behavior.
 - Provider shutdown removes owned nodes. An unclean restart re-registers the

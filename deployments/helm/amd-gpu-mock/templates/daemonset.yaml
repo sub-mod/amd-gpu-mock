@@ -47,6 +47,13 @@ spec:
             - name: api
               containerPort: {{ .Values.api.port }}
               protocol: TCP
+          {{- if .Values.driverMock.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /api/gpus
+              port: api
+            periodSeconds: 2
+          {{- end }}
           securityContext:
             privileged: true
           volumeMounts:
@@ -59,6 +66,9 @@ spec:
               mountPropagation: Bidirectional
             - name: host-dev
               mountPath: /dev
+              {{- if .Values.driverMock.enabled }}
+              mountPropagation: Bidirectional
+              {{- end }}
             - name: host-cdi
               mountPath: /etc/cdi
             - name: host-cdi-run

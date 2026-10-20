@@ -27,6 +27,7 @@ type endpoint struct {
 }
 
 type Provider struct {
+	binds                         map[string]bool
 	previousMajor                 uint32
 	root, hostDev, helper, prefix string
 	major                         uint32
@@ -60,7 +61,7 @@ func New(root, hostDev, helper string) (*Provider, error) {
 	if data, err := os.ReadFile(filepath.Join(abs, "device-major")); err == nil {
 		_, _ = fmt.Sscan(string(data), &previous)
 	}
-	return &Provider{previousMajor: previous, root: abs, hostDev: hostDev, helper: helper, prefix: fmt.Sprintf("amd-mock-%x", hash[:6]), endpoints: make(map[uint32]*endpoint), Errors: make(chan error, 1)}, nil
+	return &Provider{binds: make(map[string]bool), previousMajor: previous, root: abs, hostDev: hostDev, helper: helper, prefix: fmt.Sprintf("amd-mock-%x", hash[:6]), endpoints: make(map[uint32]*endpoint), Errors: make(chan error, 1)}, nil
 }
 
 // Reconcile supports the main renderer's physical and fixed partition inventory.
@@ -82,6 +83,11 @@ func (p *Provider) Reconcile(profile *kfd.Profile) error {
 			return err
 		}
 	}
+	// Persist ownership before publishing more nodes, so even a partially
+	// failed startup can reclaim its own stale endpoints on the next attempt.
+	if err := p.writeMajor(); err != nil {
+		return err
+	}
 	for minor, paths := range wanted {
 		if _, ok := p.endpoints[minor]; !ok {
 			if err := p.start(minor, paths); err != nil {
@@ -100,7 +106,10 @@ func (p *Provider) Reconcile(profile *kfd.Profile) error {
 			return err
 		}
 	}
-	// Consumers only accept device handles bearing this live provider's major.
+	return nil
+}
+
+func (p *Provider) writeMajor() error {
 	path := filepath.Join(p.root, "device-major")
 	if err := os.WriteFile(path+".tmp", []byte(fmt.Sprintln(p.major)), 0644); err != nil {
 		return err
@@ -164,7 +173,33 @@ func (p *Provider) nodes(e *endpoint) error {
 			var st unix.Stat_t
 			if err := unix.Lstat(path, &st); err == nil {
 				if st.Mode&unix.S_IFMT == unix.S_IFCHR && uint64(st.Rdev) == unix.Mkdev(p.major, e.minor) {
+					if base == p.hostDev && p.previousMajor == p.major && isMountpoint(path) {
+						p.binds[path] = true
+					}
 					continue
+				}
+				if base == p.hostDev && st.Mode&unix.S_IFMT == unix.S_IFCHR {
+					oldMajor := unix.Major(uint64(st.Rdev))
+					if oldMajor == p.previousMajor && isMountpoint(path) {
+						if err := unix.Unmount(path, unix.MNT_DETACH); err != nil {
+							return err
+						}
+						delete(p.binds, path)
+						if err := unix.Lstat(path, &st); err != nil {
+							return err
+						}
+						oldMajor = unix.Major(uint64(st.Rdev))
+					}
+					if oldMajor == 226 {
+						// Preserve virtual display devices inherited by a privileged Kind node.
+						// Bind only within the node's device mount namespace, never unlink them.
+						source := filepath.Join(p.root, "dev", rel)
+						if err := unix.Mount(source, path, "", unix.MS_BIND, ""); err != nil {
+							return fmt.Errorf("bind CUSE device %s: %w", path, err)
+						}
+						p.binds[path] = true
+						continue
+					}
 				}
 				// Refuse an unrelated real driver device. Stale mock nodes are allowed
 				// only for main's fixed legacy numbers or this provider's current major.
@@ -230,6 +265,9 @@ func (p *Provider) RemoveDevice(index int) error {
 			path := filepath.Join(p.hostDev, rel)
 			var st unix.Stat_t
 			if unix.Lstat(path, &st) == nil && st.Mode&unix.S_IFMT == unix.S_IFCHR && uint64(st.Rdev) == unix.Mkdev(p.major, e.minor) {
+				if p.binds[path] {
+					continue
+				} // health is enforced by live RAS state
 				if err := os.Remove(path); err != nil {
 					return err
 				}
@@ -254,7 +292,12 @@ func (p *Provider) stop(e *endpoint) {
 			path := filepath.Join(base, rel)
 			var st unix.Stat_t
 			if unix.Lstat(path, &st) == nil && st.Mode&unix.S_IFMT == unix.S_IFCHR && uint64(st.Rdev) == unix.Mkdev(p.major, e.minor) {
-				_ = os.Remove(path)
+				if p.binds[path] {
+					_ = unix.Unmount(path, unix.MNT_DETACH)
+					delete(p.binds, path)
+				} else {
+					_ = os.Remove(path)
+				}
 			}
 		}
 	}
@@ -268,4 +311,22 @@ func (p *Provider) Close() {
 		p.stop(e)
 	}
 	_ = os.Remove(filepath.Join(p.root, "device-major"))
+}
+
+// Only provider-owned dynamic numbers qualify for stale-mount reclamation.
+func isMountpoint(path string) bool {
+	data, err := os.ReadFile("/proc/self/mountinfo")
+	if err != nil {
+		return false
+	}
+	for _, line := range strings.Split(string(data), "\n") {
+		fields := strings.Fields(line)
+		if len(fields) > 4 {
+			target := strings.NewReplacer(`\040`, " ", `\011`, "\t", `\134`, `\`).Replace(fields[4])
+			if target == path {
+				return true
+			}
+		}
+	}
+	return false
 }

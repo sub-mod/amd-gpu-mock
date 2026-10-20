@@ -2,7 +2,8 @@ name: driver-backend
 on:
   workflow_dispatch:
   push:
-    branches: [feat/cuse-libdrm-consumers]
+    branches: [main, feat/cuse-libdrm-consumers]
+    paths: ['pkg/mockdriver/**', 'pkg/gpu/kfd/**', 'cmd/node-agent/**', 'pkg/mocksmi/**', 'deployments/driver-mock/**', 'deployments/helm/**', 'tests/driver-mock/**', '.github/workflows/driver-backend.yaml']
   pull_request:
     paths: ['pkg/mockdriver/**', 'pkg/gpu/kfd/**', 'cmd/node-agent/**', 'deployments/driver-mock/**', 'deployments/helm/**', 'tests/driver-mock/**', '.github/workflows/driver-backend.yaml']
 permissions:
@@ -33,14 +34,20 @@ jobs:
           tests/dra/chart-validation.sh
           tests/demo/chart-validation.sh
           tests/driver-mock/chart.sh
+          arch=amd64
+          if [ "$(uname -m)" = aarch64 ]; then arch=arm64; fi
+          CONTAINER_RUNTIME=docker ABI_PLATFORM="linux/$arch" tests/telemetry/abi.sh
           sudo modprobe cuse
           docker build -f deployments/driver-mock/Dockerfile -t "$DRIVER_IMAGE" .
+          docker build -t local/amd-gpu-mock:driver-regression .
       - name: Real CUSE, all profiles, errors, fault recovery and unclean restart
         run: |
           mkdir -p artifacts
           python3 -u tests/driver-mock/native.py | tee artifacts/native.log
       - name: Export tested image
-        run: docker save "$DRIVER_IMAGE" | gzip > artifacts/driver-image.tar.gz
+        run: |
+          docker save "$DRIVER_IMAGE" | gzip > artifacts/driver-image.tar.gz
+          docker save local/amd-gpu-mock:driver-regression | gzip > artifacts/default-image.tar.gz
       - uses: actions/upload-artifact@v4
         if: always()
         with:

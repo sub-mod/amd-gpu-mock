@@ -23,7 +23,8 @@ RUN mkdir -p /out && \
       -L/out -l:libdrm_amdgpu.so.1 -Wl,-rpath,/opt/amd-gpu-mock/lib -o /out/driver-probe
 COPY pkg/mocksmi/ /smi/
 RUN cc -shared -fPIC -O2 -Wl,-soname,libamd_smi.so.27 \
-    /smi/mock_amdsmi.c /smi/stubs.c -o /out/libamd_smi.so
+    -Wl,--version-script=/smi/exporter/version.map \
+    /smi/exporter/mock.c /smi/exporter/unsupported.c -o /out/libamd_smi.so
 
 FROM docker.io/library/debian:bookworm-slim
 RUN apt-get update && apt-get install -y --no-install-recommends tini libfuse3-3 \
