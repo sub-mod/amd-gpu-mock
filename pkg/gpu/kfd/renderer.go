@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"syscall"
 )
@@ -253,6 +254,20 @@ func (r *Renderer) renderCPUNode(dir string) error {
 }
 
 func (r *Renderer) renderGPUNode(dir string, dev *DeviceConfig) error {
+	// KFD sysfs emits unique_id as decimal, even when a profile stores hex.
+	// Decimal-only clients otherwise read a 0x-prefixed ID as zero (an APU).
+	var uniqueID uint64
+	if dev.UniqueID != "" {
+		base := 10
+		if strings.HasPrefix(dev.UniqueID, "0x") || strings.HasPrefix(dev.UniqueID, "0X") {
+			base = 0
+		}
+		var err error
+		uniqueID, err = strconv.ParseUint(dev.UniqueID, base, 64)
+		if err != nil {
+			return fmt.Errorf("invalid unique_id for GPU %d: %w", dev.Index, err)
+		}
+	}
 	d := r.profile.DeviceDefault
 	c := d.Compute
 
@@ -298,7 +313,7 @@ func (r *Renderer) renderGPUNode(dir string, dev *DeviceConfig) error {
 		"capability 0x00002b3a",
 		"debug_prop 0x0000000000000900",
 		"sdma_fw_version 0",
-		fmt.Sprintf("unique_id %s", dev.UniqueID),
+		fmt.Sprintf("unique_id %d", uniqueID),
 		fmt.Sprintf("num_xcc %d", c.NumXCC),
 	}
 
