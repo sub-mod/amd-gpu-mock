@@ -1,0 +1,13 @@
+{
+  "backend": "library",
+  "profile": "mi300x",
+  "physicalGPUCount": 1,
+  "partition": "SPX",
+  "cluster": "amd-hami-driver",
+  "shareSlots": 4,
+  "images": {
+    "backend": "docker.io/submod/amd-driver-mock:0.1.0-experiment.2-amd64",
+    "plugin": "docker.io/submod/amd-driver-mock-hami:0.1.0-experiment.2-amd64",
+    "scheduler": "docker.io/submod/amd-driver-mock-scheduler:0.1.0-experiment.2-amd64"
+  }
+}

@@ -104,3 +104,95 @@ podman volume rm amd-rocjitsu-compute-build amd-rocjitsu-x86-build
 ```
 
 See [evaluation](../ROCJITSU.md) for results and remaining interface boundaries.
+
+## HAMi-allocated computation and AMD64
+
+The allocation extension is in `run-pods.py`. It reads the original renderer's
+live KFD properties and AMD SMI identity, then generates a functional 304-CU
+configuration with `shared-config.py`. Both Pods request `amd.com/gpu: 1`,
+`amd.com/gpucores: 50`, and `amd.com/gpumem: 64`; no ROCR/HIP visibility, CU mask,
+memory limit or LD_AUDIT value is manually supplied. The unchanged HAMi scheduler
+and plugin provide those values.
+
+```text
+1. Original profile -> renderer state -> AMD SMI/libdrm mock -> HAMi discovery
+2. Pod requests -> HAMi scheduler assigns UUID + 152 CUs + 64 MiB
+3. Kubelet Allocate -> device plugin injects devices, CU mask, memory limit,
+   and architecture-matched upstream HAMi audit library
+4. Same renderer snapshot -> RocJITsu config: KFD UUID, PCI address, 304 CUs,
+   192 GiB raw VRAM (8 XCD x 2 functional engines x 19 CUs)
+5. Unchanged HIP/ROCr -> HAMi memory hooks -> RocJITsu KFD ioctl -> CPU execution
+6. Diagnostic ioctl observer checks the original CU mask and driver result;
+   application compares 1,024 results with the CPU reference
+```
+
+This is a functional topology, not a simulation of the precise MI300X floorplan
+or disabled physical CUs. Each application uses local-mode execution with its
+own simulator instance, derived from the same authoritative snapshot. It does
+not establish a shared cross-Pod GPU memory pool, physical isolation, contention,
+performance fidelity or live fault-state propagation.
+
+Native AMD64 Linux is the target for the allocated-mask test. On the tested Mac,
+identity and memory checks pass inside genuinely allocated Pods, but QEMU 10.2.2
+user-mode does not implement `process_vm_readv`. RocJITsu uses that syscall to
+safely copy a CU-mask buffer; the actual KFD request fails with EFAULT. The test
+fails rather than replacing the syscall with unsafe memory copies or ignoring
+the rejected mask. The earlier standalone vector-add success does not remove
+this limitation.
+
+ROCr 7.2 also returns from `AqlQueue::SetCUMasking` before updating the cache used
+by `GetCUMasking` when the global mask is set. Therefore the getter's zero mask
+is not used as proof. `mask-audit.c` is a diagnostic observer, not an allocation
+backend: it forwards the original ioctl and buffer unchanged, checks the actual
+mask against the plugin-provided range, and requires driver acceptance. A
+failure exits the workload. It does not fabricate a successful driver reply.
+
+The dedicated lab selects the AMD64 hook via upstream `HOST_HOOK_PATH`; the
+script restores its original value afterward. On ARM64 this does not silently
+replace the normal ARM64 hook. The new image contains an AMD64 hook compiled
+from the same pinned `amd-hami-core` source as the plugin's ARM64 hook.
+
+The native AMD64 workflow builds all three allocation-stack images, a matching
+SDK/engine/payload and the compute image with Docker, then creates the dedicated
+Kind cluster and runs the actual Pod tests. It requires CUSE from the Linux
+host; a container image cannot supply that kernel facility.
+
+- [AMD64 workflow](../../../.github/workflows/driver-mock-amd64.yaml)
+- `build-images.sh`: supports native AMD64 and ARM64 builds, verifies matching
+  publication-tag architecture, supports `DRIVER_MOCK_PLATFORM` explicitly.
+- `prepare-sdk.sh` + `build-engine.sh` + `build-payload.sh`: reproduce payloads.
+- `build-compute-image.sh --push`: build and publish a new AMD64 compute tag.
+- `run-pods.py`: verify allocated computation; fails on missing mask support.
+
+For locally built stack images, `DRIVER_MOCK_SKIP_PULL=1` explicitly loads plugin
+and scheduler images into Kind. Default setup continues to pull published
+images. Use the default runtime architecture on native AMD64 Linux; no QEMU
+address-base setting is required there. Native AMD64 build support is separate
+from the previously published ARM64 experiment tags.
+
+### What the native AMD64 logs prove
+
+[Fresh native AMD64 source-built run](https://github.com/sub-mod/amd-gpu-mock/actions/runs/39354225951)
+passed. The actual left/right logs are captured under
+[../evidence/rocjitsu/native-amd64](../evidence/rocjitsu/native-amd64).
+
+```text
+left:  KFD_MASK ... result=0 errno=0 expected=0:0-151 match=yes
+right: KFD_MASK ... result=0 errno=0 expected=0:152-303 match=yes
+both:  HIP PCI address: 0000:05:00.0
+both:  visible_memory=67108864 expected=67108864
+both:  PASS: HIP memory cap, cumulative accounting, and free/reallocate
+both:  [  PASSED  ] 1 test.
+both:  PASS: allocated Pod computation complete
+```
+
+The HAMi OOM error/warning lines are expected: the probe deliberately requests
+too much memory and requires hipErrorOutOfMemory. They are evidence of rejected
+allocations, not an unexpected Pod crash. The cache-getter zero is the documented
+ROCr 7.2 issue; the accepted KFD requests are the mask evidence. The observer
+fails on a mismatched mask or rejected driver request.
+
+The test checks normal HIP API enforcement and mask propagation, not security
+against bypassing those hooks, exact silicon execution placement, physical
+VRAM isolation, performance partitioning, a shared cross-Pod execution engine,
+or dashboard fault/telemetry propagation into RocJITsu.

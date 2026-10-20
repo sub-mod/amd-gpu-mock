@@ -51,6 +51,7 @@ runtime with RocJITsu's KMD interposer/CPU execution engine in isolated AMD64
 userspace under ARM64 Podman/QEMU. The no-simulator control fails with no device.
 See [results and scripts](ROCJITSU.md). No shared interface is changed: this is
 not yet wired to the project's profile/state, AMD SMI/libdrm mock or HAMi hooks.
-QEMU guest-base configuration is needed on the tested host. CU-mask propagation,
-memory limits, shared fault state, native ARM64 ROCm and allocated-Pod computation
-remain unimplemented/unverified by this milestone.
+QEMU guest-base configuration is needed on the tested host. The following allocation extension verifies identity and memory accounting in
+Mac Pods, but its actual CU-mask ioctl fails because QEMU user-mode lacks
+process_vm_readv. Native AMD64 validation is separate. Shared fault state,
+native ARM64 ROCm, cross-Pod shared VRAM and physical isolation remain unverified.

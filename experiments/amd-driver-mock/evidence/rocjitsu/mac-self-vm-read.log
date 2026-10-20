@@ -1,0 +1,2 @@
+self process_vm_readv=-1 errno=38 value=
+exit=1
