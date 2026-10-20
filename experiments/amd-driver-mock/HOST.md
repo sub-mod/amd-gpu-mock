@@ -1,6 +1,7 @@
 # Host requirements for the library backend
 
-The current validated host is an ARM64 Linux Podman VM on macOS. Kubernetes runs
+Validated hosts include native AMD64 Ubuntu 24.04 with Docker and an ARM64 Linux
+Podman VM on macOS. In the ARM64 setup, Kubernetes runs
 inside its dedicated Kind node. CUSE runs in the Linux VM's kernel, not macOS.
 The backend and workload device opens are native ARM64, not translated x86 calls.
 
@@ -48,6 +49,9 @@ state volume. The loaded CUSE module may remain until VM shutdown. Once no CUSE
 users remain, `podman machine ssh 'sudo rmmod cuse'` removes that module; it must
 not be forced out from under another CUSE consumer.
 
-AMD64 Linux, Docker, CRC/OpenShift, additional GPUs and other kernels remain
-unvalidated. The scripts contain a Docker runtime adapter, but that is not a
-claim of a Docker clean-install result.
+Native AMD64 Docker passed a fresh published-image installation and allocated HIP
+computation in [CI](https://github.com/sub-mod/amd-gpu-mock/actions/runs/39357566039).
+Fedora AMD64 is a target, not yet an end-to-end validated host. Its running kernel
+must supply CUSE and the runtime must expose /dev/cuse to privileged containers.
+See the [AMD64 guide](rocjitsu/README.md#fedoralinux-amd64-use-the-published-images).
+CRC/OpenShift, additional GPUs and other kernels remain unvalidated for this backend.

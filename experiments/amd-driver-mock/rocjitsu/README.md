@@ -84,8 +84,8 @@ $RUNTIME exec -e QEMU_GUEST_BASE=0x800000000000 -i amd-rocjitsu-x86 sh -s \
 Use fresh resource names or reuse the existing stopped containers with `start`;
 never delete the unrelated `amd-driver-mock-state` or HAMi cluster to retry this.
 On native AMD64 Linux, install the SDK and run `build-engine.sh` in the same
-AMD64 container; no ARM cross-builder is needed. That variant has not been run
-in this evaluation.
+AMD64 container; no ARM cross-builder is needed. The native AMD64 CI workflow
+uses this path and passed both source-build and allocated-computation checks.
 
 `prepare-sdk.sh` pins the ROCm packages and gives their signed repository priority
 over Ubuntu's older HIP packages. `build-engine.sh` uses explicit x86-64 baseline,
@@ -106,6 +106,54 @@ podman volume rm amd-rocjitsu-compute-build amd-rocjitsu-x86-build
 See [evaluation](../ROCJITSU.md) for results and remaining interface boundaries.
 
 ## HAMi-allocated computation and AMD64
+
+### Fedora/Linux AMD64: use the published images
+
+This AMD64 target is for x86-64 Linux users, including Fedora. Native Ubuntu
+24.04 CI passed a fresh installation from all four public images:
+[published-image validation](https://github.com/sub-mod/amd-gpu-mock/actions/runs/39357566039).
+Fedora installation has not yet been validated. Windows is outside this milestone.
+The existing Mac ARM64 allocation setup is unchanged.
+
+Install Docker with a running daemon, Kind v0.33.0 or newer, kubectl, Helm, Git
+and Python 3. Run from the repository root on `experiment/amd-driver-mock`.
+The runtime's Linux host must provide CUSE; on Fedora load it before setup:
+
+```bash
+uname -m # must report x86_64
+sudo modprobe cuse
+test -c /dev/cuse
+docker run --rm --privileged docker.io/submod/amd-driver-mock:0.1.0-experiment.2-amd64 sh -ec 'test -c /dev/cuse'
+```
+
+If the module is missing, install your distribution's module package matching
+the running kernel before continuing. An image cannot supply the host kernel
+module. These commands use Docker; rootless Podman is not validated for this lab.
+
+```bash
+export CONTAINER_RUNTIME=docker
+export DRIVER_MOCK_CONFIG=experiments/amd-driver-mock/config.amd64.json
+experiments/amd-driver-mock/setup.sh
+
+mkdir -p tmp/rocjitsu-eval/emulation/rocjitsu/configs
+curl -fsSL https://raw.githubusercontent.com/ROCm/rocm-systems/0f80b261740a91e44ac2042e2f7eca6cdd8611a2/emulation/rocjitsu/configs/gfx942_cdna3_kmd.json \
+  -o tmp/rocjitsu-eval/emulation/rocjitsu/configs/gfx942_cdna3_kmd.json
+docker pull docker.io/submod/amd-driver-mock-compute:0.1.0-experiment.1-amd64
+kind load docker-image docker.io/submod/amd-driver-mock-compute:0.1.0-experiment.1-amd64 --name amd-hami-driver
+python3 experiments/amd-driver-mock/rocjitsu/run-pods.py
+
+# Inspect actual workload output; tests leave Pods available.
+kubectl --kubeconfig tmp/hami/kubeconfig -n amd-driver-mock-demo logs compute-left
+kubectl --kubeconfig tmp/hami/kubeconfig -n amd-driver-mock-demo logs compute-right
+# When finished, remove only the dedicated experiment resources:
+experiments/amd-driver-mock/cleanup.sh
+```
+
+No SDK, compiler or custom image build is required. Image digests and source pins
+are in [published-images.amd64.json](../published-images.amd64.json).
+Actual fresh-install logs are in
+[published-amd64 evidence](../evidence/rocjitsu/published-amd64).
+
 
 The allocation extension is in `run-pods.py`. It reads the original renderer's
 live KFD properties and AMD SMI identity, then generates a functional 304-CU

@@ -1,0 +1,278 @@
+{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "annotations": {
+      "hami.io/amd-cu-allocated": "{\"6c5a8aa5-b19f-8083-8be1-d4f7d007dcac\":\"152-303\"}",
+      "hami.io/amd-devices-allocated": "6c5a8aa5-b19f-8083-8be1-d4f7d007dcac,AMD Instinct MI300X,64,152:;",
+      "hami.io/amd-devices-to-allocate": ";",
+      "hami.io/bind-phase": "success",
+      "hami.io/bind-time": "1792462405",
+      "hami.io/vgpu-node": "amd-hami-driver-control-plane",
+      "hami.io/vgpu-time": "1792462405",
+      "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"amd-mock-compute\"},\"name\":\"compute-right\",\"namespace\":\"amd-driver-mock-demo\"},\"spec\":{\"containers\":[{\"command\":[\"/bin/sh\",\"-ec\",\"set -eu\\nfor program in limits hip_vector_add_test; do\\n /opt/compute/bin/rocjitsu --config /etc/compute/gpu.json -- /usr/bin/env LD_PRELOAD=/opt/compute/lib/libmask-audit.so:/opt/compute/lib/librocjitsu.so /opt/compute/bin/$program\\ndone\\necho 'PASS: allocated Pod computation complete'\\nsleep infinity\\n\"],\"env\":[],\"image\":\"docker.io/submod/amd-driver-mock-compute:0.1.0-experiment.1-amd64\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"compute\",\"resources\":{\"limits\":{\"amd.com/gpu\":1,\"amd.com/gpucores\":50,\"amd.com/gpumem\":64}},\"volumeMounts\":[{\"mountPath\":\"/etc/compute\",\"name\":\"config\",\"readOnly\":true}]}],\"restartPolicy\":\"Never\",\"terminationGracePeriodSeconds\":1,\"volumes\":[{\"configMap\":{\"name\":\"rocjitsu-shared-profile\"},\"name\":\"config\"}]}}\n"
+    },
+    "creationTimestamp": "2026-10-20T02:13:21Z",
+    "generation": 1,
+    "labels": {
+      "app": "amd-mock-compute",
+      "hami.io/vgpu-node": "amd-hami-driver-control-plane"
+    },
+    "name": "compute-right",
+    "namespace": "amd-driver-mock-demo",
+    "resourceVersion": "854",
+    "uid": "73b2ed5e-b9e3-4bf6-85ee-82241e8519e0"
+  },
+  "spec": {
+    "containers": [
+      {
+        "command": [
+          "/bin/sh",
+          "-ec",
+          "set -eu\nfor program in limits hip_vector_add_test; do\n /opt/compute/bin/rocjitsu --config /etc/compute/gpu.json -- /usr/bin/env LD_PRELOAD=/opt/compute/lib/libmask-audit.so:/opt/compute/lib/librocjitsu.so /opt/compute/bin/$program\ndone\necho 'PASS: allocated Pod computation complete'\nsleep infinity\n"
+        ],
+        "image": "docker.io/submod/amd-driver-mock-compute:0.1.0-experiment.1-amd64",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "compute",
+        "resources": {
+          "limits": {
+            "amd.com/gpu": "1",
+            "amd.com/gpucores": "50",
+            "amd.com/gpumem": "64"
+          },
+          "requests": {
+            "amd.com/gpu": "1",
+            "amd.com/gpucores": "50",
+            "amd.com/gpumem": "64"
+          }
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File",
+        "volumeMounts": [
+          {
+            "mountPath": "/etc/compute",
+            "name": "config",
+            "readOnly": true
+          },
+          {
+            "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+            "name": "kube-api-access-n6jfx",
+            "readOnly": true
+          }
+        ]
+      }
+    ],
+    "dnsPolicy": "ClusterFirst",
+    "enableServiceLinks": true,
+    "nodeName": "amd-hami-driver-control-plane",
+    "preemptionPolicy": "PreemptLowerPriority",
+    "priority": 0,
+    "restartPolicy": "Never",
+    "schedulerName": "hami-scheduler",
+    "securityContext": {},
+    "serviceAccount": "default",
+    "serviceAccountName": "default",
+    "terminationGracePeriodSeconds": 1,
+    "tolerations": [
+      {
+        "effect": "NoExecute",
+        "key": "node.kubernetes.io/not-ready",
+        "operator": "Exists",
+        "tolerationSeconds": 300
+      },
+      {
+        "effect": "NoExecute",
+        "key": "node.kubernetes.io/unreachable",
+        "operator": "Exists",
+        "tolerationSeconds": 300
+      }
+    ],
+    "volumes": [
+      {
+        "configMap": {
+          "defaultMode": 420,
+          "name": "rocjitsu-shared-profile"
+        },
+        "name": "config"
+      },
+      {
+        "name": "kube-api-access-n6jfx",
+        "projected": {
+          "defaultMode": 420,
+          "sources": [
+            {
+              "serviceAccountToken": {
+                "expirationSeconds": 3607,
+                "path": "token"
+              }
+            },
+            {
+              "configMap": {
+                "items": [
+                  {
+                    "key": "ca.crt",
+                    "path": "ca.crt"
+                  }
+                ],
+                "name": "kube-root-ca.crt"
+              }
+            },
+            {
+              "downwardAPI": {
+                "items": [
+                  {
+                    "fieldRef": {
+                      "apiVersion": "v1",
+                      "fieldPath": "metadata.namespace"
+                    },
+                    "path": "namespace"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "status": {
+    "allocatedResources": {
+      "amd.com/gpu": "1",
+      "amd.com/gpucores": "50",
+      "amd.com/gpumem": "64"
+    },
+    "conditions": [
+      {
+        "lastProbeTime": null,
+        "lastTransitionTime": "2026-10-20T02:13:26Z",
+        "observedGeneration": 1,
+        "status": "True",
+        "type": "PodReadyToStartContainers"
+      },
+      {
+        "lastProbeTime": null,
+        "lastTransitionTime": "2026-10-20T02:13:26Z",
+        "observedGeneration": 1,
+        "status": "True",
+        "type": "Initialized"
+      },
+      {
+        "lastProbeTime": null,
+        "lastTransitionTime": "2026-10-20T02:13:26Z",
+        "observedGeneration": 1,
+        "status": "True",
+        "type": "Ready"
+      },
+      {
+        "lastProbeTime": null,
+        "lastTransitionTime": "2026-10-20T02:13:26Z",
+        "observedGeneration": 1,
+        "status": "True",
+        "type": "ContainersReady"
+      },
+      {
+        "lastProbeTime": null,
+        "lastTransitionTime": "2026-10-20T02:13:25Z",
+        "observedGeneration": 1,
+        "status": "True",
+        "type": "PodScheduled"
+      }
+    ],
+    "containerStatuses": [
+      {
+        "allocatedResources": {
+          "amd.com/gpu": "1",
+          "amd.com/gpucores": "50",
+          "amd.com/gpumem": "64"
+        },
+        "allocatedResourcesStatus": [
+          {
+            "name": "amd.com/gpu",
+            "resources": [
+              {
+                "health": "Healthy",
+                "resourceID": "0000:05:00.0#2"
+              }
+            ]
+          }
+        ],
+        "containerID": "containerd://bd030b58321e0ba51fc1952c8e06c3a1541aa02b45add8c9ea01c0b661959764",
+        "image": "docker.io/submod/amd-driver-mock-compute:0.1.0-experiment.1-amd64",
+        "imageID": "docker.io/library/import-2026-10-20@sha256:9dd0dedfa8ffac259e01f85c6e2798ce6336d078f375263628948237182a18c9",
+        "lastState": {},
+        "name": "compute",
+        "ready": true,
+        "resources": {
+          "limits": {
+            "amd.com/gpu": "1",
+            "amd.com/gpucores": "50",
+            "amd.com/gpumem": "64"
+          },
+          "requests": {
+            "amd.com/gpu": "1",
+            "amd.com/gpucores": "50",
+            "amd.com/gpumem": "64"
+          }
+        },
+        "restartCount": 0,
+        "started": true,
+        "state": {
+          "running": {
+            "startedAt": "2026-10-20T02:13:26Z"
+          }
+        },
+        "user": {
+          "linux": {
+            "gid": 0,
+            "supplementalGroups": [
+              0
+            ],
+            "uid": 0
+          }
+        },
+        "volumeMounts": [
+          {
+            "mountPath": "/etc/compute",
+            "name": "config",
+            "readOnly": true,
+            "recursiveReadOnly": "Disabled"
+          },
+          {
+            "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+            "name": "kube-api-access-n6jfx",
+            "readOnly": true,
+            "recursiveReadOnly": "Disabled"
+          }
+        ]
+      }
+    ],
+    "hostIP": "172.18.0.2",
+    "hostIPs": [
+      {
+        "ip": "172.18.0.2"
+      }
+    ],
+    "observedGeneration": 1,
+    "phase": "Running",
+    "podIP": "10.244.0.11",
+    "podIPs": [
+      {
+        "ip": "10.244.0.11"
+      }
+    ],
+    "qosClass": "BestEffort",
+    "resources": {
+      "limits": {
+        "amd.com/gpu": "1",
+        "amd.com/gpucores": "50",
+        "amd.com/gpumem": "64"
+      },
+      "requests": {
+        "amd.com/gpu": "1",
+        "amd.com/gpucores": "50",
+        "amd.com/gpumem": "64"
+      }
+    },
+    "startTime": "2026-10-20T02:13:26Z"
+  }
+}
