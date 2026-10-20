@@ -58,6 +58,7 @@ nav:
       - Overview: docs/site/scenarios.md
       - Scenarios:
           - AMD device plugin: docs/guides/device-plugin.md
+          - HAMi sharing: docs/guides/hami.md
           - Optional CUSE and libdrm: docs/guides/driver-mock.md
           - AMD DRA driver: docs/guides/dra.md
           - AMD GPU Operator: docs/guides/gpu-operator.md
@@ -67,6 +68,7 @@ nav:
           - Multiple GPUs: demo/multi-gpu/README.md
           - Same-GPU partition allocation: demo/partition-allocation/README.md
           - GPU and NIC worker: demo/gpu-network/single-node/README.md
+          - HAMi same-GPU sharing: demo/hami/README.md
           - Spur batch scheduling: demo/spur/README.md
           - Two-worker RDMA: demo/gpu-network/two-node/README.md
       - Tasks:

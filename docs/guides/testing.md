@@ -247,3 +247,12 @@ GPU-memory DMA, real inference or physical RDMA bandwidth.
 See the [driver backend guide](driver-mock.md) for native device-open/libdrm
 checks and the compatibility matrix. The existing default-backend tests remain
 required; optional-backend results do not substitute for them.
+
+## HAMi consumer integration
+
+`hami-e2e` runs on native AMD64 and ARM64. It builds pinned unchanged HAMi
+consumers, installs main's published CUSE node agent, and checks one-GPU
+discovery, two half-GPU allocations, native opens, exhaustion/reuse, plugin
+restart, dashboard crash/recovery and agent restart followed by real exporter
+Grafana queries. Dispatch with `published=true` to repeat against public images
+and the published chart without builds. See the [HAMi guide](hami.md).

@@ -39,6 +39,20 @@ def evidence(name):
  assert data['native_device_open'] and data['settings']['ROCR_VISIBLE_DEVICES']=='GPU-9c4f000000000001'
  return data
 assert k('config','current-context').strip()=='kind-amd-hami-main'
+def hashes(namespace,workload,paths):
+ return [line.split()[0] for line in k('-n',namespace,'exec',workload,'--','sha256sum',*paths).splitlines()]
+source=hashes('amd-mock','ds/amd-gpu-mock',
+ ['/opt/amd-gpu-mock/lib/libdrm_amdgpu.so.1','/usr/lib64/libamd_smi.so'])
+consumer=hashes('amd-hami','ds/amd-gpu-device-plugin-daemonset',
+ ['/var/lib/amd-gpu-mock/driver/usr/lib64/libdrm_amdgpu.so.1',
+  '/var/lib/amd-gpu-mock/driver/usr/lib64/libamd_smi.so.27'])
+assert source==consumer
+linked=k('-n','amd-hami','exec','ds/amd-gpu-device-plugin-daemonset','--','ldd',
+ '/opt/amd-driver-mock/bin/hami-device-plugin')
+assert '/var/lib/amd-gpu-mock/driver/usr/lib64/libdrm_amdgpu.so.1' in linked
+assert '/var/lib/amd-gpu-mock/driver/usr/lib64/libamd_smi.so.27' in linked
+print('PASS: HAMi dynamically links byte-identical libdrm/AMD SMI libraries staged by main node-agent',flush=True)
+print(linked,flush=True)
 node=get('nodes')['items'][0]
 devices=json.loads(node['metadata']['annotations']['hami.io/node-amd-register'])
 assert len(devices)==1 and devices[0]['devcore']==304 and devices[0]['devmem']==196608 and devices[0]['count']==4

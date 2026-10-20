@@ -8,6 +8,7 @@ Install the [quick start](getting-started.md) first. Use the
 | Demo | Setup | What to show |
 | --- | --- | --- |
 | [Tiny LLM](../../demo/llm/README.md) | DRA or device plugin | Application response, allocated devices and logs |
+| [HAMi sharing](../../demo/hami/README.md) | Dedicated CUSE cluster, AMD64/ARM64 | Same-GPU software shares, allocation evidence, exhaustion/reuse, dashboard health |
 | [DRA](../../demo/dra/README.md) | Default | Published devices and claim allocation |
 | [Allocation lifecycle](../../demo/allocation/README.md) | Default | Allocation, release and subsequent reuse |
 | [Multi-GPU](../../demo/multi-gpu/README.md) | See demo allocator requirements | Multiple distinct devices in a workload |

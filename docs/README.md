@@ -15,6 +15,7 @@ behavior, validation and limits.
 | [How it works](how-it-works.md) | Mock interfaces, allocation and telemetry paths |
 | [Architecture](architecture.md) | ASCII component diagrams and fault flow |
 | [GPU profiles](profiles.md) | Model inventory, capacities and fidelity limits |
+| [HAMi sharing](guides/hami.md) | Optional same-GPU software shares, native opens, exhaustion/reuse and dashboard faults |
 | [Native device/library backend](guides/driver-mock.md) | Optional CUSE devices, libdrm/AMD SMI queries, published images and fidelity limits |
 | [DRA](guides/dra.md) | ResourceClaims, allocation, CDI and lifecycle checks |
 | [Same-GPU partition allocation](guides/partition-allocation.md) | Fixed MI300X DPX/NPS2, two containers sharing a physical parent, each layer's responsibilities |
