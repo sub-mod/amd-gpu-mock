@@ -1,0 +1,50 @@
+name: Published AMD64 driver mock
+on:
+  push:
+    branches: [experiment/amd-driver-mock]
+    paths:
+      - .github/workflows/driver-mock-published-amd64.yaml
+      - experiments/amd-driver-mock/config.amd64.json
+  workflow_dispatch:
+defaults:
+  run:
+    shell: bash
+permissions:
+  contents: read
+jobs:
+  published-allocation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CONTAINER_RUNTIME: docker
+      DRIVER_MOCK_CONFIG: experiments/amd-driver-mock/config.amd64.json
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install cluster tool and host CUSE
+        run: |
+          sudo modprobe cuse
+          test -c /dev/cuse
+          curl -fsSL https://kind.sigs.k8s.io/dl/v0.33.0/kind-linux-amd64 -o /tmp/kind
+          sudo install /tmp/kind /usr/local/bin/kind
+      - name: Get pinned topology template (no compiler or SDK)
+        run: |
+          mkdir -p tmp/rocjitsu-eval/emulation/rocjitsu/configs tmp/rocjitsu-results
+          curl -fsSL https://raw.githubusercontent.com/ROCm/rocm-systems/0f80b261740a91e44ac2042e2f7eca6cdd8611a2/emulation/rocjitsu/configs/gfx942_cdna3_kmd.json -o tmp/rocjitsu-eval/emulation/rocjitsu/configs/gfx942_cdna3_kmd.json
+      - name: Fresh setup from published images
+        run: |
+          experiments/amd-driver-mock/setup.sh > tmp/rocjitsu-results/published-setup.log 2>&1
+          docker pull docker.io/submod/amd-driver-mock-compute:0.1.0-experiment.1-amd64
+          kind load docker-image docker.io/submod/amd-driver-mock-compute:0.1.0-experiment.1-amd64 --name amd-hami-driver
+      - name: Verify allocated computation
+        run: python3 experiments/amd-driver-mock/rocjitsu/run-pods.py | tee tmp/rocjitsu-results/published-compute.log
+      - name: Collect diagnostics
+        if: always()
+        run: |
+          mkdir -p tmp/rocjitsu-results
+          kubectl --kubeconfig tmp/hami/kubeconfig get pods -A -o wide > tmp/rocjitsu-results/pods.log 2>&1 || true
+          kubectl --kubeconfig tmp/hami/kubeconfig get events -A > tmp/rocjitsu-results/events.log 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: published-amd64-evidence
+          path: tmp/rocjitsu-results/

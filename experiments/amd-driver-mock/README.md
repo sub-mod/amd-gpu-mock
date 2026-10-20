@@ -123,8 +123,8 @@ DRIVER_MOCK_IMAGE_TAG=0.1.0-experiment.2-arm64 \
 ```
 
 Publishing requires an existing registry login. The script refuses an existing
-published tag. Only the tested ARM64 tag family is supported by this release
-script. Build contexts exclude logs, archives and unrelated temporary files.
+published tag. The build script supports ARM64 and AMD64, and requires the published tag
+suffix to match the image architecture. ARM64 published tags remain unchanged. Build contexts exclude logs, archives and unrelated temporary files.
 Kernel-coupled ioctl emulation, multi-GPU support and standalone repo extraction
 remain separate iterations.
 

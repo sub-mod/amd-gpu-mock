@@ -1,0 +1,5 @@
+[HAMI-core-hip Error(pid:13 tid:13 /tmp/amd-hami-core/src/multiprocess/hip_multiprocess_memory_limit.c:531)]: Device 0 OOM: usage 0 + alloc 67108865 = 67108865 > limit 67108864
+[HAMI-core-hip Warn(pid:13 tid:13 /tmp/amd-hami-core/src/hip/libamvgpu_audit.c:244)]: hipMalloc: OOM rejected 67108865 bytes on device 0
+[HAMI-core-hip Error(pid:13 tid:13 /tmp/amd-hami-core/src/multiprocess/hip_multiprocess_memory_limit.c:531)]: Device 0 OOM: usage 50331648 + alloc 33554432 = 83886080 > limit 67108864
+[HAMI-core-hip Warn(pid:13 tid:13 /tmp/amd-hami-core/src/hip/libamvgpu_audit.c:244)]: hipMalloc: OOM rejected 33554432 bytes on device 0
+KFD_MASK queue=1 bits=160 result=-1 expected=0:0-151 match=yes

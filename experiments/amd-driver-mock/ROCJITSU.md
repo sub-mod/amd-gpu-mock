@@ -20,7 +20,8 @@ Ubuntu 24.04, GCC 13.3, CMake 3.28.3, Ninja 1.11.1, Python 3.12.
 | HIP vector-add through real ROCm 7.2 | Passed | 1,024 results compared against CPU reference |
 | Same executable without simulator | Expected failure | hipErrorNoDevice; no physical GPU passed in |
 | Matrix multiplication / LLM | Not run | No broader compute claim |
-| HAMi + RocJITsu integration | Not attempted | No memory/CU isolation claim |
+| HAMi + RocJITsu on native AMD64 | Passed in fresh CI cluster | Two 152-CU allocations, 64 MiB caps, accepted KFD masks and correct HIP output |
+| HAMi + RocJITsu on Mac | Identity and memory checks passed; mask ioctl failed | QEMU process_vm_readv unavailable |
 
 The initial native ARM64 container had no HIP SDK. The next milestone used
 ROCm 7.2 AMD64 userspace through QEMU 10.2.2 in the existing ARM64 Podman VM.
@@ -42,8 +43,8 @@ simulation. Captured logs: [evidence/rocjitsu](evidence/rocjitsu).
 [Reproduction, scripts, and execution diagram](rocjitsu/README.md).
 
 The dedicated HAMi demo remains separate. Evaluation containers are stopped,
-with source, SDK and build caches retained for retry. No custom image was built
-or published, no upstream source patch, and no PR or push.
+with source, SDK and build caches retained for retry. That standalone milestone built no custom image and made no source patch.
+The later allocation extension adds a compute image and branch-only CI.
 
 ## Boundary and proposed order
 
@@ -115,3 +116,39 @@ cmake --build /build --target rocm_visibility_test -j2
 # Attempted but interrupted; do not count as a completed build:
 cmake --build /build --target rocjitsu_tests -j2
 ```
+
+## Allocated-Pod extension and platform boundary
+
+The next extension now runs actual HAMi allocation, using the shared renderer
+snapshot and architecture-matched upstream hook. On the tested Mac, both Pods
+passed HIP memory-cap enforcement (single/cumulative overflow rejection and
+free/reallocate), raw GPU identity and PCI address checks. The actual CU-mask
+ioctl fails: QEMU 10.2.2 user-mode returns ENOSYS for process_vm_readv, reproduced
+independently. The driver safely returns EFAULT. The test does not skip it or
+replace safe pointer access with memcpy. The earlier vector-add success is
+therefore not a masked-computation success.
+
+ROCr 7.2's local mask getter cache is also unsuitable for proof when its setter
+returns early through the driver. The diagnostic observer forwards original
+ioctls and requires matching masks plus driver acceptance. See
+[allocated execution diagram and AMD64 workflow](rocjitsu/README.md#hami-allocated-computation-and-amd64).
+
+Native AMD64 Linux validation runs on the experiment branch only, with Docker,
+CUSE and a real kernel implementing the syscall. No PR or main merge. Explicit
+shared-state projection is a functional 304-CU topology, not physical layout;
+local-mode simulators do not establish cross-Pod shared VRAM or live fault state.
+
+### Native AMD64 result
+
+[Source-built fresh-cluster run](https://github.com/sub-mod/amd-gpu-mock/actions/runs/39354225951)
+passed. Both actual Pod logs were inspected: KFD masks 0–151 and 152–303 were
+accepted (result=0), each Pod enforced a 64 MiB HIP cap, overflow/cumulative
+allocation rejection and reuse after free passed, identity was
+GPU-9c4f000000000001 / 0000:05:00.0, and both unchanged HIP vector-add tests
+passed all 1,024 CPU-reference comparisons. Raw evidence is in
+[evidence/rocjitsu/native-amd64](evidence/rocjitsu/native-amd64).
+
+This adds native AMD64 support to the optional driver experiment, not native
+ARM64 ROCm or a fix for QEMU's missing syscall. The original main baseline and
+normal quick start are unchanged. The reusable decimal KFD ID and AMD SMI BDF
+fixes remain isolated earlier commits; this integration is experiment-only.

@@ -1,0 +1,41 @@
+{
+  "architecture": "amd64",
+  "sourceCommit": "6d5e65b4ecfae86256cfef5e99ae307dbdbb0f1f",
+  "sourceBuildRun": "https://github.com/sub-mod/amd-gpu-mock/actions/runs/39354225951",
+  "rocjitsuSource": "0f80b261740a91e44ac2042e2f7eca6cdd8611a2",
+  "images": {
+    "backend": {
+      "reference": "docker.io/submod/amd-driver-mock:0.1.0-experiment.2-amd64",
+      "digest": "sha256:1748e37dec721930a0465d601399ca75c0902bdb0ff129ef5129cc477db4c6da",
+      "config": "sha256:8318b131d97cc0fa58a3a310b8c44ca4cbc35382b262d5fd6a24c987527ac839",
+      "architecture": "amd64",
+      "anonymousManifestAndConfigVerified": true
+    },
+    "plugin": {
+      "reference": "docker.io/submod/amd-driver-mock-hami:0.1.0-experiment.2-amd64",
+      "digest": "sha256:503d08d4e0da6f1cbf24bef0aa0af4d10b764b818da546b23198bad51017ae18",
+      "config": "sha256:55450aedd358c51df2ddfd446cbe408df35aada1b8f9a18ea3ab70afad7e0d25",
+      "architecture": "amd64",
+      "anonymousManifestAndConfigVerified": true
+    },
+    "scheduler": {
+      "reference": "docker.io/submod/amd-driver-mock-scheduler:0.1.0-experiment.2-amd64",
+      "digest": "sha256:84e06914d283eec6a3d03fb6374df7f7bc04888cb396c6fc5e3693c27ff25a28",
+      "config": "sha256:10beaa15d87ef426df09b397434d86eb8277019cf4843d88158c6030f88a8c3e",
+      "architecture": "amd64",
+      "anonymousManifestAndConfigVerified": true
+    },
+    "compute": {
+      "reference": "docker.io/submod/amd-driver-mock-compute:0.1.0-experiment.1-amd64",
+      "digest": "sha256:0243ce95d810dd86c693927f78b0259096291ae25ef0bebea77dc9107d20eed2",
+      "config": "sha256:697e86a1adb1ce5e31ed71f0ae648695c400b6d7dbff6925fac96371c5ffcfae",
+      "architecture": "amd64",
+      "anonymousManifestAndConfigVerified": true
+    }
+  },
+  "validation": {
+    "nativeAllocatedCompute": "passed",
+    "publishedFreshSetup": "pending",
+    "macMaskedCompute": "blocked: QEMU process_vm_readv ENOSYS"
+  }
+}

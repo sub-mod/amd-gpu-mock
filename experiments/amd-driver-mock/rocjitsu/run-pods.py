@@ -50,12 +50,20 @@ try:
  allocations=[]
  for side in ['left','right']:
   p=json.loads(k('-n',ns,'get','pod','compute-'+side,'-o','json'))
+  (out/(p['metadata']['name']+'-pod.json')).write_text(json.dumps(p,indent=2))
   allocations.append(p['metadata']['annotations']['hami.io/amd-cu-allocated'])
   log=(out/('compute-'+side+'.log')).read_text()
+  assert 'HIP PCI address: '+(out/'shared-smi').read_text().splitlines()[3] in log
+  assert 'cu=304 visible_memory=67108864 expected=67108864' in log
   assert 'KFD_MASK' in log and 'result=0' in log and 'match=NO' not in log
   assert '[  PASSED  ] 1 test.' in log
   assert 'PASS: HIP memory cap, cumulative accounting, and free/reallocate' in log
- assert allocations[0]!=allocations[1]
+ masks=[]
+ for allocation in allocations:
+  ranges=list(json.loads(allocation).values());assert len(ranges)==1
+  lo,hi=map(int,ranges[0].split('-'));masks.append(set(range(lo,hi+1)))
+ assert len(masks[0])==152 and len(masks[1])==152
+ assert not masks[0]&masks[1] and masks[0]|masks[1]==set(range(304))
  print('PASS: two genuinely allocated Pods, shared identity, memory enforcement, disjoint KFD masks and HIP computation',flush=True)
 finally:
  print(k('-n','amd-hami','set','env','ds/'+ds,'HOST_HOOK_PATH='+old),flush=True)

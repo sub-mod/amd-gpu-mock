@@ -18,7 +18,7 @@ baseline. Do not merge the whole experimental branch just to take one fix.
 | Allocation | Upstream AMD DRA or ROCm device plugin | HAMi plugin and scheduler instead, on a dedicated cluster | Optional integration only; never double-advertise devices |
 | Openable devices | Character nodes used for injection/stat checks, without a backing AMD driver | Genuine CUSE-backed character devices, dynamically assigned majors | Keep experimental until portable host requirements and isolation are reviewed |
 | Driver capacity query | No libdrm_amdgpu simulator | ABI-compatible subset reads original-renderer capacity | Separate backend/project candidate |
-| GPU computation | No HIP execution | Still no HIP execution | No expanded compute claim |
+| GPU computation | No HIP execution | Optional RocJITsu vector-add passes standalone; allocated masks need native AMD64 validation | Separate backend, no main compute claim |
 
 ## Independent candidate commits
 
