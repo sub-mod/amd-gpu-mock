@@ -1,0 +1,2 @@
+abi: /test/abi.c:26: main: Assertion `amdsmi_get_processor_handle_from_bdf(query, &found) == AMDSMI_STATUS_NOT_INIT && found == NULL' failed.
+Aborted (core dumped)

@@ -1,0 +1,3 @@
+amd-driver-mock: CUSE requested card0 dynamic-major minor=0 path=/tmp/mock-card0
+amd-driver-mock: libdrm initialize card0 (CUSE provider, library backend)
+PASS: native open -> CUSE -> mock libdrm: 304 CUs, 192 GiB; unsupported query, wrong buffer size and /dev/null rejected

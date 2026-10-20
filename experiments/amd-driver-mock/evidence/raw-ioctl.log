@@ -1,0 +1,1 @@
+PASS: real CUSE device rejects unsupported raw ioctl with ENOTTY

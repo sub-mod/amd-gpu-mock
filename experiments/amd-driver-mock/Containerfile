@@ -1,0 +1,26 @@
+FROM docker.io/library/golang:1.27.2 AS renderer
+WORKDIR /render
+COPY go.mod go.sum ./
+COPY pkg/gpu/kfd/ ./pkg/gpu/kfd/
+COPY experiments/amd-driver-mock/cmd/render/ ./experiments/amd-driver-mock/cmd/render/
+RUN CGO_ENABLED=0 go build -o /render-profile ./experiments/amd-driver-mock/cmd/render
+FROM docker.io/library/ubuntu:24.04
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    build-essential libdrm-dev libfuse3-dev pkg-config python3 ca-certificates curl git \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /src
+COPY experiments/amd-driver-mock/ /src/
+COPY pkg/mocksmi/exporter/ /baseline-smi/
+RUN mkdir -p /opt/amd-driver-mock/lib /opt/amd-driver-mock/bin && \
+    cc -Wall -Wextra -Werror -fPIC -shared -Wl,-soname,libdrm_amdgpu.so.1 \
+      $(pkg-config --cflags libdrm_amdgpu) src/drm.c -o /opt/amd-driver-mock/lib/libdrm_amdgpu.so.1 && \
+    cc -Wall -Wextra -Werror $(pkg-config --cflags fuse3) src/device.c \
+      $(pkg-config --libs fuse3) -o /opt/amd-driver-mock/bin/mock-device && \
+    cc -fPIC -shared -Wl,-soname,libamd_smi.so.27 -Wl,--version-script=/baseline-smi/version.map \
+      /baseline-smi/mock.c /baseline-smi/unsupported.c -o /opt/amd-driver-mock/lib/libamd_smi.so.27 && \
+    cc -Wall -Wextra -Werror $(pkg-config --cflags libdrm_amdgpu) tests/probe.c \
+      -L/opt/amd-driver-mock/lib -l:libdrm_amdgpu.so.1 -Wl,-rpath,/opt/amd-driver-mock/lib \
+      -o /opt/amd-driver-mock/bin/probe
+COPY --from=renderer /render-profile /opt/amd-driver-mock/bin/render-profile
+COPY profiles/ /profiles/
+ENV LD_LIBRARY_PATH=/opt/amd-driver-mock/lib
