@@ -204,7 +204,7 @@ retain existing GPU device-plugin workloads.
 Re-running `./scripts/ernic/setup.sh` detects the joined worker and still runs
 both Helm steps. The network release is reconciled from the pinned upstream
 chart plus the ERNIC ConfigMap override. The GPU release is upgraded to the
-published `CHART_VERSION` in `scripts/release.env` (currently `0.2.13`), preserving
+published `CHART_VERSION` in `scripts/release.env` (currently `0.2.15`), preserving
 existing values with `--reuse-values` except for explicit worker selectors and
 DRA/device-plugin settings. It requires an existing GPU Helm release.
 

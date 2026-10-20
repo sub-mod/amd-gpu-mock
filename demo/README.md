@@ -166,9 +166,9 @@ cluster is deleted.
 
 | Component | Version |
 | --- | --- |
-| Chart (default dashboards) | 0.2.13 |
+| Chart (default dashboards) | 0.2.15 |
 | kind node / Kubernetes | 0.2.2 / v1.37.0 |
-| Mock node-agent image | v0.2.7 |
+| Mock node-agent image | v0.2.9 |
 | AMD exporter runtime | v1.5.2-mock.2 |
 
 These versions are independent: changing chart configuration does not require

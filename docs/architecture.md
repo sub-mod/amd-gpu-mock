@@ -214,7 +214,7 @@ setup scrapes the separate AMD collector endpoint instead.
 
 ## Allocation and runtime
 
-Chart 0.2.13 defaults to AMD's unchanged DRA v1.0.0 driver, republished for
+Chart 0.2.15 defaults to AMD's unchanged DRA v1.0.0 driver, republished for
 AMD64 and ARM64. Its chart mounts mock sysfs at the driver's `/sys`. Kubernetes
 allocates ResourceClaims; kubelet calls prepare/unprepare; the driver writes
 per-claim CDI specs. Containerd injects only the allocated card/render devices
@@ -225,8 +225,39 @@ GPU capacity as `amd.com/gpu`. See the [device-plugin guide](guides/device-plugi
 
 The published `amd-mock-kind-node:0.2.2` contains Kubernetes v1.37.0 and AMD's
 container toolkit, with CDI enabled. Both allocation paths use this image.
-Chart 0.2.13 uses node-agent image `amd-gpu-mock:v0.2.7`. The kind configuration
+Chart 0.2.15 uses node-agent image `amd-gpu-mock:v0.2.9`. The kind configuration
 maps localhost:8080 to dashboard NodePort 30080 automatically.
+
+## Optional native device/library consumers
+
+The default backend stages device nodes and sysfs as before. Consumers that
+need native device opens and libdrm queries can opt into the
+[CUSE/library backend](guides/driver-mock.md), using published driver image
+`amd-gpu-mock-driver:v0.1.1` with `driverMock.enabled=true`.
+
+```text
+(1) Profile + simulator + dashboard faults
+                  |
+                  v
+(2) Original node-agent renderer (one shared GPU inventory)
+         |                |                  |
+         v                v                  v
+     mock sysfs      atomic SMI state    CUSE device supervisor
+         |                |                  |
+         v                v                  v
+(3) AMD allocator    mock AMD SMI /     /dev/kfd + card/render nodes
+    discovers GPUs  libdrm_amdgpu queries    |
+         |                ^                  |
+         v                |                  |
+(4) Kubernetes allocates; kubelet injects allocated devices into Pod
+                          |                  |
+                          +--- (5) consumer --+
+```
+
+CUSE requires a Linux host with `/dev/cuse`; AMD64 and ARM64 are validated.
+This backend models device opens, discovery and selected library queries.
+Raw GPU ioctls, real GPU memory isolation and HIP execution are outside its
+scope. RocJITsu remains a separate optional computation experiment.
 
 ## Telemetry
 
