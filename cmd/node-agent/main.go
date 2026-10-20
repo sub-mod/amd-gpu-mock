@@ -66,6 +66,9 @@ func main() {
 	}
 
 	if err := renderer.RenderAll(); err != nil {
+		if provider != nil {
+			provider.Close()
+		}
 		log.Fatalf("rendering surfaces: %v", err)
 	}
 
@@ -87,9 +90,11 @@ func main() {
 		dst := filepath.Join(*rootDir, "driver/usr/lib64/libdrm_amdgpu.so.1")
 		data, err := os.ReadFile(src)
 		if err != nil {
+			provider.Close()
 			log.Fatal(err)
 		}
 		if err := os.WriteFile(dst, data, 0755); err != nil {
+			provider.Close()
 			log.Fatal(err)
 		}
 	}

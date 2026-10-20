@@ -27,7 +27,7 @@ RUN cc -shared -fPIC -O2 -Wl,-soname,libamd_smi.so.27 \
     /smi/exporter/mock.c /smi/exporter/unsupported.c -o /out/libamd_smi.so
 
 FROM docker.io/library/debian:bookworm-slim
-RUN apt-get update && apt-get install -y --no-install-recommends tini libfuse3-3 \
+RUN apt-get update && apt-get install -y --no-install-recommends tini libfuse3-3 wget ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=go-builder /out/ /usr/local/bin/
 COPY --from=native-builder /out/mock-device /out/driver-probe /usr/local/bin/
