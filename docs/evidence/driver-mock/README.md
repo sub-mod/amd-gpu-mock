@@ -36,3 +36,25 @@ passed all four AMD64/ARM64 × default/CUSE combinations without a compiler or
 image build. This separately verifies the published chart and exact image refs.
 No HIP execution, real memory allocation, physical isolation or performance
 claim follows from these interface and infrastructure tests.
+
+## Graceful restart regression
+
+Post-merge demo CI at `630b076` exposed a mounted-state lifetime bug: agent
+shutdown removed the `sys` and `smi` directories while the exporter still held
+hostPath mounts to their old directory inodes. Grafana utilization stopped
+updating after the dashboard workflow downgraded and restored the chart.
+
+The fix preserves those directory inodes and reconciles stale inventory in
+place. The workflow also uses the release chart version for dashboard toggles.
+[Source validation](https://github.com/sub-mod/amd-gpu-mock/actions/runs/39367827929)
+passed all 12 jobs, including actual SIGTERM and SIGKILL agent restarts followed
+by fresh allocated workloads and telemetry checks. The corrected artifacts are
+mock image `v0.2.9`, optional driver image `v0.1.1`, and chart `0.2.15`;
+[published provenance](published-images.json) records their exact digests.
+
+[Published fresh installs](https://github.com/sub-mod/amd-gpu-mock/actions/runs/39369579215)
+passed all four architecture/backend combinations, including graceful default
+agent restart and forced/graceful CUSE restarts. The previously failing
+[presenter workflow](https://github.com/sub-mod/amd-gpu-mock/actions/runs/39369613918)
+now passes both DRA and device-plugin jobs, including dashboard disable/restore
+and all Grafana panels against the published chart and images.
