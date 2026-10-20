@@ -1,5 +1,9 @@
 # HAMi sharing with the AMD GPU mock
 
+This integration lives on the `hami` branch. Check out that branch before
+running these commands; it has not been merged into `main`.
+
+
 HAMi is an optional allocator for the same mock node agent used by the default
 DRA demo. Use the dedicated [HAMi demo](../../demo/hami/README.md); it creates its
 own Kind cluster and kubeconfig. DRA and the ordinary AMD device plugin are

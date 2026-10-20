@@ -1,5 +1,9 @@
 # HAMi: two Pods sharing one simulated MI300X
 
+This integration lives on the `hami` branch. Check out that branch before
+running these commands; it has not been merged into `main`.
+
+
 Use this separate demo to show HAMi allocation on main's CUSE/libdrm mock.
 The [guide](../../docs/guides/hami.md) contains the numbered architecture,
 requirements, layer boundaries and limitations.

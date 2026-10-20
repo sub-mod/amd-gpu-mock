@@ -7,7 +7,7 @@ on:
         type: boolean
         default: false
   push:
-    branches: [main, feat/hami-main-support]
+    branches: [hami, feat/hami-main-support]
     paths: ['demo/hami/**', 'tests/hami/**', 'deployments/hami/**', 'deployments/helm/**', 'pkg/mockdriver/**', 'pkg/gpu/kfd/**', 'cmd/node-agent/**', 'scripts/build-hami-images.sh', '.github/workflows/hami-e2e.yaml']
   pull_request:
     paths: ['demo/hami/**', 'tests/hami/**', 'deployments/hami/**', 'deployments/helm/**', 'pkg/mockdriver/**', '.github/workflows/hami-e2e.yaml']
