@@ -153,7 +153,10 @@ jobs:
         if: matrix.mode != 'partition'
         env:
           ALLOCATOR: ${{ matrix.mode }}
-        run: python3 -u tests/driver-mock/allocated.py
+        run: |
+          python3 -u tests/driver-mock/allocated.py
+          python3 -u tests/driver-mock/restart.py
+          python3 -u tests/driver-mock/allocated.py
       - name: Tiny LLM, virtual partitions, dashboard and Grafana
         if: matrix.mode != 'partition'
         env:

@@ -87,7 +87,8 @@ changed. Both Linux AMD64 and ARM64 are build targets. Windows is out of scope.
 
 The `driver-backend` workflow runs native CUSE checks on both architectures,
 all seven profile/device-plugin suites, DRA basic/lifecycle/focused suites,
-fixed DPX allocation, scripted Tiny LLM/presenter demos, dashboard, real exporter
+fixed DPX allocation, unclean Kubernetes provider restart followed by a fresh
+allocated native-open/libdrm check, scripted Tiny LLM/presenter demos, dashboard, real exporter
 telemetry and attribution. Captured CI results distinguish planned checks from
 passed checks. The existing default-backend workflows remain regression gates.
 No HIP computation, DMA, physical isolation or performance fidelity is claimed.
