@@ -1,0 +1,11 @@
+5d9738f69aaadf6e67bb60df6b16d7eb1cff2121106c6c35fc342b65930d5bf2  /source/emulation/rocjitsu/tests/hip_vector_add_test.cpp
+bb26273b783acbe32a100b684d69efcf85b3223ee729aff92da8ef2448a1fba1  /results/artifacts/bin/hip_vector_add_test
+b1c559dfcd08b536294dfc2e04e995a071fe8d243c92766251ab8a9bf399e76e  /results/artifacts/bin/rocjitsu
+9cd2913595ceb55c662f2492992d5a3bf8622d09c17cc95ebcd42b11523ad65e  /results/artifacts/lib/librocjitsu.so
+qemu-x86_64 version 10.2.2 (qemu-10.2.2-1.fc44)
+hip-dev	7.2.26015.70200-43~24.04
+hip-runtime-amd	7.2.26015.70200-43~24.04
+hipcc	1.1.1.70200-43~24.04
+hsa-rocr	1.18.0.70200-43~24.04
+rocm-device-libs	1.0.0.70200-43~24.04
+rocm-llvm	22.0.0.26014.70200-43~24.04

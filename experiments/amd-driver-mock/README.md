@@ -130,3 +130,5 @@ remain separate iterations.
 
 [Artifact contents and provenance](ARTIFACTS.md) explain what is bundled in each
 image and which dependencies belong to the Linux host instead.
+
+[RocJITsu evaluation](ROCJITSU.md) records ARM64 build checks and the remaining compute boundary.

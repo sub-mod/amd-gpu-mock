@@ -17,12 +17,15 @@ git -C tmp/hami/amd-device-plugin submodule update --init --depth 1
 [[ "$(git -C tmp/hami/amd-device-plugin/amd-hami-core rev-parse HEAD)" = "$HAMI_CORE_COMMIT" ]] || { echo "Unexpected core source pin" >&2; exit 1; }
 for item in 'backend:Containerfile:amd-driver-mock' 'plugin:Hami.Containerfile:amd-driver-mock-hami' 'scheduler:Scheduler.Containerfile:amd-driver-mock-scheduler'; do
   IFS=: read -r kind file name <<< "$item"
-  "$runtime" build --ignorefile "$EXP/containerignore" -t "localhost/$name:experiment" -f "$EXP/$file" .
+  platform_args=()
+  if [[ -n "${DRIVER_MOCK_PLATFORM:-}" ]]; then platform_args=(--platform "$DRIVER_MOCK_PLATFORM"); fi
+  "$runtime" build "${platform_args[@]}" --ignorefile "$EXP/containerignore" -t "localhost/$name:experiment" -f "$EXP/$file" .
+  arch="$("$runtime" image inspect "localhost/$name:experiment" --format '{{.Architecture}}')"
+  [[ "$arch" = arm64 || "$arch" = amd64 ]] || { echo "Unsupported architecture: $arch" >&2; exit 1; }
   if [[ "${1:-}" = --push ]]; then
-    image="docker.io/submod/$name:${DRIVER_MOCK_IMAGE_TAG:-0.1.0-experiment.1-arm64}"
+    image="docker.io/submod/$name:${DRIVER_MOCK_IMAGE_TAG:-0.1.0-experiment.2-$arch}"
     if "$runtime" manifest inspect "$image" >/dev/null 2>&1; then echo "Refusing to overwrite published $image; choose a new DRIVER_MOCK_IMAGE_TAG" >&2; exit 1; fi
-    arch="$("$runtime" image inspect "localhost/$name:experiment" --format '{{.Architecture}}')"
-    [[ "$arch" = arm64 ]] || { echo 'This tag is reserved for the tested ARM64 build' >&2; exit 1; }
+    [[ "$image" = *"-$arch" ]] || { echo "Tag must end in -$arch" >&2; exit 1; }
     "$runtime" tag "localhost/$name:experiment" "$image"
     "$runtime" push "$image"
   fi

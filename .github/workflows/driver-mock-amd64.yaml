@@ -1,0 +1,75 @@
+name: Driver mock AMD64 compute
+on:
+  push:
+    branches: [experiment/amd-driver-mock]
+    paths: ['experiments/amd-driver-mock/**', '.github/workflows/driver-mock-amd64.yaml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  allocated-compute:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CONTAINER_RUNTIME: docker
+      BUILD_JOBS: '3'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install cluster tools and CUSE
+        run: |
+          sudo modprobe cuse
+          test -c /dev/cuse
+          curl -fsSL https://kind.sigs.k8s.io/dl/v0.33.0/kind-linux-amd64 -o /tmp/kind
+          sudo install /tmp/kind /usr/local/bin/kind
+          command -v helm
+          command -v kubectl
+      - name: Build native AMD64 allocation stack
+        run: |
+          experiments/amd-driver-mock/build-images.sh > /tmp/stack-build.log 2>&1
+          mkdir -p tmp/rocjitsu-results
+          cp /tmp/stack-build.log tmp/rocjitsu-results/
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('experiments/amd-driver-mock/config.json'); c=json.loads(p.read_text())
+          c['images']={'backend':'localhost/amd-driver-mock:experiment','plugin':'localhost/amd-driver-mock-hami:experiment','scheduler':'localhost/amd-driver-mock-scheduler:experiment'}
+          Path('tmp/rocjitsu-results/amd64-config.json').write_text(json.dumps(c))
+          PY
+      - name: Build native AMD64 simulator and payload
+        run: |
+          git clone --filter=blob:none --sparse https://github.com/ROCm/rocm-systems.git tmp/rocjitsu-eval
+          git -C tmp/rocjitsu-eval sparse-checkout set emulation/rocjitsu shared
+          git -C tmp/rocjitsu-eval checkout --detach 0f80b261740a91e44ac2042e2f7eca6cdd8611a2
+          docker run -d --name sdk -v "$PWD/tmp/rocjitsu-eval:/source:ro" -v "$PWD/tmp/hami/amd-device-plugin:/hami:ro" -v "$PWD/experiments/amd-driver-mock/rocjitsu:/evaluation:ro" -v "$PWD/tmp/rocjitsu-results:/results" -v rocjitsu-build:/build ubuntu:24.04 sleep infinity
+          docker exec sdk sh /evaluation/prepare-sdk.sh > tmp/rocjitsu-results/sdk.log 2>&1
+          docker exec -e BUILD_JOBS=3 sdk sh /evaluation/build-engine.sh > tmp/rocjitsu-results/engine.log 2>&1
+          mkdir -p tmp/rocjitsu-results/artifacts/bin tmp/rocjitsu-results/artifacts/lib
+          docker cp sdk:/build/librocjitsu.so tmp/rocjitsu-results/artifacts/lib/
+          docker cp sdk:/build/tools/rocjitsu/rocjitsu tmp/rocjitsu-results/artifacts/bin/
+          docker cp sdk:/build/lib/libgtest.a tmp/rocjitsu-results/artifacts/lib/
+          docker cp sdk:/build/dependencies/googletest-src/googletest/include tmp/rocjitsu-results/artifacts/gtest-include
+          docker exec sdk sh /evaluation/build-payload.sh > tmp/rocjitsu-results/payload.log 2>&1
+          experiments/amd-driver-mock/rocjitsu/build-compute-image.sh > tmp/rocjitsu-results/image.log 2>&1
+      - name: Allocate two Pods and verify actual computation
+        env:
+          DRIVER_MOCK_CONFIG: tmp/rocjitsu-results/amd64-config.json
+          DRIVER_MOCK_SKIP_PULL: '1'
+        run: |
+          experiments/amd-driver-mock/setup.sh > tmp/rocjitsu-results/setup.log 2>&1
+          kind load docker-image docker.io/submod/amd-driver-mock-compute:0.1.0-experiment.1-amd64 --name amd-hami-driver
+          python3 experiments/amd-driver-mock/rocjitsu/run-pods.py | tee tmp/rocjitsu-results/allocated-compute.log
+      - name: Collect diagnostics
+        if: always()
+        run: |
+          mkdir -p tmp/rocjitsu-results
+          cp /tmp/stack-build.log tmp/rocjitsu-results/ 2>/dev/null || true
+          kubectl --kubeconfig tmp/hami/kubeconfig get pods -A -o wide > tmp/rocjitsu-results/pods.log 2>&1 || true
+          kubectl --kubeconfig tmp/hami/kubeconfig get events -A > tmp/rocjitsu-results/events.log 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: amd64-compute-evidence
+          path: |
+            tmp/rocjitsu-results/*.log
+            tmp/rocjitsu-results/shared-*
+            tmp/rocjitsu-results/compute-pods.json

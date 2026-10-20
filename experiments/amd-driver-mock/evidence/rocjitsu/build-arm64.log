@@ -1,0 +1,144 @@
+[0/2] Re-checking globbed directories...
+[1/885] Building CXX object dependencies/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
+[2/885] Building CXX object dependencies/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
+[3/885] Building CXX object dependencies/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+[4/885] Linking CXX static library lib/libgtest.a
+[5/885] Linking CXX static library lib/libgmock.a
+[6/885] Linking CXX static library lib/libgtest_main.a
+[7/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatbuffers.dir/src/idl_gen_text.cpp.o
+[8/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatbuffers.dir/src/reflection.cpp.o
+In file included from /usr/include/c++/13/algorithm:60,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/flatbuffers.h:20,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/reflection_generated.h:7,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/reflection.h:25,
+                 from /build/dependencies/flatbuffers-src/src/reflection.cpp:17:
+In static member function 'static constexpr _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const unsigned char; _Up = unsigned char; bool _IsMove = false]',
+    inlined from 'constexpr _OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const unsigned char*; _OI = unsigned char*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from 'constexpr _OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const unsigned char*; _OI = unsigned char*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from 'constexpr _OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const unsigned char*; _OI = unsigned char*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from 'constexpr _OI std::copy(_II, _II, _OI) [with _II = const unsigned char*; _OI = unsigned char*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from 'static _ForwardIterator std::__uninitialized_copy<true>::__uninit_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = const unsigned char*; _ForwardIterator = unsigned char*]' at /usr/include/c++/13/bits/stl_uninitialized.h:147:27,
+    inlined from '_ForwardIterator std::uninitialized_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = const unsigned char*; _ForwardIterator = unsigned char*]' at /usr/include/c++/13/bits/stl_uninitialized.h:185:15,
+    inlined from 'constexpr _ForwardIterator std::__uninitialized_copy_a(_InputIterator, _InputIterator, _ForwardIterator, allocator<_Tp>&) [with _InputIterator = const unsigned char*; _ForwardIterator = unsigned char*; _Tp = unsigned char]' at /usr/include/c++/13/bits/stl_uninitialized.h:373:37,
+    inlined from 'constexpr void std::vector<_Tp, _Alloc>::_M_range_insert(iterator, _ForwardIterator, _ForwardIterator, std::forward_iterator_tag) [with _ForwardIterator = const unsigned char*; _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/include/c++/13/bits/vector.tcc:814:38,
+    inlined from 'constexpr std::vector<_Tp, _Alloc>::iterator std::vector<_Tp, _Alloc>::insert(const_iterator, _InputIterator, _InputIterator) [with _InputIterator = const unsigned char*; <template-parameter-2-2> = void; _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/include/c++/13/bits/stl_vector.h:1486:19,
+    inlined from 'const uint8_t* flatbuffers::AddFlatBuffer(std::vector<unsigned char>&, const uint8_t*, size_t)' at /build/dependencies/flatbuffers-src/src/reflection.cpp:621:17:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' writing between 2 and 9223372036854775803 bytes into a region of size 0 overflows the destination [-Wstringop-overflow=]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/aarch64-linux-gnu/c++/13/bits/c++allocator.h:33,
+                 from /usr/include/c++/13/bits/allocator.h:46,
+                 from /usr/include/c++/13/memory:65,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/array.h:21,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/flatbuffers.h:24:
+In member function '_Tp* std::__new_allocator<_Tp>::allocate(size_type, const void*) [with _Tp = unsigned char]',
+    inlined from 'constexpr _Tp* std::allocator< <template-parameter-1-1> >::allocate(std::size_t) [with _Tp = unsigned char]' at /usr/include/c++/13/bits/allocator.h:198:40,
+    inlined from 'static constexpr _Tp* std::allocator_traits<std::allocator<_Up> >::allocate(allocator_type&, size_type) [with _Tp = unsigned char]' at /usr/include/c++/13/bits/alloc_traits.h:482:28,
+    inlined from 'constexpr std::_Vector_base<_Tp, _Alloc>::pointer std::_Vector_base<_Tp, _Alloc>::_M_allocate(std::size_t) [with _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/include/c++/13/bits/stl_vector.h:381:33,
+    inlined from 'constexpr void std::vector<_Tp, _Alloc>::_M_range_insert(iterator, _ForwardIterator, _ForwardIterator, std::forward_iterator_tag) [with _ForwardIterator = const unsigned char*; _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/include/c++/13/bits/vector.tcc:805:40,
+    inlined from 'constexpr std::vector<_Tp, _Alloc>::iterator std::vector<_Tp, _Alloc>::insert(const_iterator, _InputIterator, _InputIterator) [with _InputIterator = const unsigned char*; <template-parameter-2-2> = void; _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/include/c++/13/bits/stl_vector.h:1486:19,
+    inlined from 'const uint8_t* flatbuffers::AddFlatBuffer(std::vector<unsigned char>&, const uint8_t*, size_t)' at /build/dependencies/flatbuffers-src/src/reflection.cpp:621:17:
+/usr/include/c++/13/bits/new_allocator.h:151:55: note: at offset [-9223372036854775808, -4] into destination object of size [4, 9223372036854775807] allocated by 'operator new'
+  151 |         return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp)));
+      |                                                       ^
+[9/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatbuffers.dir/src/util.cpp.o
+[10/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatbuffers.dir/src/idl_parser.cpp.o
+[11/885] Linking CXX static library dependencies/flatbuffers-build/libflatbuffers.a
+[12/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_text.cpp.o
+[13/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/reflection.cpp.o
+In file included from /usr/include/c++/13/algorithm:60,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/flatbuffers.h:20,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/reflection_generated.h:7,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/reflection.h:25,
+                 from /build/dependencies/flatbuffers-src/src/reflection.cpp:17:
+In static member function 'static constexpr _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const unsigned char; _Up = unsigned char; bool _IsMove = false]',
+    inlined from 'constexpr _OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const unsigned char*; _OI = unsigned char*]' at /usr/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from 'constexpr _OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const unsigned char*; _OI = unsigned char*]' at /usr/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from 'constexpr _OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const unsigned char*; _OI = unsigned char*]' at /usr/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from 'constexpr _OI std::copy(_II, _II, _OI) [with _II = const unsigned char*; _OI = unsigned char*]' at /usr/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from 'static _ForwardIterator std::__uninitialized_copy<true>::__uninit_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = const unsigned char*; _ForwardIterator = unsigned char*]' at /usr/include/c++/13/bits/stl_uninitialized.h:147:27,
+    inlined from '_ForwardIterator std::uninitialized_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = const unsigned char*; _ForwardIterator = unsigned char*]' at /usr/include/c++/13/bits/stl_uninitialized.h:185:15,
+    inlined from 'constexpr _ForwardIterator std::__uninitialized_copy_a(_InputIterator, _InputIterator, _ForwardIterator, allocator<_Tp>&) [with _InputIterator = const unsigned char*; _ForwardIterator = unsigned char*; _Tp = unsigned char]' at /usr/include/c++/13/bits/stl_uninitialized.h:373:37,
+    inlined from 'constexpr void std::vector<_Tp, _Alloc>::_M_range_insert(iterator, _ForwardIterator, _ForwardIterator, std::forward_iterator_tag) [with _ForwardIterator = const unsigned char*; _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/include/c++/13/bits/vector.tcc:814:38,
+    inlined from 'constexpr std::vector<_Tp, _Alloc>::iterator std::vector<_Tp, _Alloc>::insert(const_iterator, _InputIterator, _InputIterator) [with _InputIterator = const unsigned char*; <template-parameter-2-2> = void; _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/include/c++/13/bits/stl_vector.h:1486:19,
+    inlined from 'const uint8_t* flatbuffers::AddFlatBuffer(std::vector<unsigned char>&, const uint8_t*, size_t)' at /build/dependencies/flatbuffers-src/src/reflection.cpp:621:17:
+/usr/include/c++/13/bits/stl_algobase.h:437:30: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' writing between 2 and 9223372036854775803 bytes into a region of size 0 overflows the destination [-Wstringop-overflow=]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/aarch64-linux-gnu/c++/13/bits/c++allocator.h:33,
+                 from /usr/include/c++/13/bits/allocator.h:46,
+                 from /usr/include/c++/13/memory:65,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/array.h:21,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/flatbuffers.h:24:
+In member function '_Tp* std::__new_allocator<_Tp>::allocate(size_type, const void*) [with _Tp = unsigned char]',
+    inlined from 'constexpr _Tp* std::allocator< <template-parameter-1-1> >::allocate(std::size_t) [with _Tp = unsigned char]' at /usr/include/c++/13/bits/allocator.h:198:40,
+    inlined from 'static constexpr _Tp* std::allocator_traits<std::allocator<_Up> >::allocate(allocator_type&, size_type) [with _Tp = unsigned char]' at /usr/include/c++/13/bits/alloc_traits.h:482:28,
+    inlined from 'constexpr std::_Vector_base<_Tp, _Alloc>::pointer std::_Vector_base<_Tp, _Alloc>::_M_allocate(std::size_t) [with _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/include/c++/13/bits/stl_vector.h:381:33,
+    inlined from 'constexpr void std::vector<_Tp, _Alloc>::_M_range_insert(iterator, _ForwardIterator, _ForwardIterator, std::forward_iterator_tag) [with _ForwardIterator = const unsigned char*; _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/include/c++/13/bits/vector.tcc:805:40,
+    inlined from 'constexpr std::vector<_Tp, _Alloc>::iterator std::vector<_Tp, _Alloc>::insert(const_iterator, _InputIterator, _InputIterator) [with _InputIterator = const unsigned char*; <template-parameter-2-2> = void; _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/include/c++/13/bits/stl_vector.h:1486:19,
+    inlined from 'const uint8_t* flatbuffers::AddFlatBuffer(std::vector<unsigned char>&, const uint8_t*, size_t)' at /build/dependencies/flatbuffers-src/src/reflection.cpp:621:17:
+/usr/include/c++/13/bits/new_allocator.h:151:55: note: at offset [-9223372036854775808, -4] into destination object of size [4, 9223372036854775807] allocated by 'operator new'
+  151 |         return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp)));
+      |                                                       ^
+[14/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/util.cpp.o
+[15/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_binary.cpp.o
+[16/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_parser.cpp.o
+[17/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_cpp.cpp.o
+[18/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_csharp.cpp.o
+[19/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_dart.cpp.o
+[20/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_kotlin.cpp.o
+[21/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_kotlin_kmp.cpp.o
+[22/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_go.cpp.o
+[23/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_ts.cpp.o
+[24/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_java.cpp.o
+[25/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_php.cpp.o
+[26/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_python.cpp.o
+[27/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_lobster.cpp.o
+[28/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_fbs.cpp.o
+[29/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_grpc.cpp.o
+[30/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_rust.cpp.o
+[31/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_json_schema.cpp.o
+[32/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/file_name_saving_file_manager.cpp.o
+[33/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/file_binary_writer.cpp.o
+[34/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/file_writer.cpp.o
+[35/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_swift.cpp.o
+[36/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/flatc.cpp.o
+[37/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/flatc_main.cpp.o
+[38/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/annotated_binary_text_gen.cpp.o
+[39/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/binary_annotator.cpp.o
+[40/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/bfbs_gen_lua.cpp.o
+[41/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/bfbs_gen_nim.cpp.o
+[42/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/code_generators.cpp.o
+[43/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/cpp_generator.cc.o
+[44/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/go_generator.cc.o
+[45/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/python_generator.cc.o
+[46/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/java_generator.cc.o
+[47/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/swift_generator.cc.o
+[48/885] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/ts_generator.cc.o
+[49/885] Linking CXX executable dependencies/flatbuffers-build/flatc
+[50/885] Building CXX object lib/simdojo/CMakeFiles/simdojo.dir/src/component.cpp.o
+[51/885] Compiling FlatBuffers schema: simulation_config.fbs
+[52/885] Compiling FlatBuffers schema: checkpoint.fbs
+[53/885] Building CXX object lib/simdojo/CMakeFiles/simdojo.dir/src/simulation.cpp.o
+[54/885] Building CXX object lib/simdojo/CMakeFiles/simdojo.dir/src/topology.cpp.o
+[55/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code_object.dir/amdgpu_code_object.cpp.o
+[56/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/analysis/CMakeFiles/rocjitsu_waitcheck_target.dir/waitcheck/target.cpp.o
+[57/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code_object.dir/file_io.cpp.o
+[58/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code_object.dir/kernel_descriptor_scan.cpp.o
+[59/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code_object.dir/kernel_symbol.cpp.o
+[60/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/kernel_scope.cpp.o
+[61/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/basic_block.cpp.o
+[62/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/scoped_cfg_edges.cpp.o
+[63/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/relocation_function_table.cpp.o
+[64/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/analysis/def_use_chain.cpp.o
+[65/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/analysis/exec_state.cpp.o
+[66/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/analysis/free_registers.cpp.o
+[67/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/analysis/gfx1250_vgpr_msb.cpp.o
+[68/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/analysis/liveness.cpp.o
+[69/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/analysis/indirect_branch_discovery.cpp.o
+[70/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/executable.cpp.o
+[71/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/rj_code.cpp.o
+[72/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/builders/instruction_builder.cpp.o
+[73/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/legalization/gfx1250_b0_to_a0.cpp.o
+[74/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/rj_code_translate.cpp.o
+[75/885] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/hazard_tracker.cpp.o

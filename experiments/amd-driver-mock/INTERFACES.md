@@ -43,3 +43,14 @@ added for GPU control or execution.
   change the original renderer's RAS state through the provider; a dashboard
   adapter to the same state is future integration.
 - No OpenShift/CRC, AMD64 or Docker clean-install result is claimed.
+
+## RocJITsu compute prerequisite
+
+An unchanged upstream gfx942 HIP vector-add passes against the real ROCm 7.2
+runtime with RocJITsu's KMD interposer/CPU execution engine in isolated AMD64
+userspace under ARM64 Podman/QEMU. The no-simulator control fails with no device.
+See [results and scripts](ROCJITSU.md). No shared interface is changed: this is
+not yet wired to the project's profile/state, AMD SMI/libdrm mock or HAMi hooks.
+QEMU guest-base configuration is needed on the tested host. CU-mask propagation,
+memory limits, shared fault state, native ARM64 ROCm and allocated-Pod computation
+remain unimplemented/unverified by this milestone.

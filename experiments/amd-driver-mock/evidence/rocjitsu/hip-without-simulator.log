@@ -1,0 +1,23 @@
+Note: Google Test filter = HipVectorAddTest.CorrectResult
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from HipVectorAddTest
+[ RUN      ] HipVectorAddTest.CorrectResult
+/source/emulation/rocjitsu/tests/hip_vector_add_test.cpp:62: Failure
+Expected equality of these values:
+  err
+    Which is: 100
+  hipSuccess
+    Which is: 0
+HIP error: no ROCm-capable device is detected
+
+[  FAILED  ] HipVectorAddTest.CorrectResult (7 ms)
+[----------] 1 test from HipVectorAddTest (7 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (10 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 1 test, listed below:
+[  FAILED  ] HipVectorAddTest.CorrectResult
+
+ 1 FAILED TEST

@@ -14,7 +14,9 @@ mkdir -p tmp/hami
 if [[ "$runtime" = podman ]]; then export KIND_EXPERIMENTAL_PROVIDER=podman; volume_options=dev; else export KIND_EXPERIMENTAL_PROVIDER=docker; volume_options=rw; fi
 if kind get clusters 2>/dev/null | grep -qx amd-hami-driver; then echo 'Existing amd-hami-driver cluster; use cleanup.sh before a fresh install' >&2; exit 1; fi
 if "$runtime" volume inspect amd-driver-mock-state >/dev/null 2>&1; then echo 'Existing experiment volume; use cleanup.sh before a fresh install' >&2; exit 1; fi
-for img in "$backend" "$plugin" "$scheduler"; do "$runtime" pull "$img"; done
+if [[ "${DRIVER_MOCK_SKIP_PULL:-0}" != 1 ]]; then
+ for img in "$backend" "$plugin" "$scheduler"; do "$runtime" pull "$img"; done
+fi
 "$runtime" run --rm --privileged "$backend" sh -ec 'test -c /dev/cuse || { echo "Host CUSE is unavailable; see HOST.md" >&2; exit 1; }'
 for item in "amd-device-plugin:$HAMI_AMD_COMMIT" "HAMi:$HAMI_COMMIT"; do
  repo="${item%%:*}"; pin="${item#*:}"; dest="tmp/hami/$repo"
@@ -35,6 +37,9 @@ import json,sys
 print(json.dumps({'kind':'Cluster','apiVersion':'kind.x-k8s.io/v1alpha4','nodes':[{'role':'control-plane','extraMounts':[{'hostPath':sys.argv[1],'containerPath':'/var/lib/amd-driver-mock'}]}]}))
 PY
 kind create cluster --name amd-hami-driver --image "$KIND_NODE_IMAGE" --config tmp/hami/kind.yaml --kubeconfig tmp/hami/kubeconfig --wait 120s
+if [[ "${DRIVER_MOCK_SKIP_PULL:-0}" = 1 ]]; then
+ kind load docker-image "$plugin" "$scheduler" --name amd-hami-driver
+fi
 "$runtime" exec amd-hami-driver-control-plane sh -ec 'mkdir -p /dev/dri; for path in dri/card0 dri/renderD128 kfd; do test -e /dev/$path || touch /dev/$path; mount --bind /var/lib/amd-driver-mock/dev/$path /dev/$path; done'
 DRIVER_MOCK_CONFIG="$CONFIG" python3 "$EXP/deploy.py"
 scheduler_repo="${scheduler%:*}"; scheduler_tag="${scheduler##*:}"

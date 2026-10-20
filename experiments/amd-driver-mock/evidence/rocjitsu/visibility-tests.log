@@ -1,0 +1,57 @@
+Running main() from /build/dependencies/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 24 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 24 tests from RocmVisibilityTest
+[ RUN      ] RocmVisibilityTest.UnsetAndEmptyRocrSelectorsDiffer
+[       OK ] RocmVisibilityTest.UnsetAndEmptyRocrSelectorsDiffer (0 ms)
+[ RUN      ] RocmVisibilityTest.KfdEnumerationSkipsZeroGpuIdsAndCompactsOrdinals
+[       OK ] RocmVisibilityTest.KfdEnumerationSkipsZeroGpuIdsAndCompactsOrdinals (0 ms)
+[ RUN      ] RocmVisibilityTest.NumericAndUuidSelectorsReorderDevices
+[       OK ] RocmVisibilityTest.NumericAndUuidSelectorsReorderDevices (0 ms)
+[ RUN      ] RocmVisibilityTest.AmbiguousRocrUuidTerminatesAfterValidPrefix
+[       OK ] RocmVisibilityTest.AmbiguousRocrUuidTerminatesAfterValidPrefix (0 ms)
+[ RUN      ] RocmVisibilityTest.ClientUuidUsesCaseSensitiveFirstMatch
+[       OK ] RocmVisibilityTest.ClientUuidUsesCaseSensitiveFirstMatch (0 ms)
+[ RUN      ] RocmVisibilityTest.InvalidRocrTokenPreservesValidPrefix
+[       OK ] RocmVisibilityTest.InvalidRocrTokenPreservesValidPrefix (0 ms)
+[ RUN      ] RocmVisibilityTest.MalformedSelectorsTerminateSelection
+[       OK ] RocmVisibilityTest.MalformedSelectorsTerminateSelection (0 ms)
+[ RUN      ] RocmVisibilityTest.DuplicateAndReorderedSelectorsMatchRuntimeBehavior
+[       OK ] RocmVisibilityTest.DuplicateAndReorderedSelectorsMatchRuntimeBehavior (0 ms)
+[ RUN      ] RocmVisibilityTest.NegativeRocrOrdinalPreservesValidPrefix
+[       OK ] RocmVisibilityTest.NegativeRocrOrdinalPreservesValidPrefix (0 ms)
+[ RUN      ] RocmVisibilityTest.HipSelectorUsesPostRocrOrdinals
+[       OK ] RocmVisibilityTest.HipSelectorUsesPostRocrOrdinals (0 ms)
+[ RUN      ] RocmVisibilityTest.HipSelectorTakesPrecedenceOverCudaFallback
+[       OK ] RocmVisibilityTest.HipSelectorTakesPrecedenceOverCudaFallback (0 ms)
+[ RUN      ] RocmVisibilityTest.NormalizesClientUuidToPostRocrOrdinal
+[       OK ] RocmVisibilityTest.NormalizesClientUuidToPostRocrOrdinal (0 ms)
+[ RUN      ] RocmVisibilityTest.NormalizesClientSelectorAgainstExpandedRocrOrder
+[       OK ] RocmVisibilityTest.NormalizesClientSelectorAgainstExpandedRocrOrder (0 ms)
+[ RUN      ] RocmVisibilityTest.NormalizesSelectedDbtHostToClientDeviceZero
+[       OK ] RocmVisibilityTest.NormalizesSelectedDbtHostToClientDeviceZero (0 ms)
+[ RUN      ] RocmVisibilityTest.SynthesizesClientOrderForSelectedDbtHost
+[       OK ] RocmVisibilityTest.SynthesizesClientOrderForSelectedDbtHost (0 ms)
+[ RUN      ] RocmVisibilityTest.DoesNotSynthesizeClientOrderWithoutSelectedHost
+[       OK ] RocmVisibilityTest.DoesNotSynthesizeClientOrderWithoutSelectedHost (0 ms)
+[ RUN      ] RocmVisibilityTest.SelectsDbtHostFromClientVisibleGpusBeforeNormalization
+[       OK ] RocmVisibilityTest.SelectsDbtHostFromClientVisibleGpusBeforeNormalization (0 ms)
+[ RUN      ] RocmVisibilityTest.ExpandsRocrSelectionWithGuestOrdinal
+[       OK ] RocmVisibilityTest.ExpandsRocrSelectionWithGuestOrdinal (0 ms)
+[ RUN      ] RocmVisibilityTest.DoesNotExpandEmptyRocrSelection
+[       OK ] RocmVisibilityTest.DoesNotExpandEmptyRocrSelection (0 ms)
+[ RUN      ] RocmVisibilityTest.SelectsFirstVisibleIsaMatch
+[       OK ] RocmVisibilityTest.SelectsFirstVisibleIsaMatch (0 ms)
+[ RUN      ] RocmVisibilityTest.SelectsExplicitGpuWithMatchingIsa
+[       OK ] RocmVisibilityTest.SelectsExplicitGpuWithMatchingIsa (0 ms)
+[ RUN      ] RocmVisibilityTest.RejectsHiddenExplicitGpu
+[       OK ] RocmVisibilityTest.RejectsHiddenExplicitGpu (0 ms)
+[ RUN      ] RocmVisibilityTest.RejectsExplicitGpuWithDifferentIsa
+[       OK ] RocmVisibilityTest.RejectsExplicitGpuWithDifferentIsa (0 ms)
+[ RUN      ] RocmVisibilityTest.ReportsMissingIsaMatch
+[       OK ] RocmVisibilityTest.ReportsMissingIsaMatch (0 ms)
+[----------] 24 tests from RocmVisibilityTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 24 tests from 1 test suite ran. (0 ms total)
+[  PASSED  ] 24 tests.
