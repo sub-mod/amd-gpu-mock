@@ -58,3 +58,14 @@ behavior, test evidence, missing APIs and merge-back classification. Keep
 unsupported operations explicit. Shared fixes should have narrow commits and
 standalone tests, so they can be reviewed/cherry-picked without experimental
 images or CUSE dependencies. Do not merge them into main until asked.
+
+## RocJITsu evaluation
+
+[Evaluation and captured results](ROCJITSU.md): experiment-only scripts and
+evidence. Original main and the HAMi experiment still do not run HIP kernels
+by themselves. An isolated unchanged upstream HIP vector-add now passes with
+ROCm 7.2, cross-built RocJITsu and AMD64 QEMU userspace on ARM64. All 1,024 values
+are compared to a CPU reference. Direct execution without the simulator fails
+with hipErrorNoDevice. QEMU guest-base configuration fixes the observed high-VA
+queue setup failure without source patches. No integration/isolation claim or
+additional merge-back implementation from this milestone.

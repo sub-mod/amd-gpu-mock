@@ -1,0 +1,11 @@
+Note: Google Test filter = HipVectorAddTest.CorrectResult
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from HipVectorAddTest
+[ RUN      ] HipVectorAddTest.CorrectResult
+[       OK ] HipVectorAddTest.CorrectResult (3897 ms)
+[----------] 1 test from HipVectorAddTest (3898 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (3900 ms total)
+[  PASSED  ] 1 test.

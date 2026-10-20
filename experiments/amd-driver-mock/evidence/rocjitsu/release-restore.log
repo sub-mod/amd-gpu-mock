@@ -1,0 +1,4 @@
+ninja: Entering directory `/build'
+[0/2] Re-checking globbed directories...
+[1/2] Building CXX object lib/rocjitsu/src/rocjitsu/kmd/linux/CMakeFiles/rocjitsu_kmd.dir/simulated_kfd.cpp.o
+[2/2] Linking CXX shared library librocjitsu.so

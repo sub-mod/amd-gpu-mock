@@ -1,0 +1,8 @@
+Note: Google Test filter = HipVectorAddTest.CorrectResult
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from HipVectorAddTest
+[ RUN      ] HipVectorAddTest.CorrectResult
+qemu: uncaught target signal 11 (Segmentation fault) - core dumped
+qemu: uncaught target signal 11 (Segmentation fault) - core dumped
+Segmentation fault

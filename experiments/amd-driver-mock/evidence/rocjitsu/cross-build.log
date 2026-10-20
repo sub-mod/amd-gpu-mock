@@ -1,0 +1,745 @@
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/x86_64-linux-gnu-gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/x86_64-linux-gnu-g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Proceeding with version: 24.3.25.0
+-- Looking for strtof_l
+-- Looking for strtof_l - found
+-- Looking for strtoull_l
+-- Looking for strtoull_l - found
+-- Looking for realpath
+-- Looking for realpath - found
+-- CMAKE_CXX_FLAGS: 
+-- Performing Test _RJ_C_HOST_CPU_x86_64
+-- Performing Test _RJ_C_HOST_CPU_x86_64 - Success
+-- Performing Test _RJ_CXX_HOST_CPU_x86_64
+-- Performing Test _RJ_CXX_HOST_CPU_x86_64 - Success
+-- rocjitsu host CPU baseline: x86-64
+-- amdclang++ not found - device kernel tests will be disabled
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- GuestKfd DBT guest tests built but NOT registered with CTest (no gfx1201 KFD host GPU)
+-- rocminfo test disabled (rocminfo not found)
+-- HSA init test disabled (libhsa-runtime64 not found)
+-- HIP tests disabled (amdclang++ not found)
+-- rocgdb debug smoke test disabled (need rocgdb, hipcc, mirage)
+-- Configuring done (5.0s)
+-- Generating done (0.1s)
+-- Build files have been written to: /build
+[0/2] Re-checking globbed directories...
+[1/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatbuffers.dir/src/reflection.cpp.o
+In file included from /usr/x86_64-linux-gnu/include/c++/13/algorithm:60,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/flatbuffers.h:20,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/reflection_generated.h:7,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/reflection.h:25,
+                 from /build/dependencies/flatbuffers-src/src/reflection.cpp:17:
+In static member function 'static constexpr _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const unsigned char; _Up = unsigned char; bool _IsMove = false]',
+    inlined from 'constexpr _OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const unsigned char*; _OI = unsigned char*]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from 'constexpr _OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const unsigned char*; _OI = unsigned char*]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from 'constexpr _OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const unsigned char*; _OI = unsigned char*]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from 'constexpr _OI std::copy(_II, _II, _OI) [with _II = const unsigned char*; _OI = unsigned char*]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from 'static _ForwardIterator std::__uninitialized_copy<true>::__uninit_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = const unsigned char*; _ForwardIterator = unsigned char*]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_uninitialized.h:147:27,
+    inlined from '_ForwardIterator std::uninitialized_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = const unsigned char*; _ForwardIterator = unsigned char*]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_uninitialized.h:185:15,
+    inlined from 'constexpr _ForwardIterator std::__uninitialized_copy_a(_InputIterator, _InputIterator, _ForwardIterator, allocator<_Tp>&) [with _InputIterator = const unsigned char*; _ForwardIterator = unsigned char*; _Tp = unsigned char]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_uninitialized.h:373:37,
+    inlined from 'constexpr void std::vector<_Tp, _Alloc>::_M_range_insert(iterator, _ForwardIterator, _ForwardIterator, std::forward_iterator_tag) [with _ForwardIterator = const unsigned char*; _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/x86_64-linux-gnu/include/c++/13/bits/vector.tcc:814:38,
+    inlined from 'constexpr std::vector<_Tp, _Alloc>::iterator std::vector<_Tp, _Alloc>::insert(const_iterator, _InputIterator, _InputIterator) [with _InputIterator = const unsigned char*; <template-parameter-2-2> = void; _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_vector.h:1486:19,
+    inlined from 'const uint8_t* flatbuffers::AddFlatBuffer(std::vector<unsigned char>&, const uint8_t*, size_t)' at /build/dependencies/flatbuffers-src/src/reflection.cpp:621:17:
+/usr/x86_64-linux-gnu/include/c++/13/bits/stl_algobase.h:437:30: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' writing between 2 and 9223372036854775803 bytes into a region of size 0 overflows the destination [-Wstringop-overflow=]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/x86_64-linux-gnu/include/c++/13/x86_64-linux-gnu/bits/c++allocator.h:33,
+                 from /usr/x86_64-linux-gnu/include/c++/13/bits/allocator.h:46,
+                 from /usr/x86_64-linux-gnu/include/c++/13/memory:65,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/array.h:21,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/flatbuffers.h:24:
+In member function '_Tp* std::__new_allocator<_Tp>::allocate(size_type, const void*) [with _Tp = unsigned char]',
+    inlined from 'constexpr _Tp* std::allocator< <template-parameter-1-1> >::allocate(std::size_t) [with _Tp = unsigned char]' at /usr/x86_64-linux-gnu/include/c++/13/bits/allocator.h:198:40,
+    inlined from 'static constexpr _Tp* std::allocator_traits<std::allocator<_Up> >::allocate(allocator_type&, size_type) [with _Tp = unsigned char]' at /usr/x86_64-linux-gnu/include/c++/13/bits/alloc_traits.h:482:28,
+    inlined from 'constexpr std::_Vector_base<_Tp, _Alloc>::pointer std::_Vector_base<_Tp, _Alloc>::_M_allocate(std::size_t) [with _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_vector.h:381:33,
+    inlined from 'constexpr void std::vector<_Tp, _Alloc>::_M_range_insert(iterator, _ForwardIterator, _ForwardIterator, std::forward_iterator_tag) [with _ForwardIterator = const unsigned char*; _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/x86_64-linux-gnu/include/c++/13/bits/vector.tcc:805:40,
+    inlined from 'constexpr std::vector<_Tp, _Alloc>::iterator std::vector<_Tp, _Alloc>::insert(const_iterator, _InputIterator, _InputIterator) [with _InputIterator = const unsigned char*; <template-parameter-2-2> = void; _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_vector.h:1486:19,
+    inlined from 'const uint8_t* flatbuffers::AddFlatBuffer(std::vector<unsigned char>&, const uint8_t*, size_t)' at /build/dependencies/flatbuffers-src/src/reflection.cpp:621:17:
+/usr/x86_64-linux-gnu/include/c++/13/bits/new_allocator.h:151:55: note: at offset [-9223372036854775808, -4] into destination object of size [4, 9223372036854775807] allocated by 'operator new'
+  151 |         return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp)));
+      |                                                       ^
+[2/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatbuffers.dir/src/idl_gen_text.cpp.o
+[3/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatbuffers.dir/src/util.cpp.o
+[4/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_text.cpp.o
+[5/638] Building CXX object dependencies/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+[6/638] Linking CXX static library lib/libgtest.a
+[7/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/reflection.cpp.o
+In file included from /usr/x86_64-linux-gnu/include/c++/13/algorithm:60,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/flatbuffers.h:20,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/reflection_generated.h:7,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/reflection.h:25,
+                 from /build/dependencies/flatbuffers-src/src/reflection.cpp:17:
+In static member function 'static constexpr _Up* std::__copy_move<_IsMove, true, std::random_access_iterator_tag>::__copy_m(_Tp*, _Tp*, _Up*) [with _Tp = const unsigned char; _Up = unsigned char; bool _IsMove = false]',
+    inlined from 'constexpr _OI std::__copy_move_a2(_II, _II, _OI) [with bool _IsMove = false; _II = const unsigned char*; _OI = unsigned char*]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_algobase.h:506:30,
+    inlined from 'constexpr _OI std::__copy_move_a1(_II, _II, _OI) [with bool _IsMove = false; _II = const unsigned char*; _OI = unsigned char*]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_algobase.h:533:42,
+    inlined from 'constexpr _OI std::__copy_move_a(_II, _II, _OI) [with bool _IsMove = false; _II = const unsigned char*; _OI = unsigned char*]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_algobase.h:540:31,
+    inlined from 'constexpr _OI std::copy(_II, _II, _OI) [with _II = const unsigned char*; _OI = unsigned char*]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_algobase.h:633:7,
+    inlined from 'static _ForwardIterator std::__uninitialized_copy<true>::__uninit_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = const unsigned char*; _ForwardIterator = unsigned char*]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_uninitialized.h:147:27,
+    inlined from '_ForwardIterator std::uninitialized_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = const unsigned char*; _ForwardIterator = unsigned char*]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_uninitialized.h:185:15,
+    inlined from 'constexpr _ForwardIterator std::__uninitialized_copy_a(_InputIterator, _InputIterator, _ForwardIterator, allocator<_Tp>&) [with _InputIterator = const unsigned char*; _ForwardIterator = unsigned char*; _Tp = unsigned char]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_uninitialized.h:373:37,
+    inlined from 'constexpr void std::vector<_Tp, _Alloc>::_M_range_insert(iterator, _ForwardIterator, _ForwardIterator, std::forward_iterator_tag) [with _ForwardIterator = const unsigned char*; _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/x86_64-linux-gnu/include/c++/13/bits/vector.tcc:814:38,
+    inlined from 'constexpr std::vector<_Tp, _Alloc>::iterator std::vector<_Tp, _Alloc>::insert(const_iterator, _InputIterator, _InputIterator) [with _InputIterator = const unsigned char*; <template-parameter-2-2> = void; _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_vector.h:1486:19,
+    inlined from 'const uint8_t* flatbuffers::AddFlatBuffer(std::vector<unsigned char>&, const uint8_t*, size_t)' at /build/dependencies/flatbuffers-src/src/reflection.cpp:621:17:
+/usr/x86_64-linux-gnu/include/c++/13/bits/stl_algobase.h:437:30: warning: 'void* __builtin_memcpy(void*, const void*, long unsigned int)' writing between 2 and 9223372036854775803 bytes into a region of size 0 overflows the destination [-Wstringop-overflow=]
+  437 |             __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+      |             ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/x86_64-linux-gnu/include/c++/13/x86_64-linux-gnu/bits/c++allocator.h:33,
+                 from /usr/x86_64-linux-gnu/include/c++/13/bits/allocator.h:46,
+                 from /usr/x86_64-linux-gnu/include/c++/13/memory:65,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/array.h:21,
+                 from /build/dependencies/flatbuffers-src/include/flatbuffers/flatbuffers.h:24:
+In member function '_Tp* std::__new_allocator<_Tp>::allocate(size_type, const void*) [with _Tp = unsigned char]',
+    inlined from 'constexpr _Tp* std::allocator< <template-parameter-1-1> >::allocate(std::size_t) [with _Tp = unsigned char]' at /usr/x86_64-linux-gnu/include/c++/13/bits/allocator.h:198:40,
+    inlined from 'static constexpr _Tp* std::allocator_traits<std::allocator<_Up> >::allocate(allocator_type&, size_type) [with _Tp = unsigned char]' at /usr/x86_64-linux-gnu/include/c++/13/bits/alloc_traits.h:482:28,
+    inlined from 'constexpr std::_Vector_base<_Tp, _Alloc>::pointer std::_Vector_base<_Tp, _Alloc>::_M_allocate(std::size_t) [with _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_vector.h:381:33,
+    inlined from 'constexpr void std::vector<_Tp, _Alloc>::_M_range_insert(iterator, _ForwardIterator, _ForwardIterator, std::forward_iterator_tag) [with _ForwardIterator = const unsigned char*; _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/x86_64-linux-gnu/include/c++/13/bits/vector.tcc:805:40,
+    inlined from 'constexpr std::vector<_Tp, _Alloc>::iterator std::vector<_Tp, _Alloc>::insert(const_iterator, _InputIterator, _InputIterator) [with _InputIterator = const unsigned char*; <template-parameter-2-2> = void; _Tp = unsigned char; _Alloc = std::allocator<unsigned char>]' at /usr/x86_64-linux-gnu/include/c++/13/bits/stl_vector.h:1486:19,
+    inlined from 'const uint8_t* flatbuffers::AddFlatBuffer(std::vector<unsigned char>&, const uint8_t*, size_t)' at /build/dependencies/flatbuffers-src/src/reflection.cpp:621:17:
+/usr/x86_64-linux-gnu/include/c++/13/bits/new_allocator.h:151:55: note: at offset [-9223372036854775808, -4] into destination object of size [4, 9223372036854775807] allocated by 'operator new'
+  151 |         return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp)));
+      |                                                       ^
+[8/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/util.cpp.o
+[9/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_binary.cpp.o
+[10/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatbuffers.dir/src/idl_parser.cpp.o
+[11/638] Linking CXX static library dependencies/flatbuffers-build/libflatbuffers.a
+[12/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_parser.cpp.o
+[13/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_csharp.cpp.o
+[14/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_dart.cpp.o
+[15/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_cpp.cpp.o
+[16/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_kotlin.cpp.o
+[17/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_go.cpp.o
+[18/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_kotlin_kmp.cpp.o
+[19/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_php.cpp.o
+[20/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_ts.cpp.o
+[21/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_java.cpp.o
+[22/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_python.cpp.o
+[23/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_lobster.cpp.o
+[24/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_grpc.cpp.o
+[25/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_fbs.cpp.o
+[26/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/file_name_saving_file_manager.cpp.o
+[27/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_json_schema.cpp.o
+[28/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/file_binary_writer.cpp.o
+[29/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/file_writer.cpp.o
+[30/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/flatc_main.cpp.o
+[31/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_swift.cpp.o
+[32/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/idl_gen_rust.cpp.o
+[33/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/flatc.cpp.o
+[34/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/annotated_binary_text_gen.cpp.o
+[35/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/bfbs_gen_lua.cpp.o
+[36/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/binary_annotator.cpp.o
+[37/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/bfbs_gen_nim.cpp.o
+[38/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/code_generators.cpp.o
+[39/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/go_generator.cc.o
+[40/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/cpp_generator.cc.o
+[41/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/python_generator.cc.o
+[42/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/swift_generator.cc.o
+[43/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/java_generator.cc.o
+[44/638] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/ts_generator.cc.o
+[45/638] Linking CXX executable dependencies/flatbuffers-build/flatc
+[46/638] Compiling FlatBuffers schema: checkpoint.fbs
+[47/638] Compiling FlatBuffers schema: simulation_config.fbs
+[48/638] Building CXX object lib/simdojo/CMakeFiles/simdojo.dir/src/component.cpp.o
+[49/638] Building CXX object lib/rocjitsu/CMakeFiles/rocjitsu_version_objects.dir/src/rocjitsu/base/rj_version.cpp.o
+[50/638] Linking CXX static library lib/rocjitsu/librocjitsu_version.a
+[51/638] Building CXX object lib/simdojo/CMakeFiles/simdojo.dir/src/simulation.cpp.o
+[52/638] Building CXX object lib/simdojo/CMakeFiles/simdojo.dir/src/topology.cpp.o
+[53/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code_object.dir/file_io.cpp.o
+[54/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code_object.dir/amdgpu_code_object.cpp.o
+[55/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/analysis/CMakeFiles/rocjitsu_waitcheck_target.dir/waitcheck/target.cpp.o
+[56/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code_object.dir/kernel_descriptor_scan.cpp.o
+[57/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code_object.dir/kernel_symbol.cpp.o
+[58/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/kernel_scope.cpp.o
+[59/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/basic_block.cpp.o
+[60/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/relocation_function_table.cpp.o
+[61/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/scoped_cfg_edges.cpp.o
+[62/638] Building CXX object CMakeFiles/rocjitsu_shared.dir/lib/rocjitsu/src/rocjitsu/kmd/linux/interposer.cpp.o
+[63/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/analysis/def_use_chain.cpp.o
+[64/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/analysis/free_registers.cpp.o
+[65/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/analysis/exec_state.cpp.o
+[66/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/analysis/gfx1250_vgpr_msb.cpp.o
+[67/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/executable.cpp.o
+[68/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/analysis/liveness.cpp.o
+[69/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_analysis.dir/analysis/indirect_branch_discovery.cpp.o
+[70/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/rj_code.cpp.o
+[71/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/builders/instruction_builder.cpp.o
+[72/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/legalization/gfx1250_b0_to_a0.cpp.o
+[73/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/rj_code_translate.cpp.o
+[74/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/hazard_tracker.cpp.o
+[75/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/lane_permutation.cpp.o
+[76/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/lds_virtualization.cpp.o
+[77/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/kernel_descriptor_translator.cpp.o
+[78/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/binary_translator.cpp.o
+[79/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/semantic/cdna3_lds.cpp.o
+[80/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/semantic/cdna4_to_cdna3_virtual_lds.cpp.o
+[81/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/semantic/cdna3_scratch.cpp.o
+[82/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/semantic/cdna4_to_rdna3.cpp.o
+[83/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/semantic/cdna4_to_rdna_common.cpp.o
+[84/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/semantic/cdna4_to_rdna4.cpp.o
+[85/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/semantic/cdna4_to_cdna3.cpp.o
+[86/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/semantic/gfx1250_flat_scratch_base.cpp.o
+[87/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/semantic_scratch.cpp.o
+[88/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/semantic/gfx1250_b0_to_a0.cpp.o
+[89/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/virtual_lds.cpp.o
+[90/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/semantic_translator.cpp.o
+[91/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/patch/sidecar_metadata.cpp.o
+[92/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/patch/kernarg_extension.cpp.o
+[93/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/patch/code_object_patcher.cpp.o
+[94/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/dbt/waitcnt_translator.cpp.o
+[95/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/patch/entry_prologue.cpp.o
+[96/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/patch/log_buffer.cpp.o
+[97/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/patch/kernel_text_layout.cpp.o
+[98/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/patch/probe_callable.cpp.o
+[99/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/patch/instrumentor.cpp.o
+[100/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/patch/probe_clobber.cpp.o
+[101/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/patch/probe_symbol.cpp.o
+[102/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/patch/spill_manager.cpp.o
+[103/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/patch/probe_live_in.cpp.o
+[104/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/CMakeFiles/rocjitsu_isa.dir/execution_backend.cpp.o
+[105/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/CMakeFiles/rocjitsu_isa.dir/decoder.cpp.o
+[106/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/CMakeFiles/rocjitsu_isa.dir/operand.cpp.o
+[107/638] Building CXX object lib/rocjitsu/src/rocjitsu/code/CMakeFiles/rocjitsu_code.dir/patch/trampoline_builder.cpp.o
+[108/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/CMakeFiles/rocjitsu_isa.dir/target_registry.cpp.o
+[109/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/CMakeFiles/rocjitsu_isa.dir/rj_decode.cpp.o
+[110/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/CMakeFiles/rocjitsu_isa_registry__composition.dir/target_registry_composition.cpp.o
+[111/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/decoder.cpp.o
+[112/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/exp.cpp.o
+[113/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/encodings.cpp.o
+[114/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/ds.cpp.o
+[115/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/flat.cpp.o
+[116/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/mtbuf.cpp.o
+[117/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/mimg.cpp.o
+[118/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/mubuf.cpp.o
+[119/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/operand.cpp.o
+[120/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/smem.cpp.o
+[121/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/sop1.cpp.o
+[122/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/sop2.cpp.o
+[123/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/sopc.cpp.o
+[124/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/sopk.cpp.o
+[125/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/sopp.cpp.o
+[126/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/vintrp.cpp.o
+[127/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/vop1.cpp.o
+[128/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/vop3p.cpp.o
+[129/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/vop2.cpp.o
+[130/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/model_target_provider.cpp.o
+[131/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/vop3.cpp.o
+[132/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_model.dir/__/generated/cdna1/vopc.cpp.o
+[133/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/ds_exec.cpp.o
+[134/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/execution_backend_exec.cpp.o
+[135/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/exp_exec.cpp.o
+[136/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/mimg_exec.cpp.o
+[137/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/flat_exec.cpp.o
+[138/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/mtbuf_exec.cpp.o
+[139/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/operand_exec.cpp.o
+[140/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/mubuf_exec.cpp.o
+[141/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/smem_exec.cpp.o
+[142/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/sop1_exec.cpp.o
+[143/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/sopc_exec.cpp.o
+[144/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/sop2_exec.cpp.o
+[145/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/sopk_exec.cpp.o
+[146/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/sopp_exec.cpp.o
+[147/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/vintrp_exec.cpp.o
+[148/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/vop1_exec.cpp.o
+[149/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/vop2_exec.cpp.o
+[150/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/vop3p_exec.cpp.o
+[151/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/addr_calc.cpp.o
+[152/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/target_provider.cpp.o
+[153/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/vop3_exec.cpp.o
+[154/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna1/CMakeFiles/rocjitsu_isa_cdna1_exec.dir/__/generated/cdna1/vopc_exec.cpp.o
+[155/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/decoder.cpp.o
+[156/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/ds.cpp.o
+[157/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/encodings.cpp.o
+[158/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/mimg.cpp.o
+[159/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/flat.cpp.o
+[160/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/mtbuf.cpp.o
+[161/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/mubuf.cpp.o
+[162/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/operand.cpp.o
+[163/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/smem.cpp.o
+[164/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/sop1.cpp.o
+[165/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/sop2.cpp.o
+[166/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/sopc.cpp.o
+[167/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/sopk.cpp.o
+[168/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/sopp.cpp.o
+[169/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/vop2.cpp.o
+[170/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/vop1.cpp.o
+[171/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/vop3p.cpp.o
+[172/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/model_target_provider.cpp.o
+[173/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/vop3.cpp.o
+[174/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_model.dir/__/generated/cdna2/vopc.cpp.o
+[175/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/ds_exec.cpp.o
+[176/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/execution_backend_exec.cpp.o
+[177/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/flat_exec.cpp.o
+[178/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/mimg_exec.cpp.o
+[179/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/mtbuf_exec.cpp.o
+[180/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/mubuf_exec.cpp.o
+[181/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/operand_exec.cpp.o
+[182/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/smem_exec.cpp.o
+[183/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/sop1_exec.cpp.o
+[184/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/sop2_exec.cpp.o
+[185/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/sopc_exec.cpp.o
+[186/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/sopp_exec.cpp.o
+[187/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/sopk_exec.cpp.o
+[188/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/vop1_exec.cpp.o
+[189/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/vop2_exec.cpp.o
+[190/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/vop3p_exec.cpp.o
+[191/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/addr_calc.cpp.o
+[192/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/target_provider.cpp.o
+[193/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/vopc_exec.cpp.o
+[194/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/decoder.cpp.o
+[195/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna2/CMakeFiles/rocjitsu_isa_cdna2_exec.dir/__/generated/cdna2/vop3_exec.cpp.o
+[196/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/ds.cpp.o
+[197/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/encodings.cpp.o
+[198/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/mtbuf.cpp.o
+[199/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/flat.cpp.o
+[200/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/mubuf.cpp.o
+[201/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/operand.cpp.o
+[202/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/smem.cpp.o
+[203/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/sop1.cpp.o
+[204/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/sopc.cpp.o
+[205/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/sop2.cpp.o
+[206/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/sopk.cpp.o
+[207/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/sopp.cpp.o
+[208/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/vop2.cpp.o
+[209/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/vop1.cpp.o
+[210/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/vop3p.cpp.o
+[211/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/model_target_provider.cpp.o
+[212/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/vop3.cpp.o
+[213/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/ds_exec.cpp.o
+[214/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_model.dir/__/generated/cdna3/vopc.cpp.o
+[215/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/execution_backend_exec.cpp.o
+[216/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/flat_exec.cpp.o
+[217/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/mtbuf_exec.cpp.o
+[218/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/operand_exec.cpp.o
+[219/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/mubuf_exec.cpp.o
+[220/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/smem_exec.cpp.o
+[221/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/sop1_exec.cpp.o
+[222/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/sop2_exec.cpp.o
+[223/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/sopc_exec.cpp.o
+[224/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/sopk_exec.cpp.o
+[225/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/sopp_exec.cpp.o
+[226/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/vop2_exec.cpp.o
+[227/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/vop1_exec.cpp.o
+[228/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/addr_calc.cpp.o
+[229/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/vop3p_exec.cpp.o
+[230/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/target_provider.cpp.o
+[231/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/vopc_exec.cpp.o
+[232/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/decoder.cpp.o
+[233/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna3/CMakeFiles/rocjitsu_isa_cdna3_exec.dir/__/generated/cdna3/vop3_exec.cpp.o
+[234/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/encodings.cpp.o
+[235/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/mtbuf.cpp.o
+[236/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/ds.cpp.o
+[237/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/flat.cpp.o
+[238/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/operand.cpp.o
+[239/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/mubuf.cpp.o
+[240/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/smem.cpp.o
+[241/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/sop1.cpp.o
+[242/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/sopc.cpp.o
+[243/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/sopk.cpp.o
+[244/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/sop2.cpp.o
+[245/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/sopp.cpp.o
+[246/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/vop2.cpp.o
+[247/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/vop1.cpp.o
+[248/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/vop3p.cpp.o
+[249/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/model_target_provider.cpp.o
+[250/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/ds_exec.cpp.o
+[251/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/vop3.cpp.o
+[252/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_model.dir/__/generated/cdna4/vopc.cpp.o
+[253/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/execution_backend_exec.cpp.o
+[254/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/mtbuf_exec.cpp.o
+[255/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/flat_exec.cpp.o
+[256/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/operand_exec.cpp.o
+[257/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/mubuf_exec.cpp.o
+[258/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/smem_exec.cpp.o
+[259/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/sop1_exec.cpp.o
+[260/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/sop2_exec.cpp.o
+[261/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/sopc_exec.cpp.o
+[262/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/sopk_exec.cpp.o
+[263/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/sopp_exec.cpp.o
+[264/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/vop2_exec.cpp.o
+[265/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/vop1_exec.cpp.o
+[266/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/addr_calc.cpp.o
+[267/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/target_provider.cpp.o
+[268/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/vopc_exec.cpp.o
+[269/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/decoder.cpp.o
+[270/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/vop3p_exec.cpp.o
+[271/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna4/CMakeFiles/rocjitsu_isa_cdna4_exec.dir/__/generated/cdna4/vop3_exec.cpp.o
+[272/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/exp.cpp.o
+[273/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/encodings.cpp.o
+[274/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/ds.cpp.o
+[275/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/flat.cpp.o
+[276/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/mtbuf.cpp.o
+[277/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/mimg.cpp.o
+[278/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/mubuf.cpp.o
+[279/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/operand.cpp.o
+[280/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/smem.cpp.o
+[281/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/sop1.cpp.o
+[282/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/sop2.cpp.o
+[283/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/sopc.cpp.o
+[284/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/sopk.cpp.o
+[285/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/sopp.cpp.o
+[286/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/vintrp.cpp.o
+[287/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/vop2.cpp.o
+[288/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/vop1.cpp.o
+[289/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/vop3p.cpp.o
+[290/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/model_target_provider.cpp.o
+[291/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/vopc.cpp.o
+[292/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/ds_exec.cpp.o
+[293/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_model.dir/__/generated/rdna1/vop3.cpp.o
+[294/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/execution_backend_exec.cpp.o
+[295/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/exp_exec.cpp.o
+[296/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/mimg_exec.cpp.o
+[297/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/flat_exec.cpp.o
+[298/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/mtbuf_exec.cpp.o
+[299/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/operand_exec.cpp.o
+[300/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/mubuf_exec.cpp.o
+[301/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/smem_exec.cpp.o
+[302/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/sop1_exec.cpp.o
+[303/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/sopc_exec.cpp.o
+[304/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/sop2_exec.cpp.o
+[305/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/sopk_exec.cpp.o
+[306/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/sopp_exec.cpp.o
+[307/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/vintrp_exec.cpp.o
+[308/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/vop2_exec.cpp.o
+[309/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/vop1_exec.cpp.o
+[310/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/vop3p_exec.cpp.o
+[311/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/addr_calc.cpp.o
+[312/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/target_provider.cpp.o
+[313/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/vop3_exec.cpp.o
+[314/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna1/CMakeFiles/rocjitsu_isa_rdna1_exec.dir/__/generated/rdna1/vopc_exec.cpp.o
+[315/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/decoder.cpp.o
+[316/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/encodings.cpp.o
+[317/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/ds.cpp.o
+[318/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/exp.cpp.o
+[319/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/flat.cpp.o
+[320/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/mtbuf.cpp.o
+[321/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/mimg.cpp.o
+[322/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/mubuf.cpp.o
+[323/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/smem.cpp.o
+[324/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/operand.cpp.o
+[325/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/sop1.cpp.o
+[326/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/sop2.cpp.o
+[327/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/sopc.cpp.o
+[328/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/sopk.cpp.o
+[329/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/sopp.cpp.o
+[330/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/vintrp.cpp.o
+[331/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/vop2.cpp.o
+[332/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/vop1.cpp.o
+[333/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/vop3p.cpp.o
+[334/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/model_target_provider.cpp.o
+[335/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/vopc.cpp.o
+[336/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/ds_exec.cpp.o
+[337/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_model.dir/__/generated/rdna2/vop3.cpp.o
+[338/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/execution_backend_exec.cpp.o
+[339/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/exp_exec.cpp.o
+[340/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/mimg_exec.cpp.o
+[341/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/mtbuf_exec.cpp.o
+[342/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/flat_exec.cpp.o
+[343/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/operand_exec.cpp.o
+[344/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/mubuf_exec.cpp.o
+[345/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/smem_exec.cpp.o
+[346/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/sop1_exec.cpp.o
+[347/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/sop2_exec.cpp.o
+[348/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/sopc_exec.cpp.o
+[349/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/sopk_exec.cpp.o
+[350/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/sopp_exec.cpp.o
+[351/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/vintrp_exec.cpp.o
+[352/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/vop2_exec.cpp.o
+[353/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/vop1_exec.cpp.o
+[354/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/vop3p_exec.cpp.o
+[355/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/addr_calc.cpp.o
+[356/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/target_provider.cpp.o
+[357/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/vop3_exec.cpp.o
+[358/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna2/CMakeFiles/rocjitsu_isa_rdna2_exec.dir/__/generated/rdna2/vopc_exec.cpp.o
+[359/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/decoder.cpp.o
+[360/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/encodings.cpp.o
+[361/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/ds.cpp.o
+[362/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/exp.cpp.o
+[363/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/ldsdir.cpp.o
+[364/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/flat.cpp.o
+[365/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/mtbuf.cpp.o
+[366/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/mimg.cpp.o
+[367/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/operand.cpp.o
+[368/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/mubuf.cpp.o
+[369/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/smem.cpp.o
+[370/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/sop1.cpp.o
+[371/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/sopc.cpp.o
+[372/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/sopk.cpp.o
+[373/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/sop2.cpp.o
+[374/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/sopp.cpp.o
+[375/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/vinterp.cpp.o
+[376/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/vop2.cpp.o
+[377/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/vop1.cpp.o
+[378/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/vop3p.cpp.o
+[379/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/vopd.cpp.o
+[380/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/model_target_provider.cpp.o
+[381/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/vopc.cpp.o
+[382/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/execution_backend_exec.cpp.o
+[383/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/ds_exec.cpp.o
+[384/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_model.dir/__/generated/rdna3/vop3.cpp.o
+[385/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/exp_exec.cpp.o
+[386/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/flat_exec.cpp.o
+[387/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/ldsdir_exec.cpp.o
+[388/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/mtbuf_exec.cpp.o
+[389/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/mimg_exec.cpp.o
+[390/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/operand_exec.cpp.o
+[391/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/smem_exec.cpp.o
+[392/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/mubuf_exec.cpp.o
+[393/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/sop1_exec.cpp.o
+[394/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/sop2_exec.cpp.o
+[395/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/sopc_exec.cpp.o
+[396/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/sopp_exec.cpp.o
+[397/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/sopk_exec.cpp.o
+[398/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/vinterp_exec.cpp.o
+[399/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/vop2_exec.cpp.o
+[400/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/vop1_exec.cpp.o
+[401/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/vop3p_exec.cpp.o
+[402/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/vopd_exec.cpp.o
+[403/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/addr_calc.cpp.o
+[404/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/target_provider.cpp.o
+[405/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/vopc_exec.cpp.o
+[406/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/decoder.cpp.o
+[407/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/encodings.cpp.o
+[408/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/ds.cpp.o
+[409/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/exp.cpp.o
+[410/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3/CMakeFiles/rocjitsu_isa_rdna3_exec.dir/__/generated/rdna3/vop3_exec.cpp.o
+[411/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/ldsdir.cpp.o
+[412/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/flat.cpp.o
+[413/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/mtbuf.cpp.o
+[414/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/mimg.cpp.o
+[415/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/operand.cpp.o
+[416/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/mubuf.cpp.o
+[417/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/smem.cpp.o
+[418/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/sop1.cpp.o
+[419/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/sopc.cpp.o
+[420/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/sopk.cpp.o
+[421/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/sop2.cpp.o
+[422/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/sopp.cpp.o
+[423/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/vinterp.cpp.o
+[424/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/vop2.cpp.o
+[425/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/vop1.cpp.o
+[426/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/vop3p.cpp.o
+[427/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/vopd.cpp.o
+[428/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/model_target_provider.cpp.o
+[429/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/vopc.cpp.o
+[430/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/execution_backend_exec.cpp.o
+[431/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/ds_exec.cpp.o
+[432/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/exp_exec.cpp.o
+[433/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_model.dir/__/generated/rdna3_5/vop3.cpp.o
+[434/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/ldsdir_exec.cpp.o
+[435/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/flat_exec.cpp.o
+[436/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/mimg_exec.cpp.o
+[437/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/mtbuf_exec.cpp.o
+[438/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/operand_exec.cpp.o
+[439/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/smem_exec.cpp.o
+[440/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/mubuf_exec.cpp.o
+[441/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/sop1_exec.cpp.o
+[442/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/sop2_exec.cpp.o
+[443/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/sopc_exec.cpp.o
+[444/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/sopk_exec.cpp.o
+[445/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/sopp_exec.cpp.o
+[446/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/vinterp_exec.cpp.o
+[447/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/vop2_exec.cpp.o
+[448/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/vop1_exec.cpp.o
+[449/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/vop3p_exec.cpp.o
+[450/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/vopd_exec.cpp.o
+[451/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/addr_calc.cpp.o
+[452/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/target_provider.cpp.o
+[453/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/vopc_exec.cpp.o
+[454/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/decoder.cpp.o
+[455/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/encodings.cpp.o
+[456/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/operand.cpp.o
+[457/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna3_5/CMakeFiles/rocjitsu_isa_rdna3_5_exec.dir/__/generated/rdna3_5/vop3_exec.cpp.o
+[458/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/smem.cpp.o
+[459/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/sop1.cpp.o
+[460/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/sop2.cpp.o
+[461/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/sopk.cpp.o
+[462/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/sopc.cpp.o
+[463/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/sopp.cpp.o
+[464/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/vbuffer.cpp.o
+[465/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/vdsdir.cpp.o
+[466/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/vexport.cpp.o
+[467/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/vds.cpp.o
+[468/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/vflat.cpp.o
+[469/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/vglobal.cpp.o
+[470/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/vinterp.cpp.o
+[471/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/vimage.cpp.o
+[472/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/vop2.cpp.o
+[473/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/vop1.cpp.o
+[474/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/vop3p.cpp.o
+[475/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/vopd.cpp.o
+[476/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/vsample.cpp.o
+[477/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/vopc.cpp.o
+[478/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/vscratch.cpp.o
+[479/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/model_target_provider.cpp.o
+[480/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_model.dir/__/generated/rdna4/vop3.cpp.o
+[481/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/execution_backend_exec.cpp.o
+[482/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/operand_exec.cpp.o
+[483/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/smem_exec.cpp.o
+[484/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/sop1_exec.cpp.o
+[485/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/sop2_exec.cpp.o
+[486/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/sopc_exec.cpp.o
+[487/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/sopk_exec.cpp.o
+[488/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/sopp_exec.cpp.o
+[489/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/vdsdir_exec.cpp.o
+[490/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/vbuffer_exec.cpp.o
+[491/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/vds_exec.cpp.o
+[492/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/vexport_exec.cpp.o
+[493/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/vflat_exec.cpp.o
+[494/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/vglobal_exec.cpp.o
+[495/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/vimage_exec.cpp.o
+[496/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/vinterp_exec.cpp.o
+[497/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/vop2_exec.cpp.o
+[498/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/vop1_exec.cpp.o
+[499/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/vop3p_exec.cpp.o
+[500/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/vopd_exec.cpp.o
+[501/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/vsample_exec.cpp.o
+[502/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/vscratch_exec.cpp.o
+[503/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/vopc_exec.cpp.o
+[504/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/addr_calc.cpp.o
+[505/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/target_provider.cpp.o
+[506/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/decoder.cpp.o
+[507/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/encodings.cpp.o
+[508/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/operand.cpp.o
+[509/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/smem.cpp.o
+[510/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/rdna4/CMakeFiles/rocjitsu_isa_rdna4_exec.dir/__/generated/rdna4/vop3_exec.cpp.o
+[511/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/sop1.cpp.o
+[512/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/sopc.cpp.o
+[513/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/sop2.cpp.o
+[514/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/sopk.cpp.o
+[515/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/sopp.cpp.o
+[516/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vbuffer.cpp.o
+[517/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vflat.cpp.o
+[518/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vds.cpp.o
+[519/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vglobal.cpp.o
+[520/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vimage.cpp.o
+[521/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vop2.cpp.o
+[522/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vop1.cpp.o
+[523/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vop3_alu.cpp.o
+[524/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vop3_cmp.cpp.o
+[525/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vop3_data.cpp.o
+[526/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vop3_cvt.cpp.o
+[527/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vop3_misc.cpp.o
+[528/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vop3_ternary.cpp.o
+[529/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vop3p.cpp.o
+[530/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vopc_cmp.cpp.o
+[531/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vopc_cmpx.cpp.o
+[532/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/model_target_provider.cpp.o
+[533/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vopd.cpp.o
+[534/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_model.dir/__/generated/cdna5/vscratch.cpp.o
+[535/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/execution_backend_exec.cpp.o
+[536/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/operand_exec.cpp.o
+[537/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/smem_exec.cpp.o
+[538/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/sop1_exec.cpp.o
+[539/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/sopc_exec.cpp.o
+[540/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/sop2_exec.cpp.o
+[541/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/sopk_exec.cpp.o
+[542/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/sopp_exec.cpp.o
+[543/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vbuffer_exec.cpp.o
+[544/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vflat_exec.cpp.o
+[545/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vglobal_exec.cpp.o
+[546/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vds_exec.cpp.o
+[547/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vimage_exec.cpp.o
+[548/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vop2_exec.cpp.o
+[549/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vop1_exec.cpp.o
+[550/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vop3_exec_alu.cpp.o
+[551/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vop3_exec_data.cpp.o
+[552/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vop3_exec_cvt.cpp.o
+[553/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vop3_exec_cmp.cpp.o
+[554/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vop3_exec_misc.cpp.o
+[555/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vopc_exec_cmp.cpp.o
+[556/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vop3_exec_ternary.cpp.o
+[557/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vopc_exec_cmpx.cpp.o
+[558/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vscratch_exec.cpp.o
+[559/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vopd_exec.cpp.o
+[560/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/target_provider.cpp.o
+[561/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/addr_calc.cpp.o
+[562/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/amdgpu/cdna5/CMakeFiles/rocjitsu_isa_cdna5_exec.dir/__/generated/cdna5/vop3p_exec.cpp.o
+[563/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/risc_v/CMakeFiles/rocjitsu_isa_risc_v.dir/decoder.cpp.o
+[564/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/risc_v/CMakeFiles/rocjitsu_isa_risc_v.dir/encodings.cpp.o
+[565/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/risc_v/CMakeFiles/rocjitsu_isa_risc_v.dir/operand.cpp.o
+[566/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/risc_v/CMakeFiles/rocjitsu_isa_risc_v.dir/base_i.cpp.o
+[567/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/risc_v/CMakeFiles/rocjitsu_isa_risc_v.dir/m_ext.cpp.o
+[568/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/risc_v/CMakeFiles/rocjitsu_isa_risc_v.dir/a_ext.cpp.o
+[569/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/risc_v/CMakeFiles/rocjitsu_isa_risc_v.dir/f_ext.cpp.o
+[570/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/risc_v/CMakeFiles/rocjitsu_isa_risc_v.dir/zicsr.cpp.o
+[571/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/risc_v/CMakeFiles/rocjitsu_isa_risc_v.dir/d_ext.cpp.o
+[572/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/risc_v/CMakeFiles/rocjitsu_isa_risc_v.dir/zifencei.cpp.o
+[573/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/risc_v/CMakeFiles/rocjitsu_isa_risc_v.dir/privileged.cpp.o
+[574/638] Building CXX object lib/rocjitsu/src/rocjitsu/isa/arch/risc_v/CMakeFiles/rocjitsu_isa_risc_v.dir/target_provider.cpp.o
+[575/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/CMakeFiles/rocjitsu_vm.dir/soc.cpp.o
+[576/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/aql/aql_packet_processor.cpp.o
+[577/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/CMakeFiles/rocjitsu_vm.dir/amdgpu/partitioning.cpp.o
+[578/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/CMakeFiles/rocjitsu_vm.dir/virtual_machine.cpp.o
+[579/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/CMakeFiles/rocjitsu_vm.dir/rj_vm.cpp.o
+[580/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/circular_ring_reader.cpp.o
+[581/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/compute_queue_binding_factory.cpp.o
+[582/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/buffer_format.cpp.o
+[583/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/cluster_lds_multicast.cpp.o
+[584/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/consumer_cursor_journal.cpp.o
+[585/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/completion_tracker.cpp.o
+[586/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/device_cache_coherence.cpp.o
+[587/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/gpu_memory_access.cpp.o
+[588/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/command_processor.cpp.o
+[589/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/gpu_queue_registry.cpp.o
+[590/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/gpu_vm.cpp.o
+[591/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/gws_device.cpp.o
+[592/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/compute_unit.cpp.o
+[593/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/iod.cpp.o
+[594/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/hwreg.cpp.o
+[595/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/l1_scalar_cache.cpp.o
+[596/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/l1_vector_cache.cpp.o
+[597/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/l2_cache.cpp.o
+[598/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/memory_side_cache.cpp.o
+[599/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/lds_stack.cpp.o
+[600/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/mes_engine.cpp.o
+[601/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/memory_pipeline.cpp.o
+[602/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/pm4/pm4_packet_processor.cpp.o
+[603/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/sdma_packet_processor.cpp.o
+[604/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/memory_wait_scoreboard.cpp.o
+[605/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/sdma_ring_consumer.cpp.o
+[606/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/sdma_queue_binding_factory.cpp.o
+[607/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/sdma_queue_scheduler.cpp.o
+[608/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/pci/CMakeFiles/rocjitsu_ip_discovery.dir/ip_discovery.cpp.o
+[609/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/shader_engine.cpp.o
+[610/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/wavefront.cpp.o
+[611/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/pci/CMakeFiles/rocjitsu_ip_discovery.dir/ip_discovery_profile.cpp.o
+[612/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/risc_v/CMakeFiles/rocjitsu_vm_risc_v.dir/hart_state.cpp.o
+[613/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/CMakeFiles/rocjitsu_vm_amdgpu.dir/xcd.cpp.o
+[614/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/amdgpu/pci/CMakeFiles/rocjitsu_ip_discovery.dir/gpu_generation_registry.cpp.o
+[615/638] Building CXX object lib/rocjitsu/src/rocjitsu/kmd/linux/CMakeFiles/rocjitsu_kmd.dir/cwsr.cpp.o
+[616/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/risc_v/CMakeFiles/rocjitsu_vm_risc_v.dir/hart.cpp.o
+[617/638] Building CXX object lib/rocjitsu/src/rocjitsu/kmd/linux/CMakeFiles/rocjitsu_kmd.dir/libc_passthrough.cpp.o
+[618/638] Building CXX object lib/rocjitsu/src/rocjitsu/kmd/linux/CMakeFiles/rocjitsu_kmd.dir/guest_kfd.cpp.o
+[619/638] Building CXX object lib/rocjitsu/src/rocjitsu/kmd/linux/CMakeFiles/rocjitsu_kmd.dir/linux_kfd.cpp.o
+[620/638] Building CXX object lib/rocjitsu/src/rocjitsu/kmd/linux/CMakeFiles/rocjitsu_kmd.dir/legacy_gpu_vm.cpp.o
+[621/638] Building CXX object lib/rocjitsu/src/rocjitsu/kmd/linux/CMakeFiles/rocjitsu_kmd.dir/events.cpp.o
+[622/638] Building CXX object lib/rocjitsu/src/rocjitsu/kmd/linux/CMakeFiles/rocjitsu_kmd.dir/remote_driver.cpp.o
+[623/638] Building CXX object lib/rocjitsu/src/rocjitsu/kmd/linux/CMakeFiles/rocjitsu_kmd.dir/rj_daemon.cpp.o
+[624/638] Building CXX object lib/rocjitsu/src/rocjitsu/kmd/linux/CMakeFiles/rocjitsu_kmd.dir/sysfs.cpp.o
+[625/638] Building CXX object lib/rocjitsu/src/rocjitsu/kmd/linux/CMakeFiles/rocjitsu_kmd.dir/transport.cpp.o
+[626/638] Building CXX object lib/rocjitsu/src/rocjitsu/config/CMakeFiles/rocjitsu_dbt_config.dir/dbt_guest_config.cpp.o
+[627/638] Building CXX object lib/rocjitsu/src/rocjitsu/config/CMakeFiles/rocjitsu_config.dir/effective_config.cpp.o
+[628/638] Building CXX object lib/rocjitsu/src/rocjitsu/config/CMakeFiles/rocjitsu_config.dir/checkpoint.cpp.o
+[629/638] Building CXX object lib/rocjitsu/src/rocjitsu/kmd/linux/CMakeFiles/rocjitsu_kmd.dir/simulated_kfd.cpp.o
+[630/638] Building CXX object lib/rocjitsu/src/rocjitsu/config/CMakeFiles/rocjitsu_config.dir/config_loader.cpp.o
+[631/638] Building CXX object tools/rocjitsu/CMakeFiles/rocjitsu_cli_launch_preload.dir/launch_preload.cpp.o
+[632/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/plugins/CMakeFiles/rocjitsu_plugin_loader.dir/plugin_config_resolver.cpp.o
+[633/638] Building CXX object lib/rocjitsu/src/rocjitsu/vm/plugins/CMakeFiles/rocjitsu_plugin_loader.dir/plugin_loader.cpp.o
+[634/638] Building CXX object tools/rocjitsu/CMakeFiles/rocjitsu_cli_launch_preload.dir/rocm_visibility.cpp.o
+[635/638] Linking CXX static library tools/rocjitsu/librocjitsu_cli_launch_preload.a
+[636/638] Linking CXX shared library librocjitsu.so
+[637/638] Building CXX object tools/rocjitsu/CMakeFiles/rocjitsu_bin.dir/main.cpp.o
+[638/638] Linking CXX executable tools/rocjitsu/rocjitsu

@@ -1,0 +1,18 @@
+[0/2] Re-checking globbed directories...
+[1/17] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/bfbs_gen_lua.cpp.o
+[2/17] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/bfbs_gen_nim.cpp.o
+[3/17] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/src/code_generators.cpp.o
+[4/17] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/cpp_generator.cc.o
+[5/17] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/go_generator.cc.o
+[6/17] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/java_generator.cc.o
+[7/17] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/python_generator.cc.o
+[8/17] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/swift_generator.cc.o
+[9/17] Building CXX object dependencies/flatbuffers-build/CMakeFiles/flatc.dir/grpc/src/compiler/ts_generator.cc.o
+[10/17] Linking CXX executable dependencies/flatbuffers-build/flatc
+[11/17] Compiling FlatBuffers schema: simulation_config.fbs
+[12/17] Compiling FlatBuffers schema: checkpoint.fbs
+[13/17] Building CXX object tools/rocjitsu/CMakeFiles/rocjitsu_cli_launch_preload.dir/launch_preload.cpp.o
+[14/17] Building CXX object tools/rocjitsu/CMakeFiles/rocjitsu_cli_launch_preload.dir/rocm_visibility.cpp.o
+[15/17] Linking CXX static library tools/rocjitsu/librocjitsu_cli_launch_preload.a
+[16/17] Building CXX object tests/CMakeFiles/rocm_visibility_test.dir/rocm_visibility_test.cpp.o
+[17/17] Linking CXX executable tests/rocm_visibility_test

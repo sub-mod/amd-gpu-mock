@@ -1,0 +1,5 @@
+bb26273b783acbe32a100b684d69efcf85b3223ee729aff92da8ef2448a1fba1  hip_vector_add_test
+
+hip_vector_add_test:	file format elf64-x86-64
+Extracting offload bundle: hip_vector_add_test.0.host-x86_64-unknown-linux-gnu-
+Extracting offload bundle: hip_vector_add_test.0.hipv4-amdgcn-amd-amdhsa--gfx942
