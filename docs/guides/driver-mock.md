@@ -65,8 +65,10 @@ preloaded with a replacement libdrm.
 - Unknown queries and firmware queries return `EOPNOTSUPP`; malformed handles or
   buffers are rejected. Raw ioctls return `ENOTTY`, reads/writes `EOPNOTSUPP`.
 - Multiple GPUs and fixed partition inventory use the same original renderer.
-  Profile changes reconcile endpoints. Simulated crashes remove owned host
-  paths; recovery restores the registered endpoints, not legacy dummy numbers.
+  Profile changes reconcile endpoints. Simulated crashes withdraw driver
+  bindings and remove unbound owned host paths. Protected bind overlays remain
+  in place while live RAS state rejects libdrm calls; recovery restores missing
+  paths using registered endpoints, not legacy dummy numbers.
 - The driver image supplies the existing ABI 27 AMD SMI shim, including BDF
   lookup, using the original renderer's same SMI state.
 - Fatal RAS state rejects libdrm capacity/initialization calls. This does not

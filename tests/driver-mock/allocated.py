@@ -8,6 +8,7 @@ import time
 MODE = os.environ.get('ALLOCATOR', 'dra')
 IMAGE = os.environ.get('DRIVER_IMAGE', 'local/amd-gpu-mock-driver:test')
 NS = 'amd-driver-consumer-test'
+CU, VRAM = {'SPX': (304, 206158430208), 'DPX': (152, 103079215104)}[os.environ.get('PARTITION_MODE', 'SPX')]
 
 def k(*args, payload=None):
     return subprocess.check_output(['kubectl', *args], input=json.dumps(payload) if payload else None, text=True)
@@ -22,12 +23,12 @@ try:
                'metadata':{'name':'gpu','namespace':NS},'spec':{'spec':{'devices':{'requests':[
                    {'name':'gpu','exactly':{'deviceClassName':'gpu.amd.com'}}]}}}})
     spec = {'restartPolicy':'Never','containers':[{'name':'consumer','image':IMAGE,
-            'imagePullPolicy':'Never','env':[{'name':'LD_LIBRARY_PATH','value':'/var/lib/amd-gpu-mock/driver/usr/lib64'}],'command':['sh','-ec', '''
+            'imagePullPolicy':'Never','env':[{'name':'LD_LIBRARY_PATH','value':'/var/lib/amd-gpu-mock/driver/usr/lib64'}],'command':['sh','-ec', f'''
 set -- /dev/dri/renderD*
 test "$#" = 1
 test -c "$1"
 exec 3<>/dev/kfd
-driver-probe "$1" 304 206158430208 'AMD Instinct MI300X'
+driver-probe "$1" {CU} {VRAM} 'AMD Instinct MI300X'
 echo 'PASS: allocated workload native KFD/render access and libdrm capacity'
 '''], 'volumeMounts':[{'name':'state','mountPath':'/var/lib/amd-gpu-mock','readOnly':True}]}],
             'volumes':[{'name':'state','hostPath':{'path':'/var/lib/amd-gpu-mock','type':'Directory'}}]}

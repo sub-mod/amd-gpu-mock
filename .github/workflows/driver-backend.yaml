@@ -137,7 +137,9 @@ jobs:
             "${args[@]}" --wait --timeout 5m
       - name: Fixed same-GPU partition allocation
         if: matrix.mode == 'partition'
-        run: python3 -u tests/dra/partition-allocation.py
+        run: |
+          python3 -u tests/dra/partition-allocation.py
+          PARTITION_MODE=DPX ALLOCATOR=dra python3 -u tests/driver-mock/allocated.py
       - name: DRA allocation, lifecycle and focused groups
         if: matrix.mode == 'dra'
         env:
