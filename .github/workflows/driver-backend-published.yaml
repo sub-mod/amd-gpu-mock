@@ -39,18 +39,23 @@ jobs:
         run: |
           args=()
           if [ '${{ matrix.backend }}' = cuse ]; then
-            args+=(--set driverMock.enabled=true --set image.repository=docker.io/submod/amd-gpu-mock-driver --set image.tag=v0.1.0)
+            args+=(--set driverMock.enabled=true --set image.repository=docker.io/submod/amd-gpu-mock-driver --set image.tag=v0.1.1)
           fi
-          helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock --version 0.2.14 \
+          helm install amd-gpu-mock oci://docker.io/submod/amd-gpu-mock --version 0.2.15 \
             -n amd-mock --create-namespace "${args[@]}" --wait --timeout 6m
       - name: Allocated native opens, libdrm and provider restart
         if: matrix.backend == 'cuse'
         env:
-          DRIVER_IMAGE: docker.io/submod/amd-gpu-mock-driver:v0.1.0
+          DRIVER_IMAGE: docker.io/submod/amd-gpu-mock-driver:v0.1.1
         run: |
           python3 -u tests/driver-mock/allocated.py
           python3 -u tests/driver-mock/restart.py
           python3 -u tests/driver-mock/allocated.py
+          PROVIDER_RESTART_MODE=graceful python3 -u tests/driver-mock/restart.py
+          python3 -u tests/driver-mock/allocated.py
+      - name: Graceful default-agent restart preserves mounted exporter state
+        if: matrix.backend == 'nodes'
+        run: PROVIDER_RESTART_MODE=graceful python3 -u tests/driver-mock/restart.py
       - name: DRA Tiny LLM, virtual partition demo and automatic dashboards
         env:
           MODE: dra
