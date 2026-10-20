@@ -241,3 +241,9 @@ See the [numbered execution diagram](../../demo/gpu-network/two-node/README.md#a
 and captured logs for evidence. This optional ARM64/Podman integration is run
 locally; it is not part of the hosted Kind-only CI matrix. It does not validate
 GPU-memory DMA, real inference or physical RDMA bandwidth.
+
+## Optional CUSE/library backend
+
+See the [driver backend guide](driver-mock.md) for native device-open/libdrm
+checks and the compatibility matrix. The existing default-backend tests remain
+required; optional-backend results do not substitute for them.

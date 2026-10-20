@@ -91,3 +91,8 @@ monitoring:
         memory: 256Mi
       limits:
         memory: 1Gi
+
+# Optional native-open and libdrm capacity backend. Requires host CUSE.
+# Select the dedicated published driver image as described in the guide.
+driverMock:
+  enabled: false

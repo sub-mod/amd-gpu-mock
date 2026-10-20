@@ -11,6 +11,7 @@ import (
 	"syscall"
 
 	"github.com/amd-gpu-mock/pkg/gpu/kfd"
+	"github.com/amd-gpu-mock/pkg/mockdriver"
 	"gopkg.in/yaml.v3"
 )
 
@@ -20,7 +21,12 @@ func main() {
 	rootDir := flag.String("root", "/var/lib/amd-gpu-mock", "root directory for staged surfaces")
 	apiAddr := flag.String("api", ":8080", "address for the status/control API and dashboard")
 	partitionMode := flag.String("partition", "SPX", "fixed startup compute partition: SPX or MI300X DPX/NPS2")
+	backend := flag.String("device-backend", "nodes", "device backend: nodes or cuse (requires optional driver image)")
+	cuseDev := flag.String("cuse-host-dev", "/dev", "host device directory for the CUSE backend")
 	flag.Parse()
+	if *backend != "nodes" && *backend != "cuse" {
+		log.Fatal("device-backend must be nodes or cuse")
+	}
 
 	log.Printf("amd-gpu-mock node agent starting")
 	log.Printf("config: %s", *configPath)
@@ -49,6 +55,16 @@ func main() {
 
 	renderer := kfd.NewRenderer(&profile, *rootDir)
 
+	var provider *mockdriver.Provider
+	if *backend == "cuse" {
+		provider, err = mockdriver.New(*rootDir, *cuseDev, "mock-device")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer provider.Close()
+		renderer.SetDeviceBackend(provider)
+	}
+
 	if err := renderer.RenderAll(); err != nil {
 		log.Fatalf("rendering surfaces: %v", err)
 	}
@@ -66,6 +82,17 @@ func main() {
 		log.Printf("warning: mock library not found at %s (non-fatal)", libSrc)
 	}
 
+	if provider != nil {
+		src := "/opt/amd-gpu-mock/lib/libdrm_amdgpu.so.1"
+		dst := filepath.Join(*rootDir, "driver/usr/lib64/libdrm_amdgpu.so.1")
+		data, err := os.ReadFile(src)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if err := os.WriteFile(dst, data, 0755); err != nil {
+			log.Fatal(err)
+		}
+	}
 	log.Printf("all surfaces staged at %s", *rootDir)
 	log.Printf("kfd topology: %s/sys/class/kfd/kfd/topology/", *rootDir)
 	log.Printf("device nodes: %s/dev/", *rootDir)
@@ -94,7 +121,7 @@ func main() {
 	}
 
 	// Create device nodes with mknod if running as root.
-	if os.Getuid() == 0 {
+	if os.Getuid() == 0 && provider == nil {
 		if err := createDeviceNodes(&profile, *rootDir); err != nil {
 			log.Printf("warning: device node creation in mock root failed (non-fatal): %v", err)
 		}
@@ -152,13 +179,28 @@ func main() {
 	// Wait for termination signal, then clean up.
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGTERM, syscall.SIGINT)
-	s := <-sig
-	log.Printf("received %v, cleaning up", s)
+	var deviceErrors <-chan error
+	if provider != nil {
+		deviceErrors = provider.Errors
+	}
+	var backendErr error
+	select {
+	case s := <-sig:
+		log.Printf("received %v, cleaning up", s)
+	case backendErr = <-deviceErrors:
+		log.Printf("device backend failure: %v", backendErr)
+	}
+	if provider != nil {
+		provider.Close()
+	}
 
 	if err := renderer.Cleanup(); err != nil {
 		log.Printf("cleanup error: %v", err)
 	}
 	log.Printf("shutdown complete")
+	if backendErr != nil {
+		os.Exit(1)
+	}
 }
 
 func createDeviceNodes(profile *kfd.Profile, rootDir string) error {

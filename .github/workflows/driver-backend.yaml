@@ -1,0 +1,186 @@
+name: driver-backend
+on:
+  workflow_dispatch:
+  push:
+    branches: [feat/cuse-libdrm-consumers]
+  pull_request:
+    paths: ['pkg/mockdriver/**', 'pkg/gpu/kfd/**', 'cmd/node-agent/**', 'deployments/driver-mock/**', 'deployments/helm/**', 'tests/driver-mock/**', '.github/workflows/driver-backend.yaml']
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    env:
+      CONTAINER_RUNTIME: docker
+      DRIVER_IMAGE: local/amd-gpu-mock-driver:test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: azure/setup-helm@v4
+      - name: Contracts and native image
+        run: |
+          go test -race ./...
+          tests/dra/chart-validation.sh
+          tests/demo/chart-validation.sh
+          tests/driver-mock/chart.sh
+          sudo modprobe cuse
+          docker build -f deployments/driver-mock/Dockerfile -t "$DRIVER_IMAGE" .
+      - name: Real CUSE, all profiles, errors, fault recovery and unclean restart
+        run: |
+          mkdir -p artifacts
+          python3 -u tests/driver-mock/native.py | tee artifacts/native.log
+      - name: Export tested image
+        run: docker save "$DRIVER_IMAGE" | gzip > artifacts/driver-image.tar.gz
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: driver-native-${{ matrix.runner }}
+          path: artifacts/
+          retention-days: 3
+  profiles:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [mi210, mi250x, mi300a, mi300x, mi325x, mi350x, mi355x]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - name: Load CUSE and build optional backend
+        run: |
+          sudo modprobe cuse
+          docker build -f deployments/driver-mock/Dockerfile -t local/amd-gpu-mock-driver:test .
+      - uses: helm/kind-action@v1
+        with:
+          version: v0.33.0
+          kubectl_version: v1.37.0
+          node_image: docker.io/submod/amd-mock-kind-node:0.2.2
+          cluster_name: amd-profile-test
+          wait: 120s
+      - name: Install and test real device-plugin allocation with CUSE
+        run: |
+          kind load docker-image local/amd-gpu-mock-driver:test --name amd-profile-test
+          helm install amd-gpu-mock deployments/helm/amd-gpu-mock -n amd-mock --create-namespace \
+            --set image.repository=local/amd-gpu-mock-driver --set image.tag=test --set image.pullPolicy=Never \
+            --set driverMock.enabled=true --set gpu.profile=${{ matrix.profile }} \
+            --set dra.enabled=false --set devicePlugin.enabled=true \
+            --set monitoring.enabled=false --set metricsExporter.enabled=false --wait --timeout 5m
+          kubectl -n kube-system rollout status ds/amd-gpu-mock-device-plugin --timeout=180s
+          PROFILE=${{ matrix.profile }} python3 -u tests/profile-e2e.py
+      - name: Diagnostics
+        if: always()
+        run: |
+          mkdir -p artifacts
+          kubectl get pods -A -o wide > artifacts/pods.log || true
+          kubectl get events -A > artifacts/events.log || true
+          kubectl -n amd-mock logs ds/amd-gpu-mock > artifacts/agent.log || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: driver-profile-${{ matrix.profile }}
+          path: artifacts/
+  integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [dra, device-plugin, partition]
+    env:
+      CONTAINER_RUNTIME: docker
+      DEMO_CONTEXT: kind-amd-driver-test
+      CLUSTER_NAME: amd-driver-test
+      DEMO_CONFIG: demo/config.yaml
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - name: Build optional mock and real collector
+        run: |
+          sudo modprobe cuse
+          docker build -f deployments/driver-mock/Dockerfile -t local/amd-gpu-mock-driver:test .
+          docker build -f deployments/metrics-exporter/Dockerfile -t local/amd-device-metrics-exporter:test .
+      - uses: helm/kind-action@v1
+        with:
+          version: v0.33.0
+          kubectl_version: v1.37.0
+          node_image: docker.io/submod/amd-mock-kind-node:0.2.2
+          cluster_name: amd-driver-test
+          config: deployments/kind-node/kind-config.yaml
+          wait: 120s
+      - name: Install source chart with optional backend
+        run: |
+          kind load docker-image local/amd-gpu-mock-driver:test local/amd-device-metrics-exporter:test --name amd-driver-test
+          args=()
+          if [ '${{ matrix.mode }}' = device-plugin ]; then args+=(--set dra.enabled=false --set devicePlugin.enabled=true); fi
+          if [ '${{ matrix.mode }}' = partition ]; then args+=(--set gpu.partition=DPX); fi
+          helm install amd-gpu-mock deployments/helm/amd-gpu-mock -n amd-mock --create-namespace \
+            --set image.repository=local/amd-gpu-mock-driver --set image.tag=test --set image.pullPolicy=Never \
+            --set driverMock.enabled=true --set metricsExporter.image=local/amd-device-metrics-exporter:test \
+            "${args[@]}" --wait --timeout 5m
+      - name: Fixed same-GPU partition allocation
+        if: matrix.mode == 'partition'
+        run: python3 -u tests/dra/partition-allocation.py
+      - name: DRA allocation, lifecycle and focused groups
+        if: matrix.mode == 'dra'
+        env:
+          KEEP: '1'
+          INSTALL_DRIVER: '0'
+          DRA_NS: amd-mock
+        run: |
+          tests/dra/validate_dra.sh
+          kubectl delete namespace amd-dra-test --wait=true --timeout=120s
+          python3 -u tests/dra/lifecycle.py
+          python3 -u tests/dra/focused.py
+      - name: Native device opens and libdrm inside allocated workload
+        if: matrix.mode != 'partition'
+        env:
+          ALLOCATOR: ${{ matrix.mode }}
+        run: python3 -u tests/driver-mock/allocated.py
+      - name: Tiny LLM, virtual partitions, dashboard and Grafana
+        if: matrix.mode != 'partition'
+        env:
+          MODE: ${{ matrix.mode }}
+          ALLOCATOR: ${{ matrix.mode }}
+        run: |
+          python3 tests/demo-e2e.py
+          python3 tests/dashboard-e2e.py
+          python3 tests/demo/grafana-e2e.py
+          python3 tests/demo/presenter-e2e.py
+      - name: Real exporter telemetry, attribution and restart
+        if: matrix.mode != 'partition'
+        env:
+          ALLOCATOR: ${{ matrix.mode }}
+        run: |
+          kubectl -n amd-mock port-forward svc/amd-gpu-mock-prometheus 9090:9090 > /tmp/prometheus-forward.log 2>&1 &
+          prom_pid=$!
+          trap 'kill "$prom_pid" 2>/dev/null || true' EXIT
+          python3 -u tests/telemetry/e2e.py
+          python3 -u tests/telemetry/attribution.py
+          kubectl -n amd-mock rollout restart ds/amd-gpu-mock-metrics-exporter
+          kubectl -n amd-mock rollout status ds/amd-gpu-mock-metrics-exporter --timeout=180s
+          python3 -u tests/telemetry/e2e.py
+      - name: Diagnostics
+        if: always()
+        run: |
+          mkdir -p artifacts
+          kubectl get pods,resourceclaims -A -o wide > artifacts/pods.log || true
+          kubectl get resourceslices -o yaml > artifacts/slices.yaml || true
+          kubectl get events -A > artifacts/events.log || true
+          kubectl -n amd-mock logs ds/amd-gpu-mock > artifacts/agent.log || true
+          kind export logs artifacts/kind --name amd-driver-test || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: driver-integration-${{ matrix.mode }}
+          path: artifacts/

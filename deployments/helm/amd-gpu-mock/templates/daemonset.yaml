@@ -40,6 +40,9 @@ spec:
             - --partition={{ .Values.gpu.partition | default "SPX" }}
             - --root={{ .Values.mockRootDir }}
             - --api=:{{ .Values.api.port }}
+            {{- if .Values.driverMock.enabled }}
+            - --device-backend=cuse
+            {{- end }}
           ports:
             - name: api
               containerPort: {{ .Values.api.port }}

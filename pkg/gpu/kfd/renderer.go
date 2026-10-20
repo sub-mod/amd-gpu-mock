@@ -10,10 +10,19 @@ import (
 )
 
 // Renderer writes the KFD sysfs topology tree and device nodes from a Profile.
+type DeviceBackend interface {
+	Reconcile(*Profile) error
+	RestoreDevice(int) error
+	RemoveDevice(int) error
+}
+
 type Renderer struct {
+	backend DeviceBackend
 	profile *Profile
 	rootDir string // e.g. /var/lib/amd-gpu-mock
 }
+
+func (r *Renderer) SetDeviceBackend(backend DeviceBackend) { r.backend = backend }
 
 func NewRenderer(profile *Profile, rootDir string) *Renderer {
 	return &Renderer{profile: profile, rootDir: rootDir}
@@ -43,6 +52,11 @@ func (r *Renderer) SwitchProfile(profile *Profile) error {
 	}
 	if err := r.renderHostCompat(); err != nil {
 		return fmt.Errorf("host compat: %w", err)
+	}
+	if r.backend != nil {
+		if err := r.backend.Reconcile(profile); err != nil {
+			return err
+		}
 	}
 	return r.renderSMIState()
 }
@@ -108,16 +122,28 @@ func (r *Renderer) UpdateGPUSysfs(gpu *GPUState) error {
 
 	if gpu.Status == "crashed" {
 		writeFile(crashMarker, "1\n")
-		os.Remove(renderNode)
-		os.Remove(cardNode)
+		if r.backend != nil {
+			if err := r.backend.RemoveDevice(gpu.Index); err != nil {
+				return err
+			}
+		} else {
+			os.Remove(renderNode)
+			os.Remove(cardNode)
+		}
 		os.RemoveAll(bdfDriverDir)
 	} else {
 		os.Remove(crashMarker)
-		if _, err := os.Stat(renderNode); os.IsNotExist(err) {
-			syscall.Mknod(renderNode, syscall.S_IFCHR|0o660, int(uint64(226)<<8|uint64(128+gpu.Index)))
-		}
-		if _, err := os.Stat(cardNode); os.IsNotExist(err) {
-			syscall.Mknod(cardNode, syscall.S_IFCHR|0o660, int(uint64(226)<<8|uint64(gpu.Index)))
+		if r.backend != nil {
+			if err := r.backend.RestoreDevice(gpu.Index); err != nil {
+				return err
+			}
+		} else {
+			if _, err := os.Stat(renderNode); os.IsNotExist(err) {
+				syscall.Mknod(renderNode, syscall.S_IFCHR|0o660, int(uint64(226)<<8|uint64(128+gpu.Index)))
+			}
+			if _, err := os.Stat(cardNode); os.IsNotExist(err) {
+				syscall.Mknod(cardNode, syscall.S_IFCHR|0o660, int(uint64(226)<<8|uint64(gpu.Index)))
+			}
 		}
 		// Restore driver BDF directory if it was removed
 		if _, err := os.Stat(bdfDriverDir); os.IsNotExist(err) {
@@ -467,6 +493,9 @@ func (r *Renderer) renderDRMDevices() error {
 }
 
 func (r *Renderer) renderDeviceNodes() error {
+	if r.backend != nil {
+		return r.backend.Reconcile(r.profile)
+	}
 	devDir := filepath.Join(r.rootDir, "dev")
 
 	// /dev/kfd — KFD compute interface (one per system)
