@@ -55,3 +55,18 @@ QEMU guest-base configuration is needed on the tested host. The following alloca
 Mac Pods, but its actual CU-mask ioctl fails because QEMU user-mode lacks
 process_vm_readv. Native AMD64 validation is separate. Shared fault state,
 native ARM64 ROCm, cross-Pod shared VRAM and physical isolation remain unverified.
+
+## Current integrated-main boundary (supersedes historical gaps above)
+
+The library/device implementation is now main's published v0.1.0 artifact,
+imported unchanged. Main validates multiple profiles/GPUs, native AMD64/ARM64,
+DRA/device-plugin/DPX allocation, real opens/libdrm, crash/recovery and node-agent
+restart. This experiment still intentionally selects one MI300X/SPX for HAMi;
+main's broader coverage is not a claim that all those HAMi cases are tested.
+
+Native AMD64 HAMi allocation plus HIP computation was already validated before
+the rebase. It checks actual accepted disjoint KFD masks and HIP memory hooks;
+it does not establish physical isolation. The current rebase tests that same
+consumer against main's shared implementations. Mac QEMU process_vm_readv and
+live RocJITsu fault-state propagation remain limitations. No new API work is
+needed merely to keep HAMi's first-field capacity query compatible.

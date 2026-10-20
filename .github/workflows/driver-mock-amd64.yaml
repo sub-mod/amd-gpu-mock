@@ -3,19 +3,11 @@ on:
   push:
     branches: [experiment/amd-driver-mock]
     paths:
-      - experiments/amd-driver-mock/Containerfile*
-      - experiments/amd-driver-mock/Hami.Containerfile*
-      - experiments/amd-driver-mock/Scheduler.Containerfile*
-      - experiments/amd-driver-mock/build-images.sh
-      - experiments/amd-driver-mock/src/**
-      - experiments/amd-driver-mock/cmd/**
-      - experiments/amd-driver-mock/versions.env
       - experiments/amd-driver-mock/rocjitsu/Compute.Containerfile
       - experiments/amd-driver-mock/rocjitsu/build-*.sh
       - experiments/amd-driver-mock/rocjitsu/prepare-sdk.sh
       - experiments/amd-driver-mock/rocjitsu/limits.cpp
       - experiments/amd-driver-mock/rocjitsu/mask-audit.c
-      - .github/workflows/driver-mock-amd64.yaml
   workflow_dispatch:
 defaults:
   run:

@@ -1,0 +1,98 @@
+name: HAMi with shared main backend
+on:
+  workflow_dispatch:
+  push:
+    branches: [experiment/amd-driver-mock]
+    paths:
+      - experiments/amd-driver-mock/Containerfile*
+      - experiments/amd-driver-mock/build-images.sh
+      - experiments/amd-driver-mock/cmd/**
+      - experiments/amd-driver-mock/setup.sh
+      - experiments/amd-driver-mock/deploy.py
+      - experiments/amd-driver-mock/config*.json
+      - experiments/amd-driver-mock/versions.env
+      - experiments/amd-driver-mock/tests/**
+      - experiments/amd-driver-mock/rocjitsu/run-pods.py
+      - experiments/amd-driver-mock/rocjitsu/shared-config.py
+      - .github/workflows/hami-main-backend.yaml
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  consumer:
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    env:
+      CONTAINER_RUNTIME: docker
+      DRIVER_MOCK_SKIP_PULL: '1'
+      DRIVER_MOCK_CONFIG: tmp/hami/shared-main-config.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - uses: helm/kind-action@v1
+        with:
+          install_only: true
+          version: v0.33.0
+          kubectl_version: v1.37.0
+      - name: CUSE prerequisite and build thin consumer adapter
+        run: |
+          sudo modprobe cuse
+          experiments/amd-driver-mock/build-images.sh --backend-only
+          mkdir -p tmp/hami tmp/rocjitsu-results
+          python3 - <<'PY'
+          import json,platform,subprocess
+          from pathlib import Path
+          p=Path('experiments/amd-driver-mock')
+          arch='arm64' if platform.machine()=='aarch64' else 'amd64'
+          c=json.loads((p/('config.json' if arch=='arm64' else 'config.amd64.json')).read_text())
+          for key in ['plugin','scheduler']: subprocess.run(['docker','pull',c['images'][key]],check=True)
+          c['images']['backend']='localhost/amd-driver-mock:experiment'
+          Path('tmp/hami/shared-main-config.json').write_text(json.dumps(c))
+          # Assert the adapter imports main's implementation byte-for-byte.
+          shared='docker.io/submod/amd-gpu-mock-driver:v0.1.0@sha256:ef99d5e5501434b78773168fc985ed8420ca886d262e211d305a0e96d9e3587d'
+          paths=['/opt/amd-gpu-mock/lib/libdrm_amdgpu.so.1','/usr/lib64/libamd_smi.so','/usr/local/bin/mock-device']
+          adapted=['/opt/amd-driver-mock/lib/libdrm_amdgpu.so.1','/opt/amd-driver-mock/lib/libamd_smi.so.27','/opt/amd-driver-mock/bin/mock-device']
+          def hashes(image,files):
+              return [line.split()[0] for line in subprocess.check_output(['docker','run','--rm','--entrypoint','sha256sum',image,*files],text=True).splitlines()]
+          assert hashes(shared,paths)==hashes(c['images']['backend'],adapted)
+          print('PASS main libdrm, AMD SMI and CUSE helper imported unchanged')
+          PY
+      - name: Fresh HAMi allocation and lifecycle
+        run: |
+          experiments/amd-driver-mock/setup.sh > tmp/rocjitsu-results/shared-main-setup.log 2>&1
+          python3 -u experiments/amd-driver-mock/verify.py | tee tmp/rocjitsu-results/shared-main-hami.log
+          python3 -u experiments/amd-driver-mock/tests/lifecycle.py | tee tmp/rocjitsu-results/shared-main-lifecycle.log
+      - name: Actual computation using the existing published optional backend
+        if: matrix.runner == 'ubuntu-24.04'
+        run: |
+          kubectl --kubeconfig tmp/hami/kubeconfig delete namespace amd-driver-mock-demo --wait=true --timeout=120s
+          mkdir -p tmp/rocjitsu-eval/emulation/rocjitsu/configs
+          curl -fsSL https://raw.githubusercontent.com/ROCm/rocm-systems/0f80b261740a91e44ac2042e2f7eca6cdd8611a2/emulation/rocjitsu/configs/gfx942_cdna3_kmd.json -o tmp/rocjitsu-eval/emulation/rocjitsu/configs/gfx942_cdna3_kmd.json
+          docker pull docker.io/submod/amd-driver-mock-compute:0.1.0-experiment.1-amd64
+          kind load docker-image docker.io/submod/amd-driver-mock-compute:0.1.0-experiment.1-amd64 --name amd-hami-driver
+          python3 -u experiments/amd-driver-mock/rocjitsu/run-pods.py | tee tmp/rocjitsu-results/shared-main-compute.log
+      - name: Export tested adapter image
+        run: docker save localhost/amd-driver-mock:experiment | gzip > /tmp/shared-main-adapter.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shared-main-adapter-${{ matrix.runner }}
+          path: /tmp/shared-main-adapter.tar.gz
+          retention-days: 3
+      - name: Diagnostics
+        if: always()
+        run: |
+          mkdir -p tmp/rocjitsu-results
+          kubectl --kubeconfig tmp/hami/kubeconfig get pods -A -o wide > tmp/rocjitsu-results/pods.log 2>&1 || true
+          kubectl --kubeconfig tmp/hami/kubeconfig get events -A > tmp/rocjitsu-results/events.log 2>&1 || true
+          docker logs amd-driver-mock-provider > tmp/rocjitsu-results/shared-main-provider.log 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shared-main-evidence-${{ matrix.runner }}
+          path: tmp/rocjitsu-results/

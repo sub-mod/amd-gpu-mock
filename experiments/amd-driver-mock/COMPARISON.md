@@ -69,3 +69,31 @@ are compared to a CPU reference. Direct execution without the simulator fails
 with hipErrorNoDevice. QEMU guest-base configuration fixes the observed high-VA
 queue setup failure without source patches. No integration/isolation claim or
 additional merge-back implementation from this milestone.
+
+## Rebased on integrated main (630b076)
+
+Main now contains the optional CUSE/libdrm backend, decimal KFD identity fix,
+and AMD SMI BDF lookup. The original baseline above remains the historical
+comparison; those interfaces are no longer experiment-only candidates.
+The experiment imports main's published v0.1.0 CUSE helper, libdrm capacity
+library and AMD SMI ABI 27 library by immutable image digest. The duplicated
+`src/device.c` and `src/drm.c` implementations have been removed.
+
+Remaining experiment differences are the one-GPU renderer selection, thin
+fixed-inventory provider/staging script, unchanged HAMi scheduler/plugin and
+hooks, dedicated Kind integration, and optional RocJITsu execution. This lab's
+shell supervisor is not main's full node-agent device lifecycle manager; provider
+restart/rebinding and multiple HAMi GPUs remain separate lab validation work.
+Main's CUSE lifecycle is independently tested in its own integration matrix.
+No new consumer allocation is fabricated and no HAMi source is patched.
+
+Main's memory API now implements distinct standard MEMORY and VRAM_GTT layouts.
+HAMi's short MEMORY request remains a valid prefix whose first u64 is VRAM
+capacity. This adapter updates its negative probe to reject zero-size buffers;
+it does not restore the old incorrectly typed mock response.
+
+Backend changes use `hami-main-backend.yaml` on native AMD64 and ARM64. Its AMD64
+job reuses the unchanged published compute image for actual computation rather
+than recompiling the SDK/engine for an allocation-layer change. The full engine
+build remains available through `driver-mock-amd64.yaml` for computation-source
+changes or manual reproduction.

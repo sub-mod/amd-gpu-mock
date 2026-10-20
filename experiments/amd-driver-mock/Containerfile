@@ -4,20 +4,18 @@ COPY go.mod go.sum ./
 COPY pkg/gpu/kfd/ ./pkg/gpu/kfd/
 COPY experiments/amd-driver-mock/cmd/render/ ./experiments/amd-driver-mock/cmd/render/
 RUN CGO_ENABLED=0 go build -o /render-profile ./experiments/amd-driver-mock/cmd/render
+FROM docker.io/submod/amd-gpu-mock-driver:v0.1.0@sha256:ef99d5e5501434b78773168fc985ed8420ca886d262e211d305a0e96d9e3587d AS shared-driver
 FROM docker.io/library/ubuntu:24.04
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     build-essential libdrm-dev libfuse3-dev pkg-config python3 ca-certificates curl git \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /src
 COPY experiments/amd-driver-mock/ /src/
-COPY pkg/mocksmi/exporter/ /baseline-smi/
+# Use the tested main artifact unchanged; this adapter owns no libdrm/CUSE ABI.
+COPY --from=shared-driver /opt/amd-gpu-mock/lib/libdrm_amdgpu.so.1 /opt/amd-driver-mock/lib/libdrm_amdgpu.so.1
+COPY --from=shared-driver /usr/lib64/libamd_smi.so /opt/amd-driver-mock/lib/libamd_smi.so.27
+COPY --from=shared-driver /usr/local/bin/mock-device /opt/amd-driver-mock/bin/mock-device
 RUN mkdir -p /opt/amd-driver-mock/lib /opt/amd-driver-mock/bin && \
-    cc -Wall -Wextra -Werror -fPIC -shared -Wl,-soname,libdrm_amdgpu.so.1 \
-      $(pkg-config --cflags libdrm_amdgpu) src/drm.c -o /opt/amd-driver-mock/lib/libdrm_amdgpu.so.1 && \
-    cc -Wall -Wextra -Werror $(pkg-config --cflags fuse3) src/device.c \
-      $(pkg-config --libs fuse3) -o /opt/amd-driver-mock/bin/mock-device && \
-    cc -fPIC -shared -Wl,-soname,libamd_smi.so.27 -Wl,--version-script=/baseline-smi/version.map \
-      /baseline-smi/mock.c /baseline-smi/unsupported.c -o /opt/amd-driver-mock/lib/libamd_smi.so.27 && \
     cc -Wall -Wextra -Werror $(pkg-config --cflags libdrm_amdgpu) tests/probe.c \
       -L/opt/amd-driver-mock/lib -l:libdrm_amdgpu.so.1 -Wl,-rpath,/opt/amd-driver-mock/lib \
       -o /opt/amd-driver-mock/bin/probe

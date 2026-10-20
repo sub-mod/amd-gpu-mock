@@ -38,7 +38,12 @@ print(json.dumps({'kind':'Cluster','apiVersion':'kind.x-k8s.io/v1alpha4','nodes'
 PY
 kind create cluster --name amd-hami-driver --image "$KIND_NODE_IMAGE" --config tmp/hami/kind.yaml --kubeconfig tmp/hami/kubeconfig --wait 120s
 if [[ "${DRIVER_MOCK_SKIP_PULL:-0}" = 1 ]]; then
- kind load docker-image "$plugin" "$scheduler" --name amd-hami-driver
+ if [[ "$runtime" = podman ]]; then
+  "$runtime" save --format docker-archive -o tmp/hami/allocation-images.tar "$plugin" "$scheduler"
+  kind load image-archive tmp/hami/allocation-images.tar --name amd-hami-driver
+ else
+  kind load docker-image "$plugin" "$scheduler" --name amd-hami-driver
+ fi
 fi
 "$runtime" exec amd-hami-driver-control-plane sh -ec 'mkdir -p /dev/dri; for path in dri/card0 dri/renderD128 kfd; do test -e /dev/$path || touch /dev/$path; mount --bind /var/lib/amd-driver-mock/dev/$path /dev/$path; done'
 DRIVER_MOCK_CONFIG="$CONFIG" python3 "$EXP/deploy.py"
