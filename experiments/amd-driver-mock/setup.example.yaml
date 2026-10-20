@@ -1,0 +1,21 @@
+# PROPOSED CONTRACT ONLY: no installer consumes this file today.
+# This describes the integrating lab, not a HAMi upstream configuration schema.
+apiVersion: mock.amd.example/v1alpha1
+kind: DriverMockLab
+metadata:
+  name: hami-one-gpu
+spec:
+  backend: library # surfaces | library | device; only surfaces exists in the current lab
+  inventory:
+    profile: MI300X
+    physicalGPUCount: 1
+    partition: SPX
+  state:
+    authority: driver-mock
+    contractVersion: v1alpha1 # proposed; must be defined before implementation
+  consumer:
+    integration: hami-device-plugin
+    disableOtherGPUAllocators: true
+  scope:
+    gpuExecution: false
+    hardwareMemoryIsolation: false
