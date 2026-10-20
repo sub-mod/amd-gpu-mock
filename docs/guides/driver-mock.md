@@ -56,6 +56,12 @@ preloaded with a replacement libdrm.
   numbers rather than a `/dev/null` substitute.
 - `amdgpu_device_initialize/deinitialize`, GPU CU count/device ID, VRAM capacity,
   and profile-derived marketing name. Other GPU-info fields are zero/unspecified.
+  `AMDGPU_INFO_VRAM_GTT` returns its capacity structure; `AMDGPU_INFO_MEMORY`
+  returns the full heap structure or a requested prefix, including HAMi's short
+  query. Zero/oversized buffers are rejected. Heap usage follows the existing
+  simulated SMI state; all profile VRAM is modeled as CPU-accessible and GTT is
+  unmodeled (zero). These are simulated values, not host allocations.
+  See the [Linux UAPI](https://github.com/torvalds/linux/blob/master/include/uapi/drm/amdgpu_drm.h).
 - Unknown queries and firmware queries return `EOPNOTSUPP`; malformed handles or
   buffers are rejected. Raw ioctls return `ENOTTY`, reads/writes `EOPNOTSUPP`.
 - Multiple GPUs and fixed partition inventory use the same original renderer.

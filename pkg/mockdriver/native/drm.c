@@ -78,12 +78,32 @@ int amdgpu_query_info(amdgpu_device_handle dev, unsigned id, unsigned size, void
     int card = card_of(dev); uint64_t bytes;
     if (card < 0 || !out) return -EINVAL;
     if (!available(card)) return -ENODEV;
-    if (id != AMDGPU_INFO_MEMORY) return -EOPNOTSUPP;
-    if (size != sizeof(struct drm_amdgpu_info_vram_gtt)) return -EINVAL;
+    if (id != AMDGPU_INFO_MEMORY && id != AMDGPU_INFO_VRAM_GTT) return -EOPNOTSUPP;
     if(property(card,"local_mem_size",&bytes)) return -ENODATA;
-    struct drm_amdgpu_info_vram_gtt *mem = out; memset(mem, 0, size);
-    mem->vram_size = bytes; mem->vram_cpu_accessible_size = bytes;
-    return 0;
+    if (id == AMDGPU_INFO_VRAM_GTT) {
+        struct drm_amdgpu_info_vram_gtt mem = {0};
+        if (!size || size > sizeof(mem)) return -EINVAL;
+        mem.vram_size = bytes; mem.vram_cpu_accessible_size = bytes;
+        memcpy(out, &mem, size); return 0;
+    }
+    // MEMORY and VRAM_GTT have different UAPI structures. A short MEMORY
+    // request is a prefix of memory_info, not a reinterpreted vram_gtt reply.
+    struct drm_amdgpu_memory_info mem = {0};
+    if (!size || size > sizeof(mem)) return -EINVAL;
+    char path[1024], line[512]; unsigned long long used_mb;
+    snprintf(path,sizeof(path),"%s/smi/gpu%d",root(),card);
+    FILE *f = fopen(path,"r");
+    if (!f) return -ENODATA;
+    int ok = fgets(line,sizeof(line),f) && sscanf(line,"%*u %*u %*u %*u %llu",&used_mb)==1;
+    fclose(f); if (!ok || used_mb > bytes / (1024*1024)) return -ENODATA;
+    mem.vram.total_heap_size = bytes;
+    mem.vram.usable_heap_size = bytes;
+    mem.vram.heap_usage = used_mb * 1024 * 1024;
+    mem.vram.max_allocation = bytes - mem.vram.heap_usage;
+    // The optional backend models all profile VRAM as CPU-accessible and
+    // does not model GTT. Neither field describes physical host allocation.
+    mem.cpu_accessible_vram = mem.vram;
+    memcpy(out, &mem, size); return 0;
 }
 int amdgpu_query_firmware_version(amdgpu_device_handle dev, unsigned type, unsigned ip, unsigned index, uint32_t *version, uint32_t *feature) {
     (void)dev; (void)type; (void)ip; (void)index; (void)version; (void)feature;
